@@ -188,48 +188,24 @@ subroutine Driver_evolveAll()
      print*,'returned from hydro myPE=',dr_globalMe
 #endif
 
-#ifndef DRIVER_DIFFULAST
-     ! 3. Diffusive processes:
-     call RadTrans(dr_dt)
-#ifdef DEBUG_DRIVER
-     print*,'returned from RadTrans myPE=',dr_globalMe
-#endif
-#endif
 
+     call Timers_start("Gravity potential")
+     call Gravity_beginPotential()
+     call Timers_stop("Gravity potential")
+     
      ! 4. Add source terms:
      call Timers_start("sourceTerms")
      call Driver_sourceTerms(dr_dt)
      call Timers_stop("sourceTerms")
-#ifdef DEBUG_DRIVER
-     print*,'returned from sourceTerms myPE=',dr_globalMe
-#endif
-
-     ! If DRIVER_DIFFULAST is defined, do diffusion advance AFTER source terms.
-#ifdef DRIVER_DIFFULAST
-     ! 3. Diffusive processes: *** CHANGED ORDER !!! ***
-     !    Radiation, viscosity, conduction, & magnetic registivity
-     call RadTrans(dr_dt)
-#ifdef DEBUG_DRIVER
-        print*, 'return from Diffuse'
-#endif
-#endif
 
         ! #. Advance Particles
-        call Timers_start("Particles_advance")
-        call Particles_advance(dr_dtOld, dr_dt)
-        call Driver_driftUnk(__FILE__,__LINE__,driftUnk_flags)
-        call Timers_stop("Particles_advance")
-#ifdef DEBUG_DRIVER
-        print*, 'return from Particles_advance '  ! DEBUG
-#endif
+     call Timers_start("Particles_advance")
+     call Particles_advance(dr_dtOld, dr_dt)
+     call Timers_stop("Particles_advance")
 
-     !Allows evolution of gravitational potential for Spark Hydro
-     ! #. Calculate gravitational potentials
-     if (.NOT. Hydro_gravPotIsAlreadyUpdated()) then
-        call Timers_start("Gravity potential")
-        call Gravity_potential()
-        call Driver_driftUnk(__FILE__,__LINE__,driftUnk_flags)
-        call Timers_stop("Gravity potential")
+     call Timers_start("Gravity potential")
+     call Gravity_finishPotential()
+     call Timers_stop("Gravity potential")
 #ifdef DEBUG_DRIVER
      print*, 'return from Gravity_potential '  ! DEBUG
 #endif
