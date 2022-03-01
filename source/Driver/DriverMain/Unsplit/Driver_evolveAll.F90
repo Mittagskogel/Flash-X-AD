@@ -85,7 +85,7 @@ subroutine Driver_evolveAll()
 #include "Simulation.h"
   use Hydro_interface,     ONLY : Hydro, &
                                   Hydro_gravPotIsAlreadyUpdated
-  use Gravity_interface,   ONLY : Gravity_potential
+  use Gravity_interface,   ONLY : Gravity_potential,Gravity_beginPotential, Gravity_finishPotential
   use IO_interface,        ONLY : IO_output,IO_outputFinal
   use RadTrans_interface,  ONLY : RadTrans
   use Simulation_interface, ONLY: Simulation_adjustEvolution
@@ -191,6 +191,7 @@ subroutine Driver_evolveAll()
 
      call Timers_start("Gravity potential")
      call Gravity_beginPotential()
+!!$     call Gravity_finishPotential()     
      call Timers_stop("Gravity potential")
      
      ! 4. Add source terms:
@@ -204,12 +205,12 @@ subroutine Driver_evolveAll()
      call Timers_stop("Particles_advance")
 
      call Timers_start("Gravity potential")
-     call Gravity_finishPotential()
+     call Gravity_finishPotential()     
      call Timers_stop("Gravity potential")
 #ifdef DEBUG_DRIVER
      print*, 'return from Gravity_potential '  ! DEBUG
 #endif
-     endif
+
      
      dr_dtOld = dr_dt
 
