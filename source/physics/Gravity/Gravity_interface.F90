@@ -76,13 +76,13 @@ Module Gravity_interface
   end interface
 
   interface Gravity_beginPotential
-     subroutine Gravity_potential(potentialIndex)
+     subroutine Gravity_beginPotential(potentialIndex)
        integer, intent(IN), optional :: potentialIndex
      end subroutine Gravity_beginPotential
   end interface
 
   interface Gravity_finishPotential
-     subroutine Gravity_potential(potentialIndex)
+     subroutine Gravity_finishPotential(potentialIndex)
        integer, intent(IN), optional :: potentialIndex
      end subroutine Gravity_finishPotential
   end interface
