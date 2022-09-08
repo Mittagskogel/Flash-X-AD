@@ -66,16 +66,20 @@ PARAMETER     xc12_match         REAL     0.e0  [0.0 to 1.0]
 PARAMETER     xo16_match         REAL     0.e0  [0.0 to 1.0]
 PARAMETER     xni56_match        REAL     0.e0  [0.0 to 1.0]
 
-D useShell              flag to add a shell/belt to the profile
+D useShell              flag to add a shell/belt/wedge to the profile
 D radShellMin           Inner radius of shell
 D radShellMax           Outer radius of shell
-D thtShellMin           Min angle of belt (0.0 for shell)
-D thtShellMax           Max angle of belt (180.0 for shell)
+D thtShellMin           Min theta angle of belt (0.0 for shell)
+D thtShellMax           Max theta angle of belt (180.0 for shell)
+D phiShellMin           Min phi angle of belt (0.0 for shell)
+D phiShellMax           Max phi angle of belt (360.0 for shell)
 PARAMETER     useShell           BOOLEAN  FALSE
 PARAMETER     radShellMin        REAL     0.e0  [0.0 to ]
 PARAMETER     radShellMax        REAL     0.e0  [0.0 to ]
 PARAMETER     thtShellMin        REAL     0.e0  [0.0 to 180.0]
 PARAMETER     thtShellMax        REAL     0.e0  [0.0 to 180.0]
+PARAMETER     phiShellMin        REAL     0.e0  [0.0 to 360.0]
+PARAMETER     phiShellMax        REAL     0.e0  [0.0 to 360.0]
 
 D densShellMult         Density multiplier if shell is within profile
 D tempShellMult         Temperture multiplier if shell is within profile

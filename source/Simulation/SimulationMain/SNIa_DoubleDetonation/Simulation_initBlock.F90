@@ -47,7 +47,7 @@ subroutine Simulation_initBlock(solnData, tileDesc)
   integer :: meshGeom
 
   real, allocatable, dimension(:) :: xinitial
-  real :: radCenter, thtCenter, radCenterVol, dVol, ign_dist, dx, dy, dz, dr
+  real :: radCenter, thtCenter, phiCenter, radCenterVol, dVol, ign_dist, dx, dy, dz, dr
   real :: radMin, radMax, x2Min, x2Max, y2Min, y2Max, z2Min, z2Max
   real :: m, b, match_center
   real :: velx, vely, velz, dens, temp, pres, eint, xsum, xmissing, sumY, Ye
@@ -120,6 +120,7 @@ subroutine Simulation_initBlock(solnData, tileDesc)
            if ( meshGeom == SPHERICAL ) then
               radCenter = xCenter(i)
               thtCenter = yCenter(j)
+              phiCenter = zCenter(k)
               dVol = (4.0*PI/3.0)*(xRight(i)-xLeft(i))*(3.0*xLeft(i)*xRight(i) + (xRight(i)-xLeft(i))**2)
               radCenterVol = (4.0*PI/3.0)*xLeft(i)**3 + 0.5*dVol
 
@@ -135,6 +136,7 @@ subroutine Simulation_initBlock(solnData, tileDesc)
               if ( thtCenter < 0.0 ) then
                  thtCenter = thtCenter + PI
               end if
+              phiCenter = zCenter(k)
               radCenterVol = (4.0*PI/3.0) * radCenter**3
 
               x2Min = xLeft(i)**2
@@ -152,6 +154,7 @@ subroutine Simulation_initBlock(solnData, tileDesc)
            else if ( meshGeom == CARTESIAN ) then
               radCenter = sqrt(xCenter(i)**2 + yCenter(j)**2 + zCenter(k)**2)
               thtCenter = acos( zCenter(k) / radCenter )
+              phiCenter = mod( atan2( yCenter(j), xCenter(i) ), 2.0*PI )
               radCenterVol = (4.0*PI/3.0) * radCenter**3
 
               if ( xLeft(i)*xRight(i) > 0.0 ) then
@@ -250,7 +253,8 @@ subroutine Simulation_initBlock(solnData, tileDesc)
            if (sim_useShell) then
              ! add a shell/belt
               if ( radCenter >= sim_radShellMin .and. radCenter <= sim_radShellMax .and. &
-                 & thtCenter >= sim_thtShellMin .and. thtCenter <= sim_thtShellMax ) then
+                 & thtCenter >= sim_thtShellMin .and. thtCenter <= sim_thtShellMax .and. &
+                 & phiCenter >= sim_phiShellMin .and. phiCenter <= sim_phiShellMax ) then
                  solnData(SPECIES_BEGIN:SPECIES_END,i,j,k) = sim_smallx
 #ifdef HE4_SPEC
                  solnData(HE4_SPEC,i,j,k) = sim_xhe4Shell

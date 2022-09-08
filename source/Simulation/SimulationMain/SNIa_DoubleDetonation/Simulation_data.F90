@@ -30,6 +30,7 @@ module Simulation_data
   !shell parameters
   logical, save :: sim_useShell
   real, save :: sim_radShellMin, sim_radShellMax, sim_thtShellMin, sim_thtShellMax
+  real, save :: sim_phiShellMin, sim_phiShellMax
   real, save :: sim_xhe4Shell, sim_xc12Shell, sim_xni56Shell
   real, save :: sim_densShellMult, sim_tempShellMult
   real, save :: sim_densShell, sim_tempShell
