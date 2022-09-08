@@ -49,6 +49,7 @@ subroutine Simulation_initBlock(solnData, tileDesc)
   real, allocatable, dimension(:) :: xinitial
   real :: radCenter, thtCenter, radCenterVol, dVol, ign_dist, dx, dy, dz, dr
   real :: radMin, radMax, x2Min, x2Max, y2Min, y2Max, z2Min, z2Max
+  real :: m, b, match_center
   real :: velx, vely, velz, dens, temp, pres, eint, xsum, xmissing, sumY, Ye
   real :: enuc0, enuc, avo, c_light, q_e, conv
   integer :: i, j, k, n, nunk, lev
