@@ -237,10 +237,26 @@ subroutine Simulation_initBlock(solnData, tileDesc)
               if ( NDIM == 3 ) ign_dist = ign_dist + (zCenter(k) - sim_ignZ)**2
               ign_dist = sqrt(ign_dist)
 
+              ! build a plume by skipping any cell with radius larger than the center
+              ! of the match
+              if (sim_plume) then
+                  if (radCenter > match_center) then
+                      ign_dist = -dx
+                  endif
+              endif
+
               ! heat to ignition temp and set a parameterized composition
               ! if zone center is within half zone-width of match
               if ( ign_dist <= sim_ignROuter + 0.5*dx .and. ign_dist >= sim_ignRInner - 0.5*dx ) then
-                 temp = sim_ignTOuter
+
+                 if ( ign_dist > sim_ignROuter ) then
+                     temp = sim_ignTOuter
+                 else
+                     m = (sim_ignTInner - sim_ignTOuter)/(sim_ignRInner - sim_ignROuter)
+                     b = (sim_ignTOuter*sim_ignRInner - sim_ignTInner*sim_ignROuter)/(sim_ignRInner-sim_ignROuter)
+                     temp = m*ign_dist + b
+                 endif
+
                  solnData(SPECIES_BEGIN:SPECIES_END,i,j,k) = sim_smallx
 #ifdef C12_SPEC
                  solnData(C12_SPEC,i,j,k) = sim_xc12Match

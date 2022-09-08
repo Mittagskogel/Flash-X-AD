@@ -38,7 +38,7 @@ module Simulation_data
   real, save :: sim_densFluff, sim_tempFluff, sim_xhe4Fluff, sim_xc12Fluff, sim_xo16Fluff, sim_xni56Fluff
 
   ! ignition parameters
-  logical, save :: sim_ignite
+  logical, save :: sim_ignite, sim_plume
   real, save :: sim_ignX, sim_ignY, sim_ignZ
   real, save :: sim_ignRInner, sim_ignROuter
   real, save :: sim_ignTInner, sim_ignTOuter

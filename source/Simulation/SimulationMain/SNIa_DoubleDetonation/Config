@@ -49,6 +49,7 @@ D r_match_inner         Inner radius of spherical matchhead region
 D r_match_outer         Outer radius of spherical matchhead region
 D t_ignite_inner        Temperature of matchhead at r_match_inner
 D t_ignite_outer        Temperature of matchhead at r_match_outer
+D plume_match           Flag to clip match at t_ignite_outer outwards from center of the domain
 D xc12_match            c12 mass fraction of the matchhead region (remainder is filled with he4)
 D xo16_match            o16 mass fraction of the matchhead region (remainder is filled with he4)
 D xni56_match           ni56 mass fraction of the matchhead region (remainder is filled with he4)
@@ -60,6 +61,7 @@ PARAMETER     r_match_inner      REAL     0.e0  [0.0 to ]
 PARAMETER     r_match_outer      REAL     0.e0  [0.0 to ]
 PARAMETER     t_ignite_inner     REAL     4.e9  [0.0 to ]
 PARAMETER     t_ignite_outer     REAL     4.e9  [0.0 to ]
+PARAMETER     plume_match        BOOLEAN  FALSE
 PARAMETER     xc12_match         REAL     0.e0  [0.0 to 1.0]
 PARAMETER     xo16_match         REAL     0.e0  [0.0 to 1.0]
 PARAMETER     xni56_match        REAL     0.e0  [0.0 to 1.0]
