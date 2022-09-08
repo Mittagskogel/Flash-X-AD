@@ -6,11 +6,27 @@ REQUIRES physics/Eos/EosMain/Helmholtz
 REQUIRES physics/sourceTerms/Burn/BurnMain/nuclearBurn
 REQUIRES Simulation/SimulationComposition
 REQUIRES Multispecies
+
 REQUESTS IO
 REQUESTS IO/IOMain/hdf5
 
 ## Do not refine fluff
 LINKIF Grid_markRefineDerefine.F90.pm4 Grid/GridMain/AMR/Paramesh4
+
+## particles
+USESETUPVARS withParticles
+IF withParticles
+    REQUIRES Particles/ParticlesMain
+    REQUESTS IO/IOParticles
+    REQUESTS Particles/ParticlesInitialization/ParticlesOwned/WithDensity
+    REQUESTS Particles/ParticlesInitialization/ParticlesOwned/WithDensity/CellMassBins
+    PARTICLETYPE passive INITMETHOD With_Density MAPMETHOD quadratic ADVMETHOD rungekutta
+
+    PARTICLEPROP pdens REAL
+    PARTICLEPROP ptemp REAL
+    PARTICLEMAP TO pdens FROM VARIABLE dens
+    PARTICLEMAP TO ptemp FROM VARIABLE temp
+ENDIF
 
 #
 # progenitor
