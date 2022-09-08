@@ -312,16 +312,23 @@ subroutine Simulation_initBlock(solnData, tileDesc)
            solnData(DENS_VAR,i,j,k) = dens
            solnData(TEMP_VAR,i,j,k) = temp
 
-           solnVec(1:NUNK_VARS) => solnData(1:NUNK_VARS,i,j,k)
-           call Eos_getAbarZbar(solnVec=solnVec,sumY=sumY,Ye=Ye)
-           solnData(SUMY_MSCALAR,i,j,k) = sumY
-           solnData(YE_MSCALAR,i,j,k) = Ye
-
         end do
      end do
   end do
 
+  ! renormalize BEFORE calculating any sumY
   call Grid_renormAbundance(tileDesc,tileLimits,solnData)
+
+  do k = tileLimits(LOW,KAXIS), tileLimits(HIGH,KAXIS)
+     do j = tileLimits(LOW,JAXIS), tileLimits(HIGH,JAXIS)
+        do i = tileLimits(LOW,IAXIS), tileLimits(HIGH,IAXIS)
+           solnVec(1:NUNK_VARS) => solnData(1:NUNK_VARS,i,j,k)
+           call Eos_getAbarZbar(solnVec=solnVec,sumY=sumY,Ye=Ye)
+           solnData(SUMY_MSCALAR,i,j,k) = sumY
+           solnData(YE_MSCALAR,i,j,k) = Ye
+        end do
+     end do
+  end do
 
   call Eos_wrapped(MODE_DENS_TEMP,tileLimits,solnData)
 
