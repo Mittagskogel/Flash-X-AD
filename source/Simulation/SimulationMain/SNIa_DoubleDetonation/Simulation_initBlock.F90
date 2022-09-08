@@ -194,38 +194,6 @@ subroutine Simulation_initBlock(solnData, tileDesc)
            call Multispecies_getSumFrac(EB, enuc0, &
                 solnData(SPECIES_BEGIN:SPECIES_END,i,j,k))
 
-           if(sim_useShell) then
-             ! add a shell/belt
-              if ( radCenter >= sim_radShellMin .and. radCenter <= sim_radShellMax .and. &
-                 & thtCenter >= sim_thtShellMin .and. thtCenter <= sim_thtShellMax ) then
-                 solnData(SPECIES_BEGIN:SPECIES_END,i,j,k) = sim_smallx
-#ifdef HE4_SPEC
-                 solnData(HE4_SPEC,i,j,k) = sim_xhe4Shell
-#endif
-#ifdef C12_SPEC
-                 solnData(C12_SPEC,i,j,k) = sim_xc12Shell
-#endif
-#ifdef NI56_SPEC
-                 solnData(NI56_SPEC,i,j,k) = sim_xni56Shell
-#endif
-#ifdef O16_SPEC
-                 solnData(O16_SPEC,i,j,k) = 1.0-sim_xhe4Shell-sim_xc12Shell-sim_xni56Shell
-#endif
-
-                 if ( dens > sim_densFluff ) then
-                    dens = sim_densShellMult*dens
-                    temp = sim_tempShellMult*temp
-                 else
-                    if ( sim_densShell > 0.0 ) then
-                       dens = sim_densShell
-                    end if
-                    if ( sim_tempShell > 0.0 ) then
-                       temp = sim_tempShell
-                    end if
-                 end if
-
-              end if
-           end if
 
            if (sim_ignite) then
               !-----------------------------------------------
@@ -277,6 +245,41 @@ subroutine Simulation_initBlock(solnData, tileDesc)
               end if
 
            end if ! sim_ignite
+
+
+           if (sim_useShell) then
+             ! add a shell/belt
+              if ( radCenter >= sim_radShellMin .and. radCenter <= sim_radShellMax .and. &
+                 & thtCenter >= sim_thtShellMin .and. thtCenter <= sim_thtShellMax ) then
+                 solnData(SPECIES_BEGIN:SPECIES_END,i,j,k) = sim_smallx
+#ifdef HE4_SPEC
+                 solnData(HE4_SPEC,i,j,k) = sim_xhe4Shell
+#endif
+#ifdef C12_SPEC
+                 solnData(C12_SPEC,i,j,k) = sim_xc12Shell
+#endif
+#ifdef NI56_SPEC
+                 solnData(NI56_SPEC,i,j,k) = sim_xni56Shell
+#endif
+#ifdef O16_SPEC
+                 solnData(O16_SPEC,i,j,k) = 1.0-sim_xhe4Shell-sim_xc12Shell-sim_xni56Shell
+#endif
+
+                 temp = sim_tempShell
+                 if ( dens > sim_densFluff ) then
+                    dens = sim_densShellMult*dens
+                    temp = sim_tempShellMult*temp
+                 else
+                    if ( sim_densShell > 0.0 ) then
+                       dens = sim_densShell
+                    end if
+                    if ( sim_tempShell > 0.0 ) then
+                       temp = sim_tempShell
+                    end if
+                 end if
+
+              end if
+           end if ! sim_useShell
 
            ! Giant traffic cone
            if ( dens < sim_smallrho .or. temp < sim_smallt ) then
