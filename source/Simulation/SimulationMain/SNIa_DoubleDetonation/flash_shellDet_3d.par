@@ -180,7 +180,7 @@ geometry				= "cartesian"
 #geometry				= "cylindrical"
 #geometry				= "spherical"
 
-xmin					=  0.e0
+xmin					= -65536.e5
 xmax					=  65536.e5
 ymin					= -65536.e5
 ymax					=  65536.e5
@@ -296,6 +296,8 @@ mpole_MaxRadialZones			= 1       # Number of distinct "zones" of radial bin spac
 ## -------------------------------------------------------------
 ## miscellaneous
 ## -------------------------------------------------------------
+
+enableMaskedGCFill			= .true.  # Flag to allow masks in Grid_fillGuardCells
 
 # floor values
 smlrho					= 1.0e-6
