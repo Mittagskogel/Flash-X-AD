@@ -12,9 +12,9 @@
 #wall_clock_checkpoint			= 39600
 #wall_clock_time_limit			= 40000   # 12h, with some time for checkpoint and init
 
-# names of files
-basenm					= "snd_"
-log_file				= "snd.log"
+# names of files (use defaults for tests)
+#basenm					= "snd_"
+#log_file				= "snd.log"
 
 restart					= .false.
 
@@ -23,14 +23,14 @@ plotFileNumber				= 0
 particleFileNumber			= 0
 
 #output_directory			= "./chk"
-checkpointFileIntervalStep		= 25
+#checkpointFileIntervalStep		= 25
 #checkpointFileIntervalTime		= 1.0e-1
 
 #plotFileIntervalStep			= 0
-plotFileIntervalTime			= 5.0e-3
+#plotFileIntervalTime			= 5.0e-3
 
 #particleFileIntervalStep		= 0
-particleFileIntervalTime		= 5.0e-3
+#particleFileIntervalTime		= 5.0e-3
 
 #ignoreForcedPlot			= .true.
 #summaryOutputOnly			= .true.
