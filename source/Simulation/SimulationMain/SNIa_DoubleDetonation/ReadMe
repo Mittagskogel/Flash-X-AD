@@ -16,8 +16,8 @@ Multiple initial 1D WD profiles are provided in the Profiles directory:
 
 Example setup commands:
 
-* 2D, with default Aprox13 burner, centrally detonated analytic WD
-  `> ./setup SNIa_DoubleDetonation -auto -2d +cylindrical +sqr16 +pm4dev +newMpole +a13 -parfile=flash_centerDet_2d.par`
+* 2D, with default Aprox13 burner, edge-lit analytic WD w/ He-shell
+  `> ./setup SNIa_DoubleDetonation -auto -2d +cylindrical +sqr16 +pm4dev +newMpole +a13 -parfile=flash_shellDet_2d.par`
 
 * 2D, with XNet SN231 network, edge-lit analytic WD w/ He-shell
   `> ./setup SNIa_DoubleDetonation -auto -2d +cylindrical +sqr16 +pm4dev +newMpole +xnet xnetData=Data_SN231 -parfile=flash_shellDet_2d.par`
