@@ -53,7 +53,7 @@ zr_boundary_type = "outflow"
 
 #	Simulation time, I/O  parameters
 
-cfl		= 0.8
+cfl		= 0.6
 basenm          = "sedov_"
 restart         = .false.
 
