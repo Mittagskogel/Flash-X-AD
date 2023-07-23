@@ -65,8 +65,8 @@ pt_initialZMin = -0.5
 pt_initialZMax = +0.5
 
 basenm          = "Turb_"
-log_file        = "flash.log"
-stats_file      = "flash.dat"
+# log_file        = "flash.log"
+# stats_file      = "flash.dat"
 run_comment     = "FLASH-X"
 
 # file numbers - if you restart you have to change the checkpointFileNumber
