@@ -1,33 +1,35 @@
-!!****f* source/physics/sourceTerms/Stir/Stir_computeDt
+!> @copyright Copyright 2023 UChicago Argonne, LLC and contributors
 !!
-!! NAME
-!!  Stir_computeDt
+!! @licenseblock
+!!   Licensed under the Apache License, Version 2.0 (the "License");
+!!   you may not use this file except in compliance with the License.
 !!
-!! SYNOPSIS
-!!  Stir_computeDt(integer(IN)  :: blockID,
-!!                 integer(IN)  :: blkLimits(2,MDIM),
-!!                 integer(IN)  :: blkLimitsGC(2,MDIM),
-!!                 real,pointer :: solnData(:,:,:,:),
-!!                 real(OUT)    :: dt_stir,
-!!                 real(OUT)    :: dt_minloc(5))
+!!   Unless required by applicable law or agreed to in writing, software
+!!   distributed under the License is distributed on an "AS IS" BASIS,
+!!   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+!!   See the License for the specific language governing permissions and
+!!   limitations under the License.
+!! @endlicenseblock
 !!
-!! DESCRIPTION
-!!  Compute turbulence stiring timestep limiter dt_stir = sqrt(dx/a),
-!!  where "a" is the acceleration field.
+!! @file
+!! @brief Stir_computeDt stub
+
+!> @ingroup Stir
 !!
-!! ARGUMENTS
-!!  blockID       --  local block ID
-!!  blkLimits     --  the indices for the interior endpoints of the block
-!!  blkLimitsGC   --  the indices for endpoints including the guardcells
-!!  solnData      --  the physical, solution data from grid
-!!  dt_stir       --  variable to hold timestep constraint
-!!  dt_minloc(5)  --  array to hold limiting zone info: zone indices
-!!                    (i,j,k), block ID, PE number
+!! @brief Compute turbulence stiring timestep limiter
 !!
-!! SEE ALSO
-!!  Driver_computeDt
+!! @details
+!! @anchor Stir_computeDt_stub
 !!
-!!***
+!! Compute turbulence stiring timestep limiter dt_stir = sqrt(dx/a),
+!! where "a" is the turbulent acceleration field.
+!!
+!! @param blockID      local block ID
+!! @param blkLimits    the indices for the interior endpoints of the block
+!! @param blkLimitsGC  the indices for endpoints including the guardcells
+!! @param solnData     pointer to the physical solution data on grid (dens, velx, etc.)
+!! @param dt_stir      variable holding timestep constraint
+!! @param dt_minloc    array holding limiting cell info: cell indices (i,j,k), blockID, PE
 
 subroutine Stir_computeDt(blockID, blkLimits, blkLimitsGC, solnData, dt_stir, dt_minloc)
 
