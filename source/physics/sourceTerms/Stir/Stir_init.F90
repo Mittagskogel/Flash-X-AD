@@ -1,20 +1,29 @@
-!!****f* source/physics/sourceTerms/Stir/Stir_init
+!> @copyright Copyright 2023 UChicago Argonne, LLC and contributors
 !!
-!! NAME
-!!  Stir_init
+!! @licenseblock
+!!   Licensed under the Apache License, Version 2.0 (the "License");
+!!   you may not use this file except in compliance with the License.
 !!
-!! SYNOPSIS
-!!  Stir_init(logical(in) :: restart)
+!!   Unless required by applicable law or agreed to in writing, software
+!!   distributed under the License is distributed on an "AS IS" BASIS,
+!!   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+!!   See the License for the specific language governing permissions and
+!!   limitations under the License.
+!! @endlicenseblock
 !!
-!! DESCRIPTION
-!!  Apply turbulence stirring
+!! @file
+!! @brief Stir_init stub
+
+!> @ingroup Stir
 !!
-!! ARGUMENTS
-!!  restart - indicates if run is starting from scratch or restarting chk
+!! @brief Initialize turbulence stirring module
 !!
-!! PARAMETERS
+!! @details
+!! @anchor Stir_init_stub
 !!
-!!***
+!! Does initializations that the Stir unit might need.
+!!
+!! @param restart  boolean flag to indicate whether restarting from checkpoint file
 
 subroutine Stir_init(restart)
   implicit none
