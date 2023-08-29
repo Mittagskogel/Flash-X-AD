@@ -77,6 +77,8 @@ subroutine Stir(dt, pass)
   real(kind=8), parameter :: correction = 0.0
 #endif
 
+  logical, parameter :: Debug = .false.
+
   if (firstCall) then
     if (dr_globalMe == MASTER_PE) then
       open(funit, file=trim(outfile), position='APPEND') ! write header
@@ -90,6 +92,8 @@ subroutine Stir(dt, pass)
   endif
 
   ! =====================================================================
+
+  if (Debug .and. (dr_globalMe .eq. MASTER_PE)) print *, 'Stir: entering'
 
   ! if not using stirring or stirring is turned off after some time (st_stop_driving_time), then return
   if ((.not. st_useStir) .or. driving_stopped) return
@@ -386,6 +390,8 @@ subroutine Stir(dt, pass)
   endif
 
   call Timers_stop ("Stir")
+
+  if (Debug .and. (dr_globalMe .eq. MASTER_PE)) print *, 'Stir: exiting'
 
   return
 
