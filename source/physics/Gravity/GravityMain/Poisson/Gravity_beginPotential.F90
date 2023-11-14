@@ -1,4 +1,4 @@
-!!****if* source/physics/Gravity/GravityMain/Poisson/Gravity_potential
+!!****if* source/physics/Gravity/GravityMain/Poisson/Gravity_beginPotential
 !! NOTICE
 !!  Copyright 2022 UChicago Argonne, LLC and contributors
 !!
@@ -11,13 +11,13 @@
 !!  See the License for the specific language governing permissions and
 !!  limitations under the License.
 !!
-!! NAME 
+!! NAME
 !!
-!!     Gravity_potential
+!!  Gravity_beginPotential
 !!
 !! SYNOPSIS
 !!
-!!  call Gravity_potential(   optional,integer(IN) :: potentialIndex)
+!!  call Gravity_beginPotential(optional,integer(IN) :: potentialIndex)
 !!
 !! DESCRIPTION
 !!
@@ -25,6 +25,8 @@
 !!      blocks specified in the list, for the gravity implementations
 !!      (i.e., various Poisson implementations), which make use of it
 !!      in computing the gravitational acceleration.
+!!
+!!      The resulting potential can be considered as zone-averaged.
 !!
 !!      Supported boundary conditions are isolated (0) and
 !!      periodic (1).  The same boundary conditions are applied

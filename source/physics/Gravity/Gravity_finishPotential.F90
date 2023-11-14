@@ -1,4 +1,4 @@
-!!****f* source/physics/Gravity/Gravity_potential
+!!****f* source/physics/Gravity/Gravity_finishPotential
 !! NOTICE
 !!  Copyright 2022 UChicago Argonne, LLC and contributors
 !!
@@ -12,12 +12,12 @@
 !!  limitations under the License.
 !!
 !! NAME
-!! 
-!!  Gravity_potential 
+!!
+!!  Gravity_finishPotential
 !!
 !! SYNOPSIS
 !!
-!!  call Gravity_potential(optional,integer(IN) :: potentialIndex)
+!!  call Gravity_finishPotential(optional,integer(IN) :: potentialIndex)
 !!
 !! DESCRIPTION
 !!
@@ -46,7 +46,7 @@
 !!
 !! NOTES
 !!
-!!  Gravity_potential can operate in one of two modes:
+!!  Gravity_finishPotential can operate in one of two modes:
 !!  * automatic mode  - when called without the optional potentialIndex.
 !!    Such a call will usually be made once per time step, usually
 !!    from the main time advancement loop in Driver_evolveAll.
@@ -97,7 +97,7 @@
 !!
 !!***
 
-subroutine Gravity_potential( potentialIndex)
+subroutine Gravity_finishPotential( potentialIndex)
 
 !=============================================================================
   implicit none
@@ -106,4 +106,4 @@ subroutine Gravity_potential( potentialIndex)
   integer, intent(IN), optional :: potentialIndex
 
   return
-end subroutine Gravity_potential
+end subroutine Gravity_finishPotential

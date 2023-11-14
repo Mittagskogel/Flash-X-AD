@@ -1,4 +1,4 @@
-!!****if* source/physics/Gravity/GravityMain/Poisson/Gravity_potential
+!!****if* source/physics/Gravity/GravityMain/Poisson/Gravity_finishPotential
 !! NOTICE
 !!  Copyright 2022 UChicago Argonne, LLC and contributors
 !!
@@ -11,13 +11,13 @@
 !!  See the License for the specific language governing permissions and
 !!  limitations under the License.
 !!
-!! NAME 
+!! NAME
 !!
-!!     Gravity_potential
+!!     Gravity_finishPotential
 !!
 !! SYNOPSIS
 !!
-!!  call Gravity_potential(   optional,integer(IN) :: potentialIndex)
+!!  call Gravity_finishPotential(   optional,integer(IN) :: potentialIndex)
 !!
 !! DESCRIPTION
 !!
@@ -25,6 +25,8 @@
 !!      blocks specified in the list, for the gravity implementations
 !!      (i.e., various Poisson implementations), which make use of it
 !!      in computing the gravitational acceleration.
+!!
+!!      The resulting potential can be considered as zone-averaged.
 !!
 !!      Supported boundary conditions are isolated (0) and
 !!      periodic (1).  The same boundary conditions are applied
@@ -44,7 +46,7 @@
 !!
 !! NOTES
 !!
-!!  Gravity_potential can operate in one of two modes:
+!!  Gravity_finishPotential can operate in one of two modes:
 !!  * automatic mode  - when called without the optional potentialIndex.
 !!    Such a call will usually be made once per time step, usually
 !!    from the main time advancement loop in Driver_evolveAll.
@@ -104,7 +106,7 @@ subroutine Gravity_finishPotential( potentialIndex)
        GRID_PDE_BND_ISOLATED, GRID_PDE_BND_DIRICHLET, &
        Grid_getTileIterator, Grid_releaseTileIterator, &
        Grid_notifySolnDataUpdate, &
-       Grid_solvePoisson
+       Grid_finalizePoisson
   use Grid_tile,     ONLY : Grid_tile_t
   use Grid_iterator, ONLY : Grid_iterator_t
   
@@ -158,7 +160,7 @@ subroutine Gravity_finishPotential( potentialIndex)
   if (grav_unjunkPden) then
      density = PDEN_VAR
 #ifdef DENS_VAR           
-     call Driver_abort("[Gravity_potential] Not tested I guess!")
+     call Driver_abort("[Gravity_finishPotential] Not tested I guess!")
      ! I (JO) added this line to create the iterator.  I don't know if it is
      ! correct or if this code has ever been called.
      call Grid_getTileIterator(itor, LEAF, tiling=.FALSE.)

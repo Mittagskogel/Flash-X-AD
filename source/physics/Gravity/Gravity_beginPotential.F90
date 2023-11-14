@@ -1,4 +1,4 @@
-!!****f* source/physics/Gravity/Gravity_potential
+!!****f* source/physics/Gravity/Gravity_beginPotential
 !! NOTICE
 !!  Copyright 2022 UChicago Argonne, LLC and contributors
 !!
@@ -12,12 +12,12 @@
 !!  limitations under the License.
 !!
 !! NAME
-!! 
-!!  Gravity_potential 
+!!
+!!  Gravity_beginPotential
 !!
 !! SYNOPSIS
 !!
-!!  call Gravity_potential(optional,integer(IN) :: potentialIndex)
+!!  call Gravity_beginPotential(optional,integer(IN) :: potentialIndex)
 !!
 !! DESCRIPTION
 !!
@@ -97,7 +97,7 @@
 !!
 !!***
 
-subroutine Gravity_potential( potentialIndex)
+subroutine Gravity_beginPotential( potentialIndex)
 
 !=============================================================================
   implicit none
@@ -106,4 +106,4 @@ subroutine Gravity_potential( potentialIndex)
   integer, intent(IN), optional :: potentialIndex
 
   return
-end subroutine Gravity_potential
+end subroutine Gravity_beginPotential
