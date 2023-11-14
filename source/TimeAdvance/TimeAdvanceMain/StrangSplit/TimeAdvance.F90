@@ -34,7 +34,7 @@
 subroutine TimeAdvance(dt, dtold, time)
 
    use Hydro_interface, ONLY: Hydro, Hydro_gravPotIsAlreadyUpdated
-   use Gravity_interface, ONLY: Gravity_potential &
+   use Gravity_interface, ONLY: Gravity_potential, &
         Gravity_beginPotential, Gravity_finishPotential
    use RadTrans_interface, ONLY: RadTrans
    use Particles_interface, ONLY: Particles_advance, Particles_dump
