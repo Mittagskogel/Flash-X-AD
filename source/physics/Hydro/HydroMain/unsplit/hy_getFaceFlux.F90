@@ -463,7 +463,7 @@ subroutine hy_getFaceFlux (tileDesc,blkLimits,blkLimitsGC,del,&
 
 #if (NSPECIES+NMASS_SCALARS) > 0
               if (hy_fullSpecMsFluxHandling) then
-                 do ispu = SPECIES_BEGIN, MASS_SCALARS_END !SPECIES_END
+                 do ispu = SPECIES_BEGIN, MASS_SCALARS_END
                     isph= ispu-NPROP_VARS
 !!$                    print*,'i,j,k=',i,j,k,present(hy_spcL),present(hy_spcR)
 !!$                    print*,'associated(hy_spcR)=',associated(hy_spcR)
@@ -766,7 +766,7 @@ subroutine hy_getFaceFlux (tileDesc,blkLimits,blkLimitsGC,del,&
 
 #if (NSPECIES+NMASS_SCALARS) > 0
            if (hy_fullSpecMsFluxHandling) then
-              do ispu = SPECIES_BEGIN, MASS_SCALARS_END !SPECIES_END
+              do ispu = SPECIES_BEGIN, MASS_SCALARS_END
                  isph= ispu-NPROP_VARS
                  if (yflux(HY_DENS_FLUX,i,j,k) < 0.) then
                     yflux(HY_END_FLUX+isph,i,j,k) = yflux(HY_DENS_FLUX,i,j,k)*hy_SpcL(isph,i,j,  k,DIR_Y)
@@ -1013,7 +1013,7 @@ subroutine hy_getFaceFlux (tileDesc,blkLimits,blkLimitsGC,del,&
 
 #if (NSPECIES+NMASS_SCALARS) > 0
            if (hy_fullSpecMsFluxHandling) then
-              do ispu = SPECIES_BEGIN, MASS_SCALARS_END !SPECIES_END
+              do ispu = SPECIES_BEGIN, MASS_SCALARS_END
                  isph= ispu-NPROP_VARS
                  if (zflux(HY_DENS_FLUX,i,j,k) < 0.) then
                     zflux(HY_END_FLUX+isph,i,j,k) = zflux(HY_DENS_FLUX,i,j,k)*hy_SpcL(isph,i,j,k,  DIR_Z)
@@ -1183,7 +1183,7 @@ contains
     !       the code is to be aborted immediately once this routine is called.
     allocate(xcent(blkLimitsGC(LOW, IAXIS):blkLimitsGC(HIGH, IAXIS)))
     allocate(ycent(blkLimitsGC(LOW, JAXIS):blkLimitsGC(HIGH, JAXIS)))
-    allocate(zcent(blkLimitsGC(HIGH, KAXIS):blkLimitsGC(HIGH, KAXIS)))
+    allocate(zcent(blkLimitsGC(LOW, KAXIS):blkLimitsGC(HIGH, KAXIS)))
 
     call Grid_getCellCoords(IAXIS, CENTER, tileDesc%level, &
                             blkLimitsGC(LOW, :), blkLimitsGC(HIGH, :), xcent)

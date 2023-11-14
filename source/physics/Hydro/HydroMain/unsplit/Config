@@ -52,6 +52,17 @@ PARAMETER smallx        REAL    1.E-10
 
 
 # Variables required by the unsplit solvers
+D dens_variable mass density
+D velx_variable x-velocity
+D vely_variable y-velocity
+D velz_variable z-velocity
+D pres_variable pressure
+D ener_variable specific total energy (T+U)
+D gamc_variable sound-speed gamma
+D game_variable internal energy gamma
+D temp_variable temperature
+D eint_variable specific internal energy (U)
+D shok_variable flag variable for shock detection
 VARIABLE dens TYPE: PER_VOLUME 	EOSMAP:  DENS # density
 VARIABLE velx TYPE: PER_MASS   	EOSMAPIN:VELX # x-velocity
 VARIABLE vely TYPE: PER_MASS   	EOSMAPIN:VELY # y-velocity
@@ -96,7 +107,7 @@ D entropy		Entropy Fix routine for the Roe Riemann solver
 D entropyFixMethod      Entropy fix method for the Roe Riemann solver: Harten or HartenHyman
 D shockDetect           Switch to use a strong compressive shock detection
 D shockLowerCFL		Lower the simulation CFL if shocks are detected
-D hy_fallbackLowerCFL	Lower the simulation CFL if fallin back to a lower reconstruction order in problematic cells
+D hy_fallbackLowerCFL	Lower the simulation CFL if falling back to a lower reconstruction order in problematic cells
 D hy_cflFallbackFactor  factor for scaling CFL factor when it is lowered because of fallback in problematic cells
 
 D use_gravHalfUpdate    Include gravitational accelerations to hydro coupling at n+1/2
@@ -185,19 +196,30 @@ ELSE
 PARAMETER hy_eosModeGc STRING "see eosMode"["see eosMode","eos_nop","dens_ie","dens_pres","dens_temp"]
 ENDIF
 
-# Use SCRATCHVAR for tmporary storages
 
-# DO NOT Use SCRATCHVAR array for interface states and fluxes
-# - We now use scratch buffers privately allocated from hy_uhd_unsplit instead
+### DO NOT Use SCRATCHVAR array for (logically face-centered)
+### interface states and fluxes.
+# - We now use scratch buffers privately allocated from Hydro code
+#   instead, if necessary.
 #
-# Several scratch center variables are used in unsplit and they are formally
-# declared in the file UHD.h.
+
+### HOWEVER, DO Use SCRATCHCENTERVAR in case of using Amrex.
+# Several scratch center variables are used in unsplit Hydro, and they
+# are formally declared in the file UHD.h.
 #
 # We need to communicate to the other units, such as the Grid unit, how
 # many of these variables will be needed by unsplit.  Therefore, the
-# number of variables declared here must match the number in UHD.h.
+# number of variables declared here must match the number of symbols
+# with names HY_*_SCRATCHCTR_VAR defined in UHD.h.
 # The names of these variables as they appear here and therefore in Simulation.h
 # are not important as Hydro code should use the names in UHD.h.
+# - In case of PARAMESH, we use buffers privately allocated from
+#   within Hydro code instead (for gridDataStruct=SCRATCH_CTR, see
+#   Hydro_prepareBuffers). They are accessed via hy_memGetBlkPtr.
+#   SCRATCHCENTERVAR declarations in this Config file are then not needed.
+# - In case of Amrex, we also use calls to hy_memGetBlkPtr, but these
+#   fall through to type-bound getDataPtr calls on the Grid_tile
+#   descriptor. SCRATCHCENTERVAR declarations are needed in this case.
 IF Grid in ['', 'Amrex']
 SCRATCHCENTERVAR dummySCtr1
 SCRATCHCENTERVAR dummySCtr2

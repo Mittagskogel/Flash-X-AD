@@ -25,6 +25,11 @@ def create_build_script(absLibDir,buildFlag,args):
     else:
         USE_OMP_OL = "FALSE"
 
+    if "weaklibOMP" in setupVars:
+        USE_OMP = str(setupVars["weaklibOMP"]).upper()
+    else:
+        USE_OMP = "FALSE"
+
     fd = os.open(buildScript, os.O_WRONLY|os.O_CREAT|os.O_EXCL, 0x1e4) # 0x1e4 == 0o744
     fileObj = os.fdopen(fd, 'w')
     fileObj.write('#!/bin/sh\n')
@@ -32,10 +37,11 @@ def create_build_script(absLibDir,buildFlag,args):
     fileObj.write('set -ex\n')  # set -e to fail when an error occurs, -x to trace commands
     fileObj.write('cd source/Distributions/ExternalLibrary\n')
     fileObj.write('make -f Makefile.Flash clean\n')
-    fileObj.write('make -f Makefile.Flash' + 
+    fileObj.write('make -f Makefile.Flash -j8' +
                   ' BUILDFLAG=' + buildFlag +
                   ' USE_OACC=' + USE_OACC +
                   ' USE_OMP_OL=' + USE_OMP_OL +
+                  ' USE_OMP=' + USE_OMP +
                   '\n')
     fileObj.write('cd ../../../\n')
     fileObj.close()
@@ -55,4 +61,4 @@ def libinfo(relLibDir="",absLibDir="",buildFlag="",args="",macros=[]):
     #Also label the library as internal because we provide the source code.
     #Do not provide a path because we do not have several different
     #weaklib implementations that exist in different directories.
-    return {"REBUILD":1, "INTERNAL":""}
+    return {"REBUILD":(not GVars.noClobber), "INTERNAL":""}

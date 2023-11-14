@@ -68,7 +68,7 @@
 !!             number of points (cells) for which EOS computation is to be done.
 !!
 !!  eosData  : This array is the data structure through which variable values are 
-!!             passed in and out of the eos_idealGamma routine. The arrays is sized as 
+!!             passed in and out of the Eos routine. The arrays is sized as 
 !!             EOS_NUM*vecLen. EOS_NUM, and individual input and output
 !!             Eos variables are defined in Eos.h. The array is organizes such that
 !!             the first 1:vecLen entries represent the first Eos variable, vecLen+1:
@@ -126,7 +126,7 @@
 !!  All routines calling this routine directly should include a 
 !!    use eos_localInterface
 !!  statement, preferable with "ONLY" attribute, e.g.,
-!!    use eos_localInterface, ONLY:  eos_idealGamma
+!!    use eos_localInterface, ONLY:  Eos
 !!
 !!  For Gamma and Multigamma routines, the entropy and entropy derivatives 
 !!  calculations have not been confirmed to be correct.  Use with caution.
@@ -143,7 +143,7 @@
 #define DEBUG_EOS
 !#endif
 
-subroutine eos_idealGamma(mode, vecLen, eosData, vecBegin,vecEnd, massFrac, mask, diagFlag)
+subroutine eos_idealGamma(mode, vecLen, eosData, massFrac,  mask, vecBegin,vecEnd,  diagFlag)
 
 !==============================================================================
   use Eos_data, ONLY : eos_gasConstant, eos_gamma, &
@@ -200,12 +200,12 @@ subroutine eos_idealGamma(mode, vecLen, eosData, vecBegin,vecEnd, massFrac, mask
   end if
 #ifdef DEBUG_EOS
   if (ilo < 1 .OR. ilo > vecLen) then
-     print*,'[eos_idealGammaData] ilo is',ilo
-     call Driver_abort("[eos_idealGammaData] invalid ilo")
+     print*,'[EosData] ilo is',ilo
+     call Driver_abort("[EosData] invalid ilo")
   end if
   if (ihi < 1 .OR. ihi > vecLen) then
-     print*,'[eos_idealGammaData] ihi is',ihi
-     call Driver_abort("[eos_idealGammaData] invalid ihi")
+     print*,'[EosData] ihi is',ihi
+     call Driver_abort("[EosData] invalid ihi")
   end if
 #endif
   
@@ -371,6 +371,7 @@ end subroutine eos_idealGamma
 !!$  dstotdd  = (eosData(EOS_DPD)*dens_inv - pres*dens_inv*dens_inv + eosData(EOS_DED))*temp_inv
 !!$  dstotdt  = (eosData(EOS_DPT)*dens_inv + eosData(EOS_DET))*temp_inv  - (pres*dens_inv + eosData(eint+ilo:+ihi)) * temp_inv*temp_inv 
 !!$  
+
 
 
 

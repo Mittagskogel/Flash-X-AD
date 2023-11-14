@@ -77,19 +77,12 @@ subroutine Driver_evolveAll()
                                   Grid_fillGuardCells,&
                                   Grid_getDeltas,&
                                   Grid_getMaxRefinement
-#ifdef FLASH_GRID_AMREX
-  ! DEV: Temporary ugliness for debugging
-  use gr_amrexInterface,   ONLY : gr_writeData
-#endif
+  use TimeAdvance_interface, ONLY : TimeAdvance
 
 #include "Simulation.h"
-  use Hydro_interface,     ONLY : Hydro, &
-                                  Hydro_gravPotIsAlreadyUpdated
-  use Gravity_interface,   ONLY : Gravity_potential,Gravity_beginPotential, Gravity_finishPotential
-  use IO_interface,        ONLY : IO_output,IO_outputFinal
-  use RadTrans_interface,  ONLY : RadTrans
   use Simulation_interface, ONLY: Simulation_adjustEvolution
   use Profiler_interface, ONLY : Profiler_start, Profiler_stop
+  use IO_interface,        ONLY : IO_output,IO_outputFinal
 
   implicit none
 
@@ -132,7 +125,7 @@ subroutine Driver_evolveAll()
   endRun = .false.
 
   call Logfile_stamp( 'Entering evolution loop' , '[Driver_evolveAll]')
-  call Profiler_start("FLASH_evolution")
+  call Profiler_start("FLASHX_EVOLUTION")
   call Timers_start("evolution")
 
   call Grid_getMaxRefinement(maxLev,mode=1) !mode=1 means lrefine_max, which does not change during sim.
@@ -165,53 +158,20 @@ subroutine Driver_evolveAll()
         
      end if
      
-     call Driver_driftUnk(__FILE__,__LINE__,driftUnk_flags)
      
      dr_simTime = dr_simTime + dr_dt
      dr_simGeneration = 0
      
      ! 2. Hydro/MHD
 #ifdef DEBUG_DRIVER
-     print*,'going into Hydro/MHD'  ! DEBUG
+     print*,'going into Timestep'  ! DEBUG
      print*,'going into hydro myPE=',dr_globalMe
 #endif
      !!ChageForAMRex -- Here is where we put in the iterator and extract the relevant metadata
      !!ChageForAMRex -- from the iterator and then use the case statement to transfer control to the
      !!ChageForAMRex -- right implementation.
-     
-     
-     !! Guardcell filling routine - the call has been moved into Hydro.
-!!$     call Grid_fillGuardCells(CENTER,ALLDIR)
 
-     call Hydro(dr_simTime, dr_dt, dr_dtOld)
-#ifdef DEBUG_DRIVER
-     print*,'returned from hydro myPE=',dr_globalMe
-#endif
-
-
-     call Timers_start("Gravity potential")
-     call Gravity_beginPotential()
-!!$     call Gravity_finishPotential()     
-     call Timers_stop("Gravity potential")
-     
-     ! 4. Add source terms:
-     call Timers_start("sourceTerms")
-     call Driver_sourceTerms(dr_dt)
-     call Timers_stop("sourceTerms")
-
-        ! #. Advance Particles
-     call Timers_start("Particles_advance")
-     call Particles_advance(dr_dtOld, dr_dt)
-     call Timers_stop("Particles_advance")
-
-     call Timers_start("Gravity potential")
-     call Gravity_finishPotential()     
-     call Timers_stop("Gravity potential")
-#ifdef DEBUG_DRIVER
-     print*, 'return from Gravity_potential '  ! DEBUG
-#endif
-
-     
+     call TimeAdvance(dr_dt,dr_dtOld,dr_simTime)
      dr_dtOld = dr_dt
 
      !----
@@ -316,13 +276,13 @@ subroutine Driver_evolveAll()
   !dr_nstep had during the last loop iteration, otherwise the number for nstep
   !that will be stored in a final checkpoint file will be wrong.
   dr_nstep = min(dr_nstep,dr_nend)
-  
+
   !!******************************************************************************
   !! End of Evolution Loop
   !!******************************************************************************
   
   call Timers_stop("evolution")
-  call Profiler_stop("FLASH_evolution")
+  call Profiler_stop("FLASHX_EVOLUTION")
   call Logfile_stamp( 'Exiting evolution loop' , '[Driver_evolveAll]')
   !if a file termination, this may already be done.
   if(.NOT.endRun) call IO_outputFinal()
