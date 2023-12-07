@@ -123,8 +123,7 @@ subroutine Gravity_finishPotential( potentialIndex)
 
   real          :: redshift=0, oldRedshift=0
   real          :: scaleFactor, oldScaleFactor
-  real          :: invscale, rescale
-  integer       :: lb
+  real          :: invscale
   integer       :: bcTypes(6)
   real          :: bcValues(2,6) = 0.
   integer       :: density
@@ -144,7 +143,19 @@ subroutine Gravity_finishPotential( potentialIndex)
      newPotVar = GPOT_VAR
   end if
 
-  lb=1
+!!$  call Cosmology_getRedshift(redshift)
+!!$  call Cosmology_getOldRedshift(oldRedshift)
+!!$
+  scaleFactor = 1./(1.+redshift)
+  oldScaleFactor = 1./(1.+oldRedshift)
+
+  invscale = 1./scaleFactor**3
+
+!=========================================================================
+
+  if(.not.useGravity) return
+
+  if(.not.updateGravity) return
 
   call Timers_start("gravity")
 

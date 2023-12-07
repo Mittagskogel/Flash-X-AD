@@ -124,7 +124,6 @@ subroutine Gravity_beginPotential( potentialIndex)
   real          :: redshift=0, oldRedshift=0
   real          :: scaleFactor, oldScaleFactor
   real          :: invscale, rescale
-  integer       :: lb
   integer       :: bcTypes(6)
   real          :: bcValues(2,6) = 0.
   integer       :: density
@@ -143,8 +142,6 @@ subroutine Gravity_beginPotential( potentialIndex)
   else
      newPotVar = GPOT_VAR
   end if
-
-  lb=1
 
 !!$  call Cosmology_getRedshift(redshift)
 !!$  call Cosmology_getOldRedshift(oldRedshift)
