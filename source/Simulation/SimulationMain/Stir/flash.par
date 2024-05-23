@@ -1,16 +1,16 @@
 # kinematic viscosity and magnetic resistivity
-useViscosity                 = .false.
-visc_whichCoefficientIsConst = 2 # then set diff_visc_nu
-diff_visc_nu                 = 1e-3 # L*Mach*cs/(2*Re) implies Re=1000
+#useViscosity                 = .false.
+#visc_whichCoefficientIsConst = 2 # then set diff_visc_nu
+#diff_visc_nu                 = 1e-3 # L*Mach*cs/(2*Re) implies Re=1000
 
-useMagneticResistivity       = .false.
-resistivity                  = 1e-3
+#useMagneticResistivity       = .false.
+#resistivity                  = 1e-3
 
-useConductivity              = .false.
-useSTS                       = .false.
-useSTSforDiffusion           = .false.
+#useConductivity              = .false.
+#useSTS                       = .false.
+#useSTSforDiffusion           = .false.
 
-dt_diff_factor  = 0.2
+#dt_diff_factor  = 0.2
 
 # numerical viscosity switches
 use_avisc = .false.
@@ -52,17 +52,17 @@ zl_boundary_type      = "periodic"
 zr_boundary_type      = "periodic"
 
 # Tracer particles
-useParticles  = .false.
-pt_maxPerProc = 1000
-pt_numX       = 10
-pt_numY       = 10
-pt_numZ       = 10
-pt_initialXMin = -0.5
-pt_initialXMax = +0.5
-pt_initialYMin = -0.5
-pt_initialYMax = +0.5
-pt_initialZMin = -0.5
-pt_initialZMax = +0.5
+#useParticles  = .false.
+#pt_maxPerProc = 1000
+#pt_numX       = 10
+#pt_numY       = 10
+#pt_numZ       = 10
+#pt_initialXMin = -0.5
+#pt_initialXMax = +0.5
+#pt_initialYMin = -0.5
+#pt_initialYMax = +0.5
+#pt_initialZMin = -0.5
+#pt_initialZMax = +0.5
 
 basenm          = "Turb_"
 # log_file        = "flash.log"
@@ -71,23 +71,23 @@ run_comment     = "FLASH-X"
 
 # file numbers - if you restart you have to change the checkpointFileNumber
 restart                 = .false.
-checkpointFileNumber	= 0
-plotFileNumber		= 0
+checkpointFileNumber    = 0
+plotFileNumber          = 0
 
 # Movie
-use_movie = .false.
-movie_dt_dump =	0.05
+#use_movie = .false.
+#movie_dt_dump = 0.05
 
 # set the time between dumps
 checkpointFileIntervalTime  = 0.5
 plotFileIntervalTime        = 0.05 # 0.1T
-particleFileIntervalTime    = 0.05
+#particleFileIntervalTime    = 0.05
 dtmax                       = 0.025
-tmax                        = 50.0
+tmax                        = 1.5
 
 # set the number of steps between dumps
 checkpointFileIntervalStep  = 0
-plotFileIntervalStep	    = 0
+plotFileIntervalStep        = 0
 
 wall_clock_time_limit = 160000.0
 wall_clock_checkpoint = 86000.0
@@ -115,23 +115,23 @@ nend            = 1000000
 
 # magnetic fields
 flux_correct          = .true.
-killdivb              = .true.
+#killdivb              = .true.
 # UnitSystem            = "CGS"
 
 # polytropic EOS
-usePolytrope         = .true.
-IsothermalKonst      = 1.0 # (cs^2)
-polytropeKonst       = 1.0 # (cs^2)
-polytropeGamma1      = 1.0
-polytropeGamma2      = 1.0
-polytropeGamma3      = 1.0
-polytropeGamma4      = 1.0
-polytropeGamma5      = 1.0
-polytropeDens1       = 1e-99
-polytropeDens2       = 1e99
-polytropeDens3       = 1e99
-polytropeDens4       = 1e99
-polytropeDens5       = 1e99
+#usePolytrope         = .true.
+#IsothermalKonst      = 1.0 # (cs^2)
+#polytropeKonst       = 1.0 # (cs^2)
+#polytropeGamma1      = 1.0
+#polytropeGamma2      = 1.0
+#polytropeGamma3      = 1.0
+#polytropeGamma4      = 1.0
+#polytropeGamma5      = 1.0
+#polytropeDens1       = 1e-99
+#polytropeDens2       = 1e99
+#polytropeDens3       = 1e99
+#polytropeDens4       = 1e99
+#polytropeDens5       = 1e99
 
 #   AMR refinement parameters
 lrefine_min = 1
