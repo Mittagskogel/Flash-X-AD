@@ -1,0 +1,16 @@
+# YAML file for test information
+# comments start with "#"
+
+# tests run on 2 cores
+
+# Default stir test
+Comparison/Stir/Default:
+  setupOptions: -objdir=objStir -auto -3d -nxb 64 -nyb 64 -nzb 32
+  parfiles: test_stir.par
+  restartParfiles: test_stir.par
+
+# Spark stir test
+Comparison/Stir/Spark:
+  setupOptions: -objdir=objStir -auto -3d -nxb 64 -nyb 64 -nzb 32 +spark
+  parfiles: test_stir.par
+  restartParfiles: test_stir.par
