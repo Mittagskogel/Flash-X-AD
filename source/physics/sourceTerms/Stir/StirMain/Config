@@ -27,4 +27,4 @@ D         st_stop_driving_time   time at which to turn off driving
 PARAMETER st_stop_driving_time   REAL   1e38
 
 # this is to link the example TurbGen parameter file into the object dir
-DATAFILES *.par
+DATAFILES TurbGen.par
