@@ -1,4 +1,5 @@
 # FLASH Makefile definitions for Twister*
+# Created by Christoph Federrath (2023)
 #----------------------------------------------------------------------------
 # Set the HDF5/MPI library paths -- these need to be updated for your system
 #----------------------------------------------------------------------------
@@ -104,9 +105,11 @@ LFLAGS_TEST  = -ggdb -O0 -o
 #  depending on how FLASH was setup.
 #----------------------------------------------------------------------------
 
-LIB_OPT   = -lc++ -lstdc++
-LIB_DEBUG = -lc++ -lstdc++
-LIB_TEST  = -lc++ -lstdc++
+LIB_OPT   =
+LIB_DEBUG =
+LIB_TEST  =
+
+LIB_STDCXX = -lc++ -lstdc++
 
 LIB_HDF4  =
 LIB_HDF5  = -L${HDF5_PATH}/lib -lhdf5 -lz
