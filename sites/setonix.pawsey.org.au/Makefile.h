@@ -69,9 +69,9 @@ CFLAGS_HYPRE = -I${HYPRE_PATH}/include
 #  _DEBUG, and _TEST cases.
 #----------------------------------------------------------------------------
 
-LFLAGS_OPT   = -sdefault64 -sinteger32 -lstdc++ -o
-LFLAGS_DEBUG = -sdefault64 -sinteger32 -lstdc++ -g -o
-LFLAGS_TEST  = -sdefault64 -sinteger32 -lstdc++ -o
+LFLAGS_OPT   = -sdefault64 -sinteger32 -o
+LFLAGS_DEBUG = -sdefault64 -sinteger32 -g -o
+LFLAGS_TEST  = -sdefault64 -sinteger32 -o
 
 #----------------------------------------------------------------------------
 # Library specific linking
@@ -88,17 +88,19 @@ LIB_OPT   =
 LIB_DEBUG =
 LIB_TEST  =
 
+LIB_STDCXX =  -lstdc++
+
 LIB_HDF4  =
-LIB_HDF5  = -L $(HDF5_PATH)/lib -lhdf5 -lz
+LIB_HDF5  = -L$(HDF5_PATH)/lib -lhdf5 -lz
 
 LIB_PAPI  =
 LIB_MATH  =
 
 LIB_MPI   =
-LIB_NCMPI = -L ${NCMPI_PATH}/lib -lpnetcdf
+LIB_NCMPI = -L${NCMPI_PATH}/lib -lpnetcdf
 LIB_MPE   =
 
-LIB_HYPRE = -L ${HYPRE_PATH}/lib -lHYPRE
+LIB_HYPRE = -L${HYPRE_PATH}/lib -lHYPRE
 
 # Uncomment the following line to use electic fence memory debugger.
 # export EF_ALLOW_MALLOC_0=1
