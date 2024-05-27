@@ -8,6 +8,8 @@
 # See details in parameter file, default 'TurbGen.par'.
 # See also https://www.mso.anu.edu.au/~chfeder/codes/turbgen/turbgen.html
 
+LIBRARY STDCXX
+
 USESETUPVARS Grid
 
 IF Grid != 'UG'
@@ -25,4 +27,4 @@ D         st_stop_driving_time   time at which to turn off driving
 PARAMETER st_stop_driving_time   REAL   1e38
 
 # this is to link the example TurbGen parameter file into the object dir
-DATAFILES *.par
+DATAFILES TurbGen.par

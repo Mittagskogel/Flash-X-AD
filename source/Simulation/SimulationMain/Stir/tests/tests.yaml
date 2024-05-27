@@ -7,10 +7,10 @@
 Comparison/Stir/Default:
   setupOptions: -auto -3d -nxb 64 -nyb 64 -nzb 32
   parfiles: test_stir.par
-  restartParfiles: test_stir.par
+  transfers: object/TurbGen.par
 
 # Spark stir test
 Comparison/Stir/Spark:
   setupOptions: -auto -3d -nxb 64 -nyb 64 -nzb 32 +spark
   parfiles: test_stir.par
-  restartParfiles: test_stir.par
+  transfers: object/TurbGen.par
