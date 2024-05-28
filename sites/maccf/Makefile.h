@@ -1,4 +1,5 @@
 # FLASH Makefile definitions for Twister*
+# Created by Christoph Federrath (2023)
 #----------------------------------------------------------------------------
 # Set the HDF5/MPI library paths -- these need to be updated for your system
 #----------------------------------------------------------------------------
@@ -45,7 +46,7 @@ PP      = -D
 
 OPENMP = -fopenmp
 
-FFLAGS_OPT = -ggdb -c -O3 -fdefault-real-8 -fdefault-double-8 -fallow-argument-mismatch -Wuninitialized
+FFLAGS_OPT = -c -O3 -fdefault-real-8 -fdefault-double-8 -fallow-argument-mismatch -Wuninitialized
 
 #I explictly add -O0 because I found that compiling source files without
 #an optimization flag generates the same object code as compiling source
@@ -67,7 +68,7 @@ F90FLAGS =
 #The macro _FORTIFY_SOURCE adds some lightweight checks for buffer
 #overflows at both compile time and run time (only active at -O1 or higher)
 #http://gcc.gnu.org/ml/gcc-patches/2004-09/msg02055.html
-CFLAGS_OPT = -ggdb -c -O3 -Wuninitialized -D_FORTIFY_SOURCE=2
+CFLAGS_OPT = -c -O3 -Wuninitialized -D_FORTIFY_SOURCE=2
 
 CFLAGS_DEBUG = -ggdb -c -O0 -Wno-div-by-zero -Wundef \
 -Wconversion -Wstrict-prototypes -Wunreachable-code \
@@ -89,9 +90,9 @@ CFLAGS_NCMPI = -I${NCMPI_PATH}/include
 #  _DEBUG, and _TEST cases.
 #----------------------------------------------------------------------------
 
-LFLAGS_OPT   = -ggdb -lc++ -lstdc++ -o
-LFLAGS_DEBUG = -ggdb -O0 -lc++ -lstdc++ -o
-LFLAGS_TEST  = -ggdb -O0 -lc++ -lstdc++ -o
+LFLAGS_OPT   = -ggdb -O3 -o
+LFLAGS_DEBUG = -ggdb -O0 -o
+LFLAGS_TEST  = -ggdb -O0 -o
 
 #----------------------------------------------------------------------------
 # Library specific linking
@@ -108,14 +109,16 @@ LIB_OPT   =
 LIB_DEBUG =
 LIB_TEST  =
 
+LIB_STDCXX = -lc++ -lstdc++
+
 LIB_HDF4  =
-LIB_HDF5  = -L ${HDF5_PATH}/lib -lhdf5 -lz
+LIB_HDF5  = -L${HDF5_PATH}/lib -lhdf5 -lz
 
 LIB_PAPI  =
 LIB_MATH  =
 
 LIB_MPI   =
-LIB_NCMPI = -L ${NCMPI_PATH}/lib -lpnetcdf
+LIB_NCMPI = -L${NCMPI_PATH}/lib -lpnetcdf
 LIB_MPE   =
 
 LIB_HYPRE = -L${HYPRE_PATH}/lib -lHYPRE
