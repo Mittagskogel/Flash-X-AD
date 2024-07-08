@@ -89,6 +89,12 @@ module Hydro_data
   integer, dimension(3) :: hy_limitsArray
   real, dimension(3,3) :: hy_coeffArray
 
+  !! TODO: Eos-specific constants.
+  real :: hy_eos_gasConstant, hy_eos_gamma
+  real :: hy_eos_singleSpeciesA, hy_eos_singleSpeciesZ
+  real :: hy_eos_eintSwitch, hy_eos_smalle
+  real :: hy_eos_gammam1
+
 ! real, pointer, dimension(:, :, :, :) :: hy_tmpState, hy_starState, hy_flx, hy_fly, hy_flz, &
 !                                         hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
 !                                         hy_rope, hy_flux, hy_uPlus, hy_uMinus
@@ -108,6 +114,13 @@ module Hydro_data
    @M hy_DIR_TARGET_declare_data([hya_fareaX, hya_cvol])
    @M hy_DIR_TARGET_declare_data([hya_fareaY, hya_fareaZ])
    @M hy_DIR_TARGET_declare_data([hya_xCenter, hya_xLeft, hya_xRight, hya_yCenter, hya_yLeft, hya_yRight, hya_zCenter])
+
+   !! TODO: Eos-specific constants
+   @M hy_DIR_TARGET_declare_data([hy_eos_gasConstant, hy_eos_gamma])
+   @M hy_DIR_TARGET_declare_data([hy_eos_singleSpeciesA, hy_eos_singleSpeciesZ])
+   @M hy_DIR_TARGET_declare_data([hy_eos_eintSwitch, hy_eos_smalle])
+   @M hy_DIR_TARGET_declare_data([hy_eos_gammam1])
+
 
 end module Hydro_data
 

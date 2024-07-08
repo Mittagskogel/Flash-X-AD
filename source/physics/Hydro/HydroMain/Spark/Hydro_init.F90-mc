@@ -237,6 +237,24 @@ subroutine Hydro_init()
   call Grid_getMaxcells(hy_maxCells)
   hy_maxCells=2*NGUARD+hy_maxCells
 
+
+  !! TODO: Eos-specific constants are copied to Hydro data module scope
+  !!       to make them available on device.
+  call PhysicalConstants_get("ideal gas constant", hy_eos_gasConstant)
+
+  call RuntimeParameters_get("gamma", hy_eos_gamma)
+  call RuntimeParameters_get("eos_singleSpeciesA", hy_eos_singleSpeciesA)
+  call RuntimeParameters_get("eos_singleSpeciesZ", hy_eos_singleSpeciesZ)
+  call RuntimeParameters_get("smalle", hy_eos_smalle)
+  call RuntimeParameters_get("eintSwitch", hy_eos_eintSwitch)
+  hy_eos_gammam1 = 1.0/(hy_eos_gamma-1.0)
+
+  @M hy_DIR_TARGET_update_to([hy_eos_gasConstant, hy_eos_gamma])
+  @M hy_DIR_TARGET_update_to([hy_eos_singleSpeciesA, hy_eos_singleSpeciesZ])
+  @M hy_DIR_TARGET_update_to([hy_eos_eintSwitch, hy_eos_smalle])
+  @M hy_DIR_TARGET_update_to([hy_eos_gammam1])
+
+
   @M hy_DIR_TARGET_update_to([hy_cvisc, hy_limRad, hy_tiny, hy_gravConst, hy_4piGinv, hy_bref])
   @M hy_DIR_TARGET_update_to([hy_smalldens, hy_smallE, hy_smallpres, hy_smallX, hy_smallu])
   @M hy_DIR_TARGET_update_to([hy_fluxCorrect, hy_fluxCorrectPerLevel, hy_fluxCorVars, hy_geometry])
