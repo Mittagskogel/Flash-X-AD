@@ -88,12 +88,8 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
 
   real, intent(IN) :: timeEndAdv, dt, dtOld
   integer, intent(IN) :: sweepOrder
-
-  type(Grid_iterator_t) :: itor
-  type(Grid_tile_t)     :: tileDesc
-  real, pointer :: Uin(:,:,:,:)
+  @M iter_declare(blkLimits,blkLimitsGC, grownLimits, Uin)
   integer :: level
-  integer, dimension(LOW:HIGH,MDIM) :: blkLimits, blkLimitsGC, grownLimits
   integer, dimension(MDIM) :: lo, loGC
   real, dimension(MDIM) :: deltas
 
@@ -156,7 +152,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         @M hy_globalFillGuardCells
      end if
      nullify(Uin)
-     @M iter_all_begin(LEAF,.false.,blkLimits,blkLimitsGC,deltas)
+     @M iter_all_begin(LEAF,.false.,blkLimits,blkLimitsGC,deltas,Uin)
         lo(:) = blkLimits(LOW, :)
         loGC(:) = blkLimitsGC(LOW, :)
 
@@ -297,7 +293,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         if (.not. hy_telescoping) then
            @M hy_DIR_TARGET_exit_data(release, [Uin])
         end if
-     @M iter_end
+     @M iter_end(Uin)
      @M hy_end_stages_nt
      if (hy_fluxCorrect) then
         !Communicate the fine fluxes
@@ -307,7 +303,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         !        ! Loop over blocks and correct block-edge solution
 
         nullify(Uin)
-        @M iter_all_begin(LEAF,.false.,blkLimits,blkLimitsGC,deltas)
+        @M iter_all_begin(LEAF,.false.,blkLimits,blkLimitsGC,deltas,Uin)
            lo(:) = blkLimits(LOW, :)
            loGC(:) = blkLimitsGC(LOW, :)
            !           !Get 'Flux deltas' on coarse side of fine coarse boundaries;
@@ -332,7 +328,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
               @M hy_release_geom
            end if
            @M hy_nullFluxBuf
-        @M iter_end
+        @M iter_end(Uin)
      end if !Flux correction
    else !flux correct per level
 #ifdef DEBUG_HYDRO
@@ -350,7 +346,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
          ! Loop over blocks and compute Hydro update block-by-block
          !~ For now tiling is disabled until we can confirm block registers are the same as tile registers
          nullify(Uin)
-         @M iter_level_begin(LEAF,.FALSE.,lev,blkLimits,blkLimitsGC,deltas)
+         @M iter_level_begin(LEAF,.FALSE.,lev,blkLimits,blkLimitsGC,deltas,Uin)
             lo(:) = blkLimits(LOW, :)
             loGC(:) = blkLimitsGC(LOW, :)
             @M hy_DIR_TARGET_enter_data(to, [Uin])
@@ -501,7 +497,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
             @M hy_release_tmp_states
             @M hy_release_scr_ptrs
             @M hy_DIR_TARGET_exit_data(release, [Uin])
-         @M iter_end
+         @M iter_end(Uin)
 
       enddo !loop over levels
 
