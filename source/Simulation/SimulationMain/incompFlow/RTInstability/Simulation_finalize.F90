@@ -1,3 +1,4 @@
+!!****f* source/Simulation/SimulationMain/incompFlow/RisingBubble/Simulation_finalize
 !! NOTICE
 !!  Copyright 2022 UChicago Argonne, LLC and contributors
 !!
@@ -9,12 +10,27 @@
 !!  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 !!  See the License for the specific language governing permissions and
 !!  limitations under the License.
-subroutine mph_tempGfm3d(phi, nx, ny, nz, Tcoeff, T, Tfrc, Tnl, Tng, Tsat, dx, dy, dz, &
-                         ix1, ix2, jy1, jy2, kz1, kz2, tol)
+!!
+!! NAME
+!!  Simulation_finalize
+!!
+!! SYNOPSIS
+!!
+!!  Simulation_finalize()
+!!
+!! DESCRIPTION
+!!
+!!  This dummy function cleans up the Simulation unit, deallocates memory, etc.
+!!  However, as nothing needs to be done, only this stub is included.
+!!
+!! ARGUMENTS
+!!
+!!
+!!
+!!***
+
+#include "Simulation.h"
+
+subroutine Simulation_finalize()
    implicit none
-   real, dimension(:, :, :), intent(inout) :: Tfrc, Tnl, Tng
-   real, dimension(:, :, :), intent(in) :: phi, T, nx, ny, nz, Tcoeff
-   real, intent(in) :: Tsat, dx, dy, dz
-   integer, intent(in) :: ix1, ix2, jy1, jy2, kz1, kz2
-   real, intent(in) :: tol
-end subroutine mph_tempGfm3d
+end subroutine Simulation_finalize

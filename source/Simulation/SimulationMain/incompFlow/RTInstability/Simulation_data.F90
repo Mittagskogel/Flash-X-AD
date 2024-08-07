@@ -1,3 +1,4 @@
+!!****if* source/Simulation/SimulationMain/incompFlow/RisingBubble/Simulation_data
 !! NOTICE
 !!  Copyright 2022 UChicago Argonne, LLC and contributors
 !!
@@ -9,12 +10,29 @@
 !!  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 !!  See the License for the specific language governing permissions and
 !!  limitations under the License.
-subroutine mph_tempGfm3d(phi, nx, ny, nz, Tcoeff, T, Tfrc, Tnl, Tng, Tsat, dx, dy, dz, &
-                         ix1, ix2, jy1, jy2, kz1, kz2, tol)
+!!
+!! NAME
+!!
+!!  Simulation_data
+!!
+!! SYNOPSIS
+!!
+!!  use Simulation_data
+!!
+!! DESCRIPTION
+!!
+!!  Stores the local data for Simulation setup: INS-iso-turb
+!!
+!!***
+
+module Simulation_data
+
    implicit none
-   real, dimension(:, :, :), intent(inout) :: Tfrc, Tnl, Tng
-   real, dimension(:, :, :), intent(in) :: phi, T, nx, ny, nz, Tcoeff
-   real, intent(in) :: Tsat, dx, dy, dz
-   integer, intent(in) :: ix1, ix2, jy1, jy2, kz1, kz2
-   real, intent(in) :: tol
-end subroutine mph_tempGfm3d
+
+#include "constants.h"
+
+   real, save    :: sim_xMin, sim_xMax, sim_yMin, sim_yMax, sim_zMin, sim_zMax
+   integer, save :: sim_meshMe
+   real, save :: sim_initAmplitude, sim_initEta
+
+end module Simulation_data

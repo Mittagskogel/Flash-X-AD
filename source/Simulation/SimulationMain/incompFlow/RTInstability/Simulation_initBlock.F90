@@ -1,4 +1,4 @@
-!!****if* source/Simulation/SimulationMain/incompFlow/BubblyFlow/Simulation_initBlock
+!!****if* source/Simulation/SimulationMain/incompFlow/RisingBubble/Simulation_initBlock
 !! NOTICE
 !!  Copyright 2022 UChicago Argonne, LLC and contributors
 !!
@@ -39,7 +39,7 @@
 !!
 !!
 !!***
-!!REORDER(4): solnData, face[xyz]Data
+!!REORDER(4): solnData
 
 #include "constants.h"
 #include "Simulation.h"
@@ -62,12 +62,8 @@ subroutine Simulation_initBlock(solnData, tileDesc)
    real, allocatable, dimension(:) ::xCenter, yCenter, zCenter
    real :: xi, yi, zi
    logical :: gcell = .true.
-   real :: dfun
-   integer :: ibub
-   real, pointer, dimension(:, :, :, :) :: facexData, faceyData, facezData
 
    !----------------------------------------------------------------------
-   nullify (facexData, faceyData, facezData)
    lo = tileDesc%limits(LOW, :)
    hi = tileDesc%limits(HIGH, :)
    allocate (xCenter(lo(IAXIS):hi(IAXIS)))
@@ -81,27 +77,20 @@ subroutine Simulation_initBlock(solnData, tileDesc)
    if (NDIM >= 2) call Grid_getCellCoords(JAXIS, CENTER, tileDesc%level, lo, hi, yCenter)
    if (NDIM == 3) call Grid_getCellCoords(KAXIS, CENTER, tileDesc%level, lo, hi, zCenter)
 
-   solnData(DFUN_VAR,:,:,:) = -1e-13
-
    do k = lo(KAXIS), hi(KAXIS)
-    do j = lo(JAXIS), hi(JAXIS)
-     do i = lo(IAXIS), hi(IAXIS)
-      do ibub = 1, sim_numBubbles
-         xi = xCenter(i)
-         yi = yCenter(j)
-         zi = zCenter(k)
-         dfun = 0.5-sqrt((xi-sim_xBubble(ibub))**2+(yi-sim_yBubble(ibub))**2+(zi-sim_zBubble(ibub))**2)
-         solnData(DFUN_VAR, i, j, k) = max(solnData(DFUN_VAR,i,j,k), dfun)
+      do j = lo(JAXIS), hi(JAXIS)
+         do i = lo(IAXIS), hi(IAXIS)
+            xi = xCenter(i)
+            yi = yCenter(j)
+            zi = zCenter(k)
+
+            solnData(DFUN_VAR, i, j, k) = tanh(sim_initAmplitude*cos(2*acos(-1.0)*(xi+sim_xMin))/(sqrt(2*sim_initEta)) - yi)
+
+         end do
       end do
-     end do
-    end do
    end do
 
    deallocate (xCenter, yCenter, zCenter)
-
-   call tileDesc%getDataPtr(faceyData, FACEY)
-   faceyData(VELC_FACE_VAR, :, :, :) = 1.0
-   call tileDesc%releaseDataPtr(faceyData, FACEY)
 
    return
 
