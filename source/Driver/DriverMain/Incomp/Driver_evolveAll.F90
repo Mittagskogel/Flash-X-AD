@@ -35,7 +35,6 @@
 !!
 !!
 !!***
-!!REORDER(4): fluxBuf[XYZ]
 
 #include "constants.h"
 #include "Simulation.h"
@@ -134,12 +133,6 @@ subroutine Driver_evolveAll()
    type(Grid_iterator_t) :: itor
    type(Grid_tile_t) :: tileDesc
    logical :: runUnitTest
-   real, pointer, dimension(:, :, :, :) :: fluxBufX, fluxBufY, fluxBufZ
-   CONTIGUOUS_FSTMT(fluxBufX)
-   CONTIGUOUS_FSTMT(fluxBufY)
-   CONTIGUOUS_FSTMT(fluxBufZ)
-
-   nullify (fluxBufX, fluxBufY, fluxBufZ)
 
    ! Get grid variables for incompressible Naiver-Stokes
    call IncompNS_getGridVar("FACE_VELOCITY", iVelVar)

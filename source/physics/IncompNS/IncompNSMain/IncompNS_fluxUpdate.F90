@@ -66,7 +66,6 @@ subroutine IncompNS_fluxUpdate(tileDesc)
    lo(1:MDIM) = tileDesc%limits(LOW, 1:MDIM)
    hi(1:MDIM) = tileDesc%limits(HIGH, 1:MDIM)
 
-#ifdef FLASH_GRID_AMREX
    fluxxData(MOMT_FLUX, :, :, :) = facexData(VELC_FACE_VAR, lo(1):hi(1)+1, lo(2):hi(2), lo(3):hi(3))
    fluxyData(MOMT_FLUX, :, :, :) = faceyData(VELC_FACE_VAR, lo(1):hi(1), lo(2):hi(2)+1, lo(3):hi(3))
 #if NDIM==3
@@ -80,7 +79,6 @@ subroutine IncompNS_fluxUpdate(tileDesc)
 #if NDIM==3
    facezData(VELC_FACE_VAR, lo(1):hi(1), lo(2):hi(2), lo(3):hi(3)+1) = fluxzData(MOMT_FLUX, :, :, :)
 #endif      
-#endif
 
    ! Release pointers:
    call tileDesc%releaseDataPtr(solnData, CENTER)
