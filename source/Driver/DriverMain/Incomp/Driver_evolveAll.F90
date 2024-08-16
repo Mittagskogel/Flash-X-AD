@@ -480,6 +480,25 @@ subroutine Driver_evolveAll()
                                maskSize=NDIM*NFACE_VARS, mask=gcMask)
       ins_predcorrflg = .false.
 
+      ! Flux correction for momentum
+      !------------------------------------------------------------
+      call Grid_getTileIterator(itor, nodetype=LEAF)
+      do while (itor%isValid())
+         call itor%currentTile(tileDesc)
+         call IncompNS_fluxSet(tileDesc)
+         call itor%next()
+      end do
+      call Grid_releaseTileIterator(itor)
+      call Grid_communicateFluxes(ALLDIR, UNSPEC_LEVEL)
+      call Grid_getTileIterator(itor, nodetype=LEAF)
+      do while (itor%isValid())
+         call itor%currentTile(tileDesc)
+         call IncompNS_fluxUpdate(tileDesc)
+         call itor%next()
+      end do
+      call Grid_releaseTileIterator(itor)
+      !------------------------------------------------------------
+
       ! Calculate divergence of predicted velocity
       !------------------------------------------------------------
       call Grid_getTileIterator(itor, nodetype=LEAF)
@@ -536,6 +555,35 @@ subroutine Driver_evolveAll()
          call itor%currentTile(tileDesc)
          !---------------------------------------------------------
          call IncompNS_corrector(tileDesc, dr_dt)
+         !---------------------------------------------------------
+         call itor%next()
+      end do
+      call Grid_releaseTileIterator(itor)
+      !------------------------------------------------------------
+
+      ! Flux correction for momentum
+      !------------------------------------------------------------
+      call Grid_getTileIterator(itor, nodetype=LEAF)
+      do while (itor%isValid())
+         call itor%currentTile(tileDesc)
+         call IncompNS_fluxSet(tileDesc)
+         call itor%next()
+      end do
+      call Grid_releaseTileIterator(itor)
+      call Grid_communicateFluxes(ALLDIR, UNSPEC_LEVEL)
+      call Grid_getTileIterator(itor, nodetype=LEAF)
+      do while (itor%isValid())
+         call itor%currentTile(tileDesc)
+         call IncompNS_fluxUpdate(tileDesc)
+         call itor%next()
+      end do
+      call Grid_releaseTileIterator(itor)
+      !------------------------------------------------------------
+
+      call Grid_getTileIterator(itor, nodetype=LEAF)
+      do while (itor%isValid())
+         call itor%currentTile(tileDesc)
+         !---------------------------------------------------------
          call IncompNS_divergence(tileDesc)
          call Multiphase_divergence(tileDesc)
          !---------------------------------------------------------
