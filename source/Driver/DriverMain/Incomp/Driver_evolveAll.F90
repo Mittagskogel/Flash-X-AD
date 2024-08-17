@@ -125,7 +125,7 @@ subroutine Driver_evolveAll()
    integer :: temp, i
    real :: mindiv, maxdiv
    logical :: gcMask(NUNK_VARS+NDIM*NFACE_VARS)
-   integer :: iVelVar, iPresVar, iDfunVar, iMfluxVar, &
+   integer :: iVelVar, iPresVar, iDfunVar, iMfluxVar, iPGradVar, &
               iHliqVar, iHgasVar, iTempVar, iDivVar, iRhoFVar, &
               iViscVar, iRhoCVar, iSharpPfunVar, iSmearedPfunVar, &
               iCurvVar, iAlphVar, iTempFrcVar, iNormVar(MDIM)
@@ -138,6 +138,7 @@ subroutine Driver_evolveAll()
    call IncompNS_getGridVar("FACE_VELOCITY", iVelVar)
    call IncompNS_getGridVar("CENTER_PRESSURE", iPresVar)
    call IncompNS_getGridVar("CENTER_DIVERGENCE", iDivVar)
+   call IncompNS_getGridvar("FACE_PRESSURE_GRAD", iPGradVar)
 
 #ifdef INCOMPNS_VARDENS
    call IncompNS_getGridVar("FACE_DENSITY", iRhoFVar)
@@ -473,25 +474,6 @@ subroutine Driver_evolveAll()
                                maskSize=NDIM*NFACE_VARS, mask=gcMask)
       ins_predcorrflg = .false.
 
-      ! Flux correction for momentum
-      !------------------------------------------------------------
-      call Grid_getTileIterator(itor, nodetype=LEAF)
-      do while (itor%isValid())
-         call itor%currentTile(tileDesc)
-         call IncompNS_fluxSet(tileDesc)
-         call itor%next()
-      end do
-      call Grid_releaseTileIterator(itor)
-      call Grid_communicateFluxes(ALLDIR, UNSPEC_LEVEL)
-      call Grid_getTileIterator(itor, nodetype=LEAF)
-      do while (itor%isValid())
-         call itor%currentTile(tileDesc)
-         call IncompNS_fluxUpdate(tileDesc)
-         call itor%next()
-      end do
-      call Grid_releaseTileIterator(itor)
-      !------------------------------------------------------------
-
       ! Calculate divergence of predicted velocity
       !------------------------------------------------------------
       call Grid_getTileIterator(itor, nodetype=LEAF)
@@ -519,7 +501,7 @@ subroutine Driver_evolveAll()
       call Grid_solvePoisson(iSoln=iPresVar, iSrc=iDivVar, &
                              bcTypes=ins_pressureBC_types, &
                              bcValues=ins_pressureBC_values, &
-                             poisfact=ins_poisfact)
+                             poisfact=ins_poisfact, iGrad=iPGradVar)
       !------------------------------------------------------------
 #elif defined(INCOMPNS_PRES_LAPLACIAN)
       ! Solve variable coefficient pressure Poisson equation
@@ -553,7 +535,6 @@ subroutine Driver_evolveAll()
       end do
       call Grid_releaseTileIterator(itor)
       !------------------------------------------------------------
-
       ! Flux correction for momentum
       !------------------------------------------------------------
       call Grid_getTileIterator(itor, nodetype=LEAF)
@@ -572,7 +553,8 @@ subroutine Driver_evolveAll()
       end do
       call Grid_releaseTileIterator(itor)
       !------------------------------------------------------------
-
+      ! Divergence
+      !------------------------------------------------------------
       call Grid_getTileIterator(itor, nodetype=LEAF)
       do while (itor%isValid())
          call itor%currentTile(tileDesc)
@@ -698,6 +680,7 @@ subroutine Driver_evolveAll()
          gcMask(iDfunVar) = .TRUE.
          call Grid_fillGuardCells(CENTER, ALLDIR, &
                                   maskSize=NUNK_VARS, mask=gcMask)
+
 #ifdef HEATER_MAIN
          call Heater_mapSitesToProc(gridChanged=.TRUE.)
 #endif
