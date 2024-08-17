@@ -28,6 +28,8 @@ subroutine IncompNS_getGridVar(name, value)
       value = PRES_VAR
    case ("Center_Divergence", "center_divergence", "CENTER_DIVERGENCE")
       value = DUST_VAR
+   case ("Face_Pressure_Grad", "face_pressure_grad", "FACE_PRESSURE_GRAD")
+      value = PGN0_FACE_VAR
 #ifdef INCOMPNS_VARDENS
    case ("Face_Density", "face_density", "FACE_DENSITY")
       value = RHOF_FACE_VAR

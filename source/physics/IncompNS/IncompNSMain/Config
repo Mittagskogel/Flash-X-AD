@@ -100,6 +100,9 @@ FACEVAR hvn0
 D hvn1_facevar RHS of momentum at timestep n-1
 FACEVAR hvn1
 
+D pgn0_facevar Pressure gradient at n
+FACEVAR pgn0
+
 D pgn1_facevar Pressure gradient at n-1
 FACEVAR pgn1
 

@@ -92,7 +92,10 @@ subroutine IncompNS_corrector(tileDesc, dt)
                               faceyData(RHOF_FACE_VAR, :, :, :), &
                               facezData(RHOF_FACE_VAR, :, :, :), &
                               !------------------------------!
-                              solnData(PRES_VAR, :, :, :), &
+                              facexData(PGN0_FACE_VAR, :, :, :), &
+                              faceyData(PGN0_FACE_VAR, :, :, :), &
+                              facezData(PGN0_FACE_VAR, :, :, :), &
+                              !------------------------------!
                               ins_rhoGas, dt, del(DIR_X), del(DIR_Y), del(DIR_Z), &
                               GRID_ILO, GRID_IHI, &
                               GRID_JLO, GRID_JHI, &

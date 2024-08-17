@@ -15,7 +15,7 @@
 #include "Simulation.h"
 #include "constants.h"
 
-subroutine ins_corrector_constdens(uni, vni, wni, pxn1, pyn1, pzn1, p, ix1, ix2, jy1, jy2, kz1, kz2, &
+subroutine ins_corrector_constdens(uni, vni, wni, pxn1, pyn1, pzn1, pxn0, pyn0, pzn0, ix1, ix2, jy1, jy2, kz1, kz2, &
                                    dt, dx, dy, dz)
 
    ! This routine computes the corrected divergence-free velocities.
@@ -24,33 +24,23 @@ subroutine ins_corrector_constdens(uni, vni, wni, pxn1, pyn1, pzn1, p, ix1, ix2,
 
    INTEGER, INTENT(IN) :: ix1, ix2, jy1, jy2, kz1, kz2
    REAL, INTENT(IN) :: dt, dx, dy, dz
-   REAL, DIMENSION(:, :, :), INTENT(IN) :: p
+   REAL, DIMENSION(:, :, :), INTENT(IN) :: pxn0, pyn0, pzn0
    REAL, DIMENSION(:, :, :), INTENT(INOUT) :: uni, vni, wni, pxn1, pyn1, pzn1
 
-   uni(ix1:ix2 + 1, jy1:jy2, kz1:kz2) = &
-      uni(ix1:ix2 + 1, jy1:jy2, kz1:kz2) - &
-      dt*(p(ix1:ix2 + 1, jy1:jy2, kz1:kz2) - &
-          p(ix1 - 1:ix2, jy1:jy2, kz1:kz2))/dx
+   uni(ix1:ix2 + 1, jy1:jy2, kz1:kz2) = uni(ix1:ix2 + 1, jy1:jy2, kz1:kz2) &
+                                  - dt*pxn0(ix1:ix2 + 1, jy1:jy2, kz1:kz2)
 
-   vni(ix1:ix2, jy1:jy2 + 1, kz1:kz2) = &
-      vni(ix1:ix2, jy1:jy2 + 1, kz1:kz2) - &
-      dt*(p(ix1:ix2, jy1:jy2 + 1, kz1:kz2) - &
-          p(ix1:ix2, jy1 - 1:jy2, kz1:kz2))/dy
+   vni(ix1:ix2, jy1:jy2 + 1, kz1:kz2) = vni(ix1:ix2, jy1:jy2 + 1, kz1:kz2) &
+                                  - dt*pyn0(ix1:ix2, jy1:jy2 + 1, kz1:kz2)
 
-   pxn1(ix1:ix2 + 1, jy1:jy2, kz1:kz2) = pxn1(ix1:ix2 + 1, jy1:jy2, kz1:kz2) - &
-                                         (p(ix1:ix2 + 1, jy1:jy2, kz1:kz2) - p(ix1 - 1:ix2, jy1:jy2, kz1:kz2))/dx
-
-   pyn1(ix1:ix2, jy1:jy2 + 1, kz1:kz2) = pyn1(ix1:ix2, jy1:jy2 + 1, kz1:kz2) - &
-                                         (p(ix1:ix2, jy1:jy2 + 1, kz1:kz2) - p(ix1:ix2, jy1 - 1:jy2, kz1:kz2))/dy
+   pxn1(ix1:ix2 + 1, jy1:jy2, kz1:kz2) = pxn1(ix1:ix2 + 1, jy1:jy2, kz1:kz2) - pxn0(ix1:ix2 + 1, jy1:jy2, kz1:kz2)
+   pyn1(ix1:ix2, jy1:jy2 + 1, kz1:kz2) = pyn1(ix1:ix2, jy1:jy2 + 1, kz1:kz2) - pyn0(ix1:ix2, jy1:jy2 + 1, kz1:kz2)
 
 #if NDIM == MDIM
-   wni(ix1:ix2, jy1:jy2, kz1:kz2 + 1) = &
-      wni(ix1:ix2, jy1:jy2, kz1:kz2 + 1) - &
-      dt*(p(ix1:ix2, jy1:jy2, kz1:kz2 + 1) - &
-          p(ix1:ix2, jy1:jy2, kz1 - 1:kz2))/dz
+   wni(ix1:ix2, jy1:jy2, kz1:kz2 + 1) = wni(ix1:ix2, jy1:jy2, kz1:kz2 + 1) &
+                                  - dt*pzn0(ix1:ix2, jy1:jy2, kz1:kz2 + 1)
 
-   pzn1(ix1:ix2, jy1:jy2, kz1:kz2 + 1) = pzn1(ix1:ix2, jy1:jy2, kz1:kz2 + 1) - &
-                                         (p(ix1:ix2, jy1:jy2, kz1:kz2 + 1) - p(ix1:ix2, jy1:jy2, kz1 - 1:kz2))/dz
+   pzn1(ix1:ix2, jy1:jy2, kz1:kz2 + 1) = pzn1(ix1:ix2, jy1:jy2, kz1:kz2 + 1) - pzn0(ix1:ix2, jy1:jy2, kz1:kz2 + 1)
 #endif
 
 end subroutine ins_corrector_constdens
