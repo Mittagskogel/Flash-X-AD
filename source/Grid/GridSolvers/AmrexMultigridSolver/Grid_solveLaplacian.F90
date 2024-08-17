@@ -55,8 +55,8 @@
 #include "Simulation.h"
 #include "constants.h"   
  
-subroutine Grid_solveLaplacian (iSoln, iSrc, iCoeff, bcTypes, bcValues, poisfact) 
-   use Timers_interface, ONLY : Timers_start, Timers_stop
+subroutine Grid_solveLaplacian (iSoln, iSrc, iCoeff, bcTypes, bcValues, poisfact, iGrad) 
+    use Timers_interface, ONLY : Timers_start, Timers_stop
     use Driver_interface, ONLY : Driver_abort
     use Grid_interface,   ONLY : GRID_PDE_BND_PERIODIC,  &
          GRID_PDE_BND_NEUMANN,   &
@@ -80,6 +80,8 @@ subroutine Grid_solveLaplacian (iSoln, iSrc, iCoeff, bcTypes, bcValues, poisfact
     integer, intent(in)    :: bcTypes(6)
     real, intent(in)       :: bcValues(2,6)
     real, intent(inout)    :: poisfact
+    integer, intent(in), optional :: iGrad
+
     integer                :: amrexPoissonBcTypes(6)
 
     integer                :: i,ilev    

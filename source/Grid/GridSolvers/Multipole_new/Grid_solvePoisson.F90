@@ -45,7 +45,7 @@ subroutine Grid_solvePoisson (iSoln,                   &
                               iSrc,                    &
                               bcTypes,                 &
                               bcValues,                &
-                              poisFact)
+                              poisFact, iGrad)
 
   use Grid_interface,    ONLY : GRID_PDE_BND_ISOLATED
 
@@ -78,6 +78,7 @@ subroutine Grid_solvePoisson (iSoln,                   &
   integer, intent(in)    :: bcTypes (6)
   real,    intent(in)    :: bcValues (2,6)
   real,    intent(inout) :: poisFact
+  integer, intent(in), optional :: iGrad
 !  
 !
 !    ...Check the grid boundaries. Abort, if not isolated

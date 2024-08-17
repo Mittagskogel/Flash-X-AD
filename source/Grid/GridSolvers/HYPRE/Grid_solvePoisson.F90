@@ -83,7 +83,7 @@
 !!   
 !!***
 
-subroutine Grid_solvePoisson (iSoln, iSrc, bcTypes, bcValues, poisfact)
+subroutine Grid_solvePoisson (iSoln, iSrc, bcTypes, bcValues, poisfact, iGrad)
 
   use Grid_data,        ONLY : gr_meshMe, gr_meshcomm
   use Timers_interface, ONLY : Timers_start, Timers_stop
@@ -116,7 +116,8 @@ subroutine Grid_solvePoisson (iSoln, iSrc, bcTypes, bcValues, poisfact)
   integer, intent(in)    :: bcTypes(6)
   real, intent(in)       :: bcValues(2,6)
   real, intent(inout)    :: poisfact !DEV: NOT intent(IN) because some implementation actually changes it? - KW  
-  
+  integer, intent(in), optional :: iGrad  
+
   logical :: mask(NUNK_VARS), savedUseFloor
 
   type(Grid_tile_t) :: tileDesc
