@@ -32,7 +32,7 @@ zr_boundary_type = "noslip_ins"
 #       Simulation (grid, time, I/O) parameters
 run_comment	= "2D Channel Flow problem"
 restart         = .false.
-nend            = 10
+nend            = 1000
 tmax            = 100. 
 ins_cflFlg      = 1
 ins_cfl         = 0.3
@@ -40,8 +40,8 @@ ins_sigma	= 0.2
 ins_dtSpec      = 1.0d-2
 dtinit          = 1.0d-2
 tstep_change_factor = 1.1
-ins_pressureCorrect= .false.
-ins_intSchm = 1
+ins_pressureCorrect= .true.
+ins_intSchm = 2
 
 plot_var_1	= "pres"
 plot_var_2      = "velx"
@@ -51,16 +51,18 @@ plot_var_4      = "dust"
 checkpointFileIntervalTime = 0.
 checkpointFileIntervalStep = 0
 plotFileIntervalTime = 0.
-plotFileIntervalStep = 1
+plotFileIntervalStep = 100
 
 # AMR parameters
 nblockx	= 20
 nblocky	= 4
 nblockz = 4
-nrefs   = 10000
+nrefs   = 2
 
-lrefine_min       = 1
-lrefine_max       = 3
+lrefine_min       = 2
+lrefine_max       = 4
+refine_var_count   = 1
+refine_var_1       = "velx"
 
 #	Flux Conservation for AMR
 flux_correct    = .true.
