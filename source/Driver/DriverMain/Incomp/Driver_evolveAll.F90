@@ -62,7 +62,7 @@ subroutine Driver_evolveAll()
                              Grid_fillGuardCells, Grid_getTileIterator, &
                              Grid_releaseTileIterator, Grid_solvePoisson, Grid_solveLaplacian, &
                              Grid_correctFluxData, Grid_putFluxData, Grid_communicateFluxes, &
-                             Grid_getMaxRefinement
+                             Grid_getMaxRefinement, Grid_restrictAllLevels
 
    use Grid_iterator, ONLY: Grid_iterator_t
 
@@ -106,6 +106,7 @@ subroutine Driver_evolveAll()
    use Profiler_interface, ONLY: Profiler_start, Profiler_stop
 
    use RuntimeParameters_interface, ONLY: RuntimeParameters_get
+   use gr_amrexInterface, ONLY: gr_restrictAllLevels
 
    implicit none
 
@@ -133,6 +134,7 @@ subroutine Driver_evolveAll()
    type(Grid_iterator_t) :: itor
    type(Grid_tile_t) :: tileDesc
    logical :: runUnitTest
+   integer, dimension(1, LOW:HIGH) :: chunksRestrict
 
    ! Get grid variables for incompressible Naiver-Stokes
    call IncompNS_getGridVar("FACE_VELOCITY", iVelVar)
@@ -660,6 +662,15 @@ subroutine Driver_evolveAll()
       call Multiphase_indicators()
 #endif
       !------------------------------------------------------------
+
+#ifdef FLASH_GRID_AMREX
+      ! TODO: Find an efficient way to perform selective restriction on variables.
+      ! Grid_fillGuardcells implements the logic of masking and calling gr_restrictAllLevels
+      ! need to implement similar logic for Grid_restrictAllLevels. For now this can
+      ! serve as a proof of concept for multiphase flows
+      chunksRestrict(1, LOW:HIGH) = (/PGN1_FACE_VAR, PGN2_FACE_VAR/)
+      call gr_restrictAllLevels(FACES, .FALSE., .FALSE., chunksFC=chunksRestrict)
+#endif
 
       !output a plotfile before the grid changes
       call Timers_start("IO_output")
