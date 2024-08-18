@@ -1,6 +1,6 @@
-!!****if* source/physics/IncompNS/IncompNSMain/IncompNS_fluxSet
+!!****if* source/physics/IncompNS/IncompNSMain/constDens/IncompNS_fluxUpdate
 !! NOTICE
-!!  Copyright 2022 UChicago Argonne, LLC and contributors
+!!  Copyright 2024 UChicago Argonne, LLC and contributors
 !!
 !!  Licensed under the Apache License, Version 2.0 (the "License");
 !!  you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@
 #include "constants.h"
 #include "IncompNS.h"
 
-subroutine IncompNS_fluxSet(tileDesc)
+subroutine IncompNS_fluxUpdate(tileDesc)
 
-   use Grid_interface, ONLY: Grid_putFluxData
+   use Grid_interface, ONLY: Grid_correctFluxData
    use Grid_tile, ONLY: Grid_tile_t
    use Timers_interface, ONLY: Timers_start, Timers_stop
 
@@ -45,7 +45,7 @@ subroutine IncompNS_fluxSet(tileDesc)
    nullify (facexData, faceyData, facezData, fluxxData, fluxyData, fluxzData)
 #endif
 
-   call Timers_start("IncompNS_fluxSet")
+   call Timers_start("IncompNS_fluxUpdate")
 
    call tileDesc%deltas(del)
 #if NDIM == 2
@@ -64,22 +64,19 @@ subroutine IncompNS_fluxSet(tileDesc)
    lo(1:MDIM) = tileDesc%limits(LOW, 1:MDIM)
    hi(1:MDIM) = tileDesc%limits(HIGH, 1:MDIM)
 
-   fluxxData(:, :, :, :) = 0.
-   fluxyData(:, :, :, :) = 0.
-
-   fluxxData(VELC_FLUX, :, :, :) = facexData(VELC_FACE_VAR, lo(1):hi(1)+1, lo(2):hi(2), lo(3):hi(3))
-   fluxyData(VELC_FLUX, :, :, :) = faceyData(VELC_FACE_VAR, lo(1):hi(1), lo(2):hi(2)+1, lo(3):hi(3))
-
-   fluxxData(PRES_FLUX, :, :, :) = facexData(PGN1_FACE_VAR, lo(1):hi(1)+1, lo(2):hi(2), lo(3):hi(3))
-   fluxyData(PRES_FLUX, :, :, :) = faceyData(PGN1_FACE_VAR, lo(1):hi(1), lo(2):hi(2)+1, lo(3):hi(3))
-
+   fluxxData(MOMT_FLUX, :, :, :) = facexData(PGN0_FACE_VAR, lo(1):hi(1)+1, lo(2):hi(2), lo(3):hi(3))
+   fluxyData(MOMT_FLUX, :, :, :) = faceyData(PGN0_FACE_VAR, lo(1):hi(1), lo(2):hi(2)+1, lo(3):hi(3))
 #if NDIM==3
-   fluxzData(:, :, :, :) = 0.
-   fluxzData(VELC_FLUX, :, :, :) = facezData(VELC_FACE_VAR, lo(1):hi(1), lo(2):hi(2), lo(3):hi(3)+1)
-   fluxzData(PRES_FLUX, :, :, :) = facezData(PGN1_FACE_VAR, lo(1):hi(1), lo(2):hi(2), lo(3):hi(3)+1)
+   fluxzData(MOMT_FLUX, :, :, :) = facezData(PGN0_FACE_VAR, lo(1):hi(1), lo(2):hi(2), lo(3):hi(3)+1)
 #endif
 
-   call Grid_putFluxData(tileDesc, fluxxData, fluxyData, fluxzData, lo)
+   call Grid_correctFluxData(tileDesc, fluxxData, fluxyData, fluxzData, lo)
+
+   facexData(PGN0_FACE_VAR, lo(1):hi(1)+1, lo(2):hi(2), lo(3):hi(3)) = fluxxData(MOMT_FLUX, :, :, :)
+   faceyData(PGN0_FACE_VAR, lo(1):hi(1), lo(2):hi(2)+1, lo(3):hi(3)) = fluxyData(MOMT_FLUX, :, :, :)
+#if NDIM==3
+   facezData(PGN0_FACE_VAR, lo(1):hi(1), lo(2):hi(2), lo(3):hi(3)+1) = fluxzData(MOMT_FLUX, :, :, :)
+#endif      
 
    ! Release pointers:
    call tileDesc%releaseDataPtr(facexData, FACEX)
@@ -91,6 +88,6 @@ subroutine IncompNS_fluxSet(tileDesc)
 #endif
    call tileDesc%releaseDataPtr(fluxzData, FLUXZ)
 
-   call Timers_stop("IncompNS_fluxSet")
+   call Timers_stop("IncompNS_fluxUpdate")
 
-end subroutine IncompNS_fluxSet
+end subroutine IncompNS_fluxUpdate

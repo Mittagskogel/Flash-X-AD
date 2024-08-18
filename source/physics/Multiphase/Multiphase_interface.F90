@@ -157,22 +157,6 @@ Module Multiphase_interface
    end interface
 
    interface
-      subroutine Multiphase_fluxSet(tileDesc)
-         use Grid_tile, ONLY: Grid_tile_t
-         implicit none
-         type(Grid_tile_t), INTENT(IN) :: tileDesc
-      end subroutine Multiphase_fluxSet
-   end interface
-
-   interface
-      subroutine Multiphase_fluxUpdate(tileDesc)
-         use Grid_tile, ONLY: Grid_tile_t
-         implicit none
-         type(Grid_tile_t), INTENT(IN) :: tileDesc
-      end subroutine Multiphase_fluxUpdate
-   end interface
-
-   interface
       subroutine Multiphase_getGridVar(name, value)
          implicit none
          character(len=*), intent(in)  :: name

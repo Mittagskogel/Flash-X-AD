@@ -80,8 +80,7 @@ subroutine Driver_evolveAll()
                                    Multiphase_advection, Multiphase_redistance, Multiphase_solve, &
                                    Multiphase_setThermalProps, Multiphase_thermalForcing, Multiphase_velForcing, &
                                    Multiphase_divergence, Multiphase_extrapFluxes, Multiphase_reInitGridVars, &
-                                   Multiphase_indicators, Multiphase_setMassFlux, Multiphase_getGridVar, &
-                                   Multiphase_fluxSet, Multiphase_fluxUpdate
+                                   Multiphase_indicators, Multiphase_setMassFlux, Multiphase_getGridVar
 
    use HeatAD_interface, ONLY: HeatAD_diffusion, HeatAD_advection, HeatAD_solve, HeatAD_reInitGridVars, &
                                HeatAD_indicators, HeatAD_getGridVar
@@ -473,6 +472,28 @@ subroutine Driver_evolveAll()
       ins_predcorrflg = .true.
       call Grid_fillGuardCells(FACES, ALLDIR, &
                                maskSize=NDIM*NFACE_VARS, mask=gcMask)
+
+#ifdef MULTIPHASE_MAIN
+      ! Flux correction for momentum
+      !------------------------------------------------------------
+      call Grid_getTileIterator(itor, nodetype=LEAF)
+      do while (itor%isValid())
+         call itor%currentTile(tileDesc)
+         call IncompNS_fluxSet(tileDesc)
+         call itor%next()
+      end do
+      call Grid_releaseTileIterator(itor)
+      call Grid_communicateFluxes(ALLDIR, UNSPEC_LEVEL)
+      call Grid_getTileIterator(itor, nodetype=LEAF)
+      do while (itor%isValid())
+         call itor%currentTile(tileDesc)
+         call IncompNS_fluxUpdate(tileDesc)
+         call itor%next()
+      end do
+      call Grid_releaseTileIterator(itor)
+      !------------------------------------------------------------
+#endif
+
       ins_predcorrflg = .false.
 
       ! Calculate divergence of predicted velocity
@@ -510,21 +531,6 @@ subroutine Driver_evolveAll()
       call Driver_abort("[Driver_evolveAll] Missing pressure solver")
 #endif
 
-      ! Final step of fractional step velocity
-      ! formulation - calculate corrected velocity
-      ! and updated divergence (this should be machine-zero)
-      !------------------------------------------------------------
-      call Grid_getTileIterator(itor, nodetype=LEAF)
-      do while (itor%isValid())
-         call itor%currentTile(tileDesc)
-         !---------------------------------------------------------
-         call IncompNS_corrector(tileDesc, dr_dt)
-         !---------------------------------------------------------
-         call itor%next()
-      end do
-      call Grid_releaseTileIterator(itor)
-      !------------------------------------------------------------
-
       ! Flux correction for momentum
       !------------------------------------------------------------
       call Grid_getTileIterator(itor, nodetype=LEAF)
@@ -544,12 +550,15 @@ subroutine Driver_evolveAll()
       call Grid_releaseTileIterator(itor)
       !------------------------------------------------------------
 
-      ! Divergence
+      ! Final step of fractional step velocity
+      ! formulation - calculate corrected velocity
+      ! and updated divergence (this should be machine-zero)
       !------------------------------------------------------------
       call Grid_getTileIterator(itor, nodetype=LEAF)
       do while (itor%isValid())
          call itor%currentTile(tileDesc)
          !---------------------------------------------------------
+         call IncompNS_corrector(tileDesc, dr_dt)
          call IncompNS_divergence(tileDesc)
          call Multiphase_divergence(tileDesc)
          !---------------------------------------------------------

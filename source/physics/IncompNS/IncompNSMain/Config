@@ -109,8 +109,5 @@ FACEVAR pgn1
 D vfrc_facevar Velocity forcing for external use
 FACEVAR vfrc
 
-D velc_flux Velocity fluxes
-FLUX velc
-
-D pres_flux Pressure fluxes
-FLUX pres
+D momt_flux Momentum fluxes
+FLUX momt

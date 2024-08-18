@@ -15,6 +15,4 @@ Multiphase += Multiphase_init.o \
               Multiphase_setMassFlux.o \
               Multiphase_divergence.o \
               Multiphase_reInitGridVars.o \
-              Multiphase_getGridVar.o \
-              Multiphase_fluxSet.o \
-              Multiphase_fluxUpdate.o
+              Multiphase_getGridVar.o

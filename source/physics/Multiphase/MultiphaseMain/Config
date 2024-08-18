@@ -77,6 +77,3 @@ PARAMETER mph_presTol REAL 0.0
 
 D mph_tempTol Tolerance for temperature jumps
 PARAMETER mph_tempTol REAL 1d-2
-
-D dfun_flux Level set fluxes
-FLUX dfun
