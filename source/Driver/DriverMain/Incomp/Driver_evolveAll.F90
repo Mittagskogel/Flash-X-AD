@@ -80,7 +80,8 @@ subroutine Driver_evolveAll()
                                    Multiphase_advection, Multiphase_redistance, Multiphase_solve, &
                                    Multiphase_setThermalProps, Multiphase_thermalForcing, Multiphase_velForcing, &
                                    Multiphase_divergence, Multiphase_extrapFluxes, Multiphase_reInitGridVars, &
-                                   Multiphase_indicators, Multiphase_setMassFlux, Multiphase_getGridVar
+                                   Multiphase_indicators, Multiphase_setMassFlux, Multiphase_getGridVar, &
+                                   Multiphase_fluxSet, Multiphase_fluxUpdate
 
    use HeatAD_interface, ONLY: HeatAD_diffusion, HeatAD_advection, HeatAD_solve, HeatAD_reInitGridVars, &
                                HeatAD_indicators, HeatAD_getGridVar
@@ -106,7 +107,6 @@ subroutine Driver_evolveAll()
    use Profiler_interface, ONLY: Profiler_start, Profiler_stop
 
    use RuntimeParameters_interface, ONLY: RuntimeParameters_get
-   use gr_amrexInterface, ONLY: gr_restrictAllLevels
 
    implicit none
 
@@ -134,7 +134,6 @@ subroutine Driver_evolveAll()
    type(Grid_iterator_t) :: itor
    type(Grid_tile_t) :: tileDesc
    logical :: runUnitTest
-   integer, dimension(1, LOW:HIGH) :: chunksRestrict
 
    ! Get grid variables for incompressible Naiver-Stokes
    call IncompNS_getGridVar("FACE_VELOCITY", iVelVar)
@@ -491,12 +490,6 @@ subroutine Driver_evolveAll()
       call Grid_releaseTileIterator(itor)
       !------------------------------------------------------------
 
-      ! Fill GuardCells for Divergence
-      gcMask(:) = .FALSE.
-      gcMask(iDivVar) = .TRUE.
-      call Grid_fillGuardCells(CENTER, ALLDIR, &
-                               maskSize=NUNK_VARS, mask=gcMask)
-
 #if defined(INCOMPNS_PRES_POISSON)
       ! Solve pressure Poisson equation
       !------------------------------------------------------------
@@ -517,12 +510,6 @@ subroutine Driver_evolveAll()
       call Driver_abort("[Driver_evolveAll] Missing pressure solver")
 #endif
 
-      ! Fill GuardCells for pressure
-      gcMask(:) = .FALSE.
-      gcMask(iPresVar) = .TRUE.
-      call Grid_fillGuardCells(CENTER, ALLDIR, &
-                               maskSize=NUNK_VARS, mask=gcMask)
-
       ! Final step of fractional step velocity
       ! formulation - calculate corrected velocity
       ! and updated divergence (this should be machine-zero)
@@ -537,6 +524,7 @@ subroutine Driver_evolveAll()
       end do
       call Grid_releaseTileIterator(itor)
       !------------------------------------------------------------
+
       ! Flux correction for momentum
       !------------------------------------------------------------
       call Grid_getTileIterator(itor, nodetype=LEAF)
@@ -555,6 +543,7 @@ subroutine Driver_evolveAll()
       end do
       call Grid_releaseTileIterator(itor)
       !------------------------------------------------------------
+
       ! Divergence
       !------------------------------------------------------------
       call Grid_getTileIterator(itor, nodetype=LEAF)
@@ -599,7 +588,6 @@ subroutine Driver_evolveAll()
 #endif
 
 #ifdef MULTIPHASE_MAIN
-
       ! Multiphase advection procedure
       ! Loop over blocks (tiles) and call Multiphase
       ! routines
@@ -639,7 +627,6 @@ subroutine Driver_evolveAll()
          call Grid_releaseTileIterator(itor)
 
       end do
-      !------------------------------------------------------------
 #endif
 
       !------------------------------------------------------------
@@ -662,15 +649,6 @@ subroutine Driver_evolveAll()
       call Multiphase_indicators()
 #endif
       !------------------------------------------------------------
-
-#ifdef FLASH_GRID_AMREX
-      ! TODO: Find an efficient way to perform selective restriction on variables.
-      ! Grid_fillGuardcells implements the logic of masking and calling gr_restrictAllLevels
-      ! need to implement similar logic for Grid_restrictAllLevels. For now this can
-      ! serve as a proof of concept for multiphase flows
-      chunksRestrict(1, LOW:HIGH) = (/PGN1_FACE_VAR, PGN2_FACE_VAR/)
-      call gr_restrictAllLevels(FACES, .FALSE., .FALSE., chunksFC=chunksRestrict)
-#endif
 
       !output a plotfile before the grid changes
       call Timers_start("IO_output")
