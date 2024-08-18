@@ -444,6 +444,31 @@ subroutine Driver_evolveAll()
       call Grid_fillGuardCells(CENTER_FACES, ALLDIR, &
                                maskSize=NUNK_VARS+NDIM*NFACE_VARS, mask=gcMask)
 
+
+      ! Set predcorr flag to true indicating the start of predictor process
+      ins_predcorrflg = .true.
+
+#ifdef MULTIPHASE_MAIN
+      ! Flux correction for momentum
+      !------------------------------------------------------------
+      call Grid_getTileIterator(itor, nodetype=LEAF)
+      do while (itor%isValid())
+         call itor%currentTile(tileDesc)
+         call IncompNS_fluxSet(tileDesc)
+         call itor%next()
+      end do
+      call Grid_releaseTileIterator(itor)
+      call Grid_communicateFluxes(ALLDIR, UNSPEC_LEVEL)
+      call Grid_getTileIterator(itor, nodetype=LEAF)
+      do while (itor%isValid())
+         call itor%currentTile(tileDesc)
+         call IncompNS_fluxUpdate(tileDesc)
+         call itor%next()
+      end do
+      call Grid_releaseTileIterator(itor)
+      !------------------------------------------------------------
+#endif
+
       ! Start of fractional-step velocity procedure
       ! Calculate predicted velocity and apply
       ! necessary forcing
@@ -469,31 +494,10 @@ subroutine Driver_evolveAll()
 #if NDIM == 3
       gcMask(2*NFACE_VARS+iVelVar) = .TRUE.
 #endif
-      ins_predcorrflg = .true.
       call Grid_fillGuardCells(FACES, ALLDIR, &
                                maskSize=NDIM*NFACE_VARS, mask=gcMask)
 
-#ifdef MULTIPHASE_MAIN
-      ! Flux correction for momentum
-      !------------------------------------------------------------
-      call Grid_getTileIterator(itor, nodetype=LEAF)
-      do while (itor%isValid())
-         call itor%currentTile(tileDesc)
-         call IncompNS_fluxSet(tileDesc)
-         call itor%next()
-      end do
-      call Grid_releaseTileIterator(itor)
-      call Grid_communicateFluxes(ALLDIR, UNSPEC_LEVEL)
-      call Grid_getTileIterator(itor, nodetype=LEAF)
-      do while (itor%isValid())
-         call itor%currentTile(tileDesc)
-         call IncompNS_fluxUpdate(tileDesc)
-         call itor%next()
-      end do
-      call Grid_releaseTileIterator(itor)
-      !------------------------------------------------------------
-#endif
-
+      ! Reset predcorr flag to false
       ins_predcorrflg = .false.
 
       ! Calculate divergence of predicted velocity

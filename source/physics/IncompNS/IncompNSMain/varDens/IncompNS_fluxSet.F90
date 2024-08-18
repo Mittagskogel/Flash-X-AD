@@ -73,6 +73,13 @@ subroutine IncompNS_fluxSet(tileDesc)
       fluxzData(MOMT_FLUX, :, :, :) = facezData(SIGM_FACE_VAR, lo(1):hi(1), lo(2):hi(2), lo(3):hi(3)+1)
 #endif
 
+      fluxxData(RHOF_FLUX, :, :, :) = facexData(RHOF_FACE_VAR, lo(1):hi(1)+1, lo(2):hi(2), lo(3):hi(3))
+      fluxyData(RHOF_FLUX, :, :, :) = faceyData(RHOF_FACE_VAR, lo(1):hi(1), lo(2):hi(2)+1, lo(3):hi(3))
+
+#if NDIM==3
+      fluxzData(RHOF_FLUX, :, :, :) = facezData(RHOF_FACE_VAR, lo(1):hi(1), lo(2):hi(2), lo(3):hi(3)+1)
+#endif
+
       call Grid_putFluxData(tileDesc, fluxxData, fluxyData, fluxzData, lo)
 
    else

@@ -72,6 +72,13 @@ subroutine IncompNS_fluxUpdate(tileDesc)
       fluxzData(MOMT_FLUX, :, :, :) = facezData(SIGM_FACE_VAR, lo(1):hi(1), lo(2):hi(2), lo(3):hi(3)+1)
 #endif
 
+      fluxxData(RHOF_FLUX, :, :, :) = facexData(RHOF_FACE_VAR, lo(1):hi(1)+1, lo(2):hi(2), lo(3):hi(3))
+      fluxyData(RHOF_FLUX, :, :, :) = faceyData(RHOF_FACE_VAR, lo(1):hi(1), lo(2):hi(2)+1, lo(3):hi(3))
+
+#if NDIM==3
+      fluxzData(RHOF_FLUX, :, :, :) = facezData(RHOF_FACE_VAR, lo(1):hi(1), lo(2):hi(2), lo(3):hi(3)+1)
+#endif
+
       call Grid_correctFluxData(tileDesc, fluxxData, fluxyData, fluxzData, lo)
 
       facexData(SIGM_FACE_VAR, lo(1):hi(1)+1, lo(2):hi(2), lo(3):hi(3)) = fluxxData(MOMT_FLUX, :, :, :)
@@ -80,6 +87,11 @@ subroutine IncompNS_fluxUpdate(tileDesc)
       facezData(SIGM_FACE_VAR, lo(1):hi(1), lo(2):hi(2), lo(3):hi(3)+1) = fluxzData(MOMT_FLUX, :, :, :)
 #endif
 
+      facexData(RHOF_FACE_VAR, lo(1):hi(1)+1, lo(2):hi(2), lo(3):hi(3)) = fluxxData(RHOF_FLUX, :, :, :)
+      faceyData(RHOF_FACE_VAR, lo(1):hi(1), lo(2):hi(2)+1, lo(3):hi(3)) = fluxyData(RHOF_FLUX, :, :, :)
+#if NDIM==3
+      facezData(RHOF_FACE_VAR, lo(1):hi(1), lo(2):hi(2), lo(3):hi(3)+1) = fluxzData(RHOF_FLUX, :, :, :)
+#endif
 
    else
       fluxxData(MOMT_FLUX, :, :, :) = facexData(PGN0_FACE_VAR, lo(1):hi(1)+1, lo(2):hi(2), lo(3):hi(3))
