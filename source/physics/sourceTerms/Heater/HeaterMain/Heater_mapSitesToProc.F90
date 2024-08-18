@@ -26,7 +26,7 @@
 #include "constants.h"
 #include "Simulation.h"
 
-subroutine Heater_mapSitesToProc(inital, gridChanged)
+subroutine Heater_mapSitesToProc(initial, gridChanged)
 
    use Grid_interface, ONLY: Grid_getTileIterator, Grid_releaseTileIterator
    use Grid_iterator, ONLY: Grid_iterator_t
