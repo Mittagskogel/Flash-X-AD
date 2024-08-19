@@ -103,7 +103,7 @@
 !!   
 !!***
 
-subroutine Grid_solvePoisson (iSoln, iSrc, bcTypes, bcValues, poisfact)
+subroutine Grid_solvePoisson (iSoln, iSrc, bcTypes, bcValues, poisfact, iGrad)
 
 
   implicit none
@@ -112,7 +112,7 @@ subroutine Grid_solvePoisson (iSoln, iSrc, bcTypes, bcValues, poisfact)
   integer, intent(in)    :: bcTypes(6)
   real, intent(in)       :: bcValues(2,6)
   real, intent(inout)    :: poisfact !DEV: NOT intent(IN) because some implementation actually changes it? - KW
-  
+  integer, intent(in), optional :: iGrad
   
   return
 end subroutine Grid_solvePoisson
