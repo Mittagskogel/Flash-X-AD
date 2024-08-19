@@ -205,9 +205,7 @@ subroutine gr_markRefineDerefineCallback(lev, tags, time, tagval, clearval) bind
       call tileDesc%physicalSize(blockSize)
       blockSize(:) = 0.5*blockSize(:)
 
-      print *, "Getting deltas"
       call tileDesc%deltas(del)
-      print *, "After deltas: ", del
 
       lo = tileDesc%limits(LOW, :)
       hi = tileDesc%limits(HIGH, :)
