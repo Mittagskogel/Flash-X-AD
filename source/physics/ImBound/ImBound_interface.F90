@@ -132,5 +132,14 @@ Module ImBound_interface
          logical, intent(out) :: skipBox
       end subroutine ImBound_skipBox
    end interface
+   
+   interface
+      subroutine ImBound_velForcing(tileDesc, dt)
+         use Grid_tile, ONLY: Grid_tile_t
+         implicit none
+         real, intent(in) :: dt
+         type(Grid_tile_t), intent(in) :: tileDesc
+      end subroutine ImBound_velForcing
+   end interface
 
 end Module ImBound_interface

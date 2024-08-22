@@ -89,4 +89,15 @@ module ib_interface
       end subroutine ib_annMap3D
    end interface
 
+   interface
+      subroutine ib_velGfm2d(lmda, velx, vely, dt, coeff, dx, dy, ix1, ix2, jy1, jy2, tol)
+         implicit none
+         real, dimension(:, :, :), intent(inout) :: velx, vely
+         real, dimension(:, :, :), intent(in) :: lmda
+         real, intent(in) :: dt, dx, dy, coeff
+         integer, intent(in) :: ix1, ix2, jy1, jy2
+         real, intent(in) :: tol
+      end subroutine ib_velGfm2d
+   end interface
+
 end module ib_interface

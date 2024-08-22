@@ -344,7 +344,7 @@ subroutine gr_markRefineDerefineCallback(lev, tags, time, tagval, clearval) bind
 #endif
                   EXIT rloop
                end if
-#ifdef DFUN_VAR
+#if defined(DFUN_VAR) || defined(LMDA_VAR)
             end if
 #endif
          end do rloop
