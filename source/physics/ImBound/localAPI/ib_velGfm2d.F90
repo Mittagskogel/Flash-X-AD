@@ -9,9 +9,9 @@
 !!  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 !!  See the License for the specific language governing permissions and
 !!  limitations under the License.
-subroutine ib_velGfm2d(lmda, velx, vely, dt, coeff, dx, dy, ix1, ix2, jy1, jy2, tol)
+subroutine ib_velGfm2d(lmda, velx, vely, frcx, frcy, dt, coeff, dx, dy, ix1, ix2, jy1, jy2, tol)
    implicit none
-   real, dimension(:, :, :), intent(inout) :: velx, vely
+   real, dimension(:, :, :), intent(inout) :: frcx, frcy, velx, vely
    real, dimension(:, :, :), intent(in) :: lmda
    real, intent(in) :: dt, dx, dy, coeff
    integer, intent(in) :: ix1, ix2, jy1, jy2

@@ -57,10 +57,12 @@ subroutine ImBound_velForcing(tileDesc, dt)
    call ib_velGfm2d(solnData(LMDA_VAR, :, :, :), &
                     facexData(iVelVar, :, :, :), &
                     faceyData(iVelVar, :, :, :), &
+                    facexData(VFRC_FACE_VAR, :, :, :), &
+                    faceyData(VFRC_FACE_VAR, :, :, :), &
                     dt, coeff, &
                     del(DIR_X), del(DIR_Y), &
                     GRID_ILO, GRID_IHI, &
-                    GRID_JLO, GRID_JHI, tol=0.1)
+                    GRID_JLO, GRID_JHI, tol=0.01)
 #else
    call Driver_abort("[ImBound_velForcing] Forcing not implemented for NDIM /= 2")
    call tileDesc%getDataPtr(facezData, FACEZ)

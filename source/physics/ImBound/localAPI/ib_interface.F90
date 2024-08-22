@@ -90,9 +90,9 @@ module ib_interface
    end interface
 
    interface
-      subroutine ib_velGfm2d(lmda, velx, vely, dt, coeff, dx, dy, ix1, ix2, jy1, jy2, tol)
+      subroutine ib_velGfm2d(lmda, velx, vely, frcx, frcy, dt, coeff, dx, dy, ix1, ix2, jy1, jy2, tol)
          implicit none
-         real, dimension(:, :, :), intent(inout) :: velx, vely
+         real, dimension(:, :, :), intent(inout) :: frcx, frcy, velx, vely
          real, dimension(:, :, :), intent(in) :: lmda
          real, intent(in) :: dt, dx, dy, coeff
          integer, intent(in) :: ix1, ix2, jy1, jy2

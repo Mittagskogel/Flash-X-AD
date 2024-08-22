@@ -87,7 +87,6 @@ subroutine gr_markRefineDerefineCallback(lev, tags, time, tagval, clearval) bind
    use Grid_tile, ONLY: Grid_tile_t
    use Driver_interface, ONLY: Driver_abort
    use Grid_interface, ONLY: Grid_getBlkCenterCoords
-   use gr_physicalMultifabs, ONLY: unk
 
    implicit none
 
@@ -206,9 +205,6 @@ subroutine gr_markRefineDerefineCallback(lev, tags, time, tagval, clearval) bind
       blockSize(:) = 0.5*blockSize(:)
 
       call tileDesc%deltas(del)
-
-      lo = tileDesc%limits(LOW, :)
-      hi = tileDesc%limits(HIGH, :)
 
       tagData => tag%dataptr(mfi)
 
