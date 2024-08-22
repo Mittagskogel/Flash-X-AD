@@ -116,7 +116,7 @@ subroutine gr_markRefineDerefineCallback(lev, tags, time, tagval, clearval) bind
    integer :: specsSize
 
    real, dimension(MDIM) :: blockCenter, blockSize, del
-   real                  :: xl, xr, yl, yr, zl, zr, dfunTol
+   real                  :: xl, xr, yl, yr, zl, zr, dfunTol, lmdaTol
    integer               :: b
    logical               :: x_in_rect, y_in_rect, z_in_rect
    integer, dimension(MDIM) :: lo, hi
@@ -275,6 +275,35 @@ subroutine gr_markRefineDerefineCallback(lev, tags, time, tagval, clearval) bind
                nullify (solnData)
             else
 #endif
+
+#ifdef LMDA_VAR
+            if (iref == LMDA_VAR) then
+               solnData => unk(lev)%dataPtr(mfi)
+#if NDIM == 2
+               lmdaTol = sqrt(del(IAXIS)**2+del(JAXIS)**2)
+#elif NDIM == 3
+               lmdaTol = sqrt(del(IAXIS)**2+del(JAXIS)**2+del(KAXIS)**2)
+#else
+               call Driver_abort("[gr_markRefineDerefineCallback] Unknown dimension encountered when tagging for LMDA_VAR")
+#endif
+               if (maxval(solnData(lo(IAXIS):hi(IAXIS), &
+                                   lo(JAXIS):hi(JAXIS), &
+                                   lo(KAXIS):hi(KAXIS), LMDA_VAR)) > -2*lmdaTol .AND. &
+                   minval(solnData(lo(IAXIS):hi(IAXIS), &
+                                   lo(JAXIS):hi(JAXIS), &
+                                   lo(KAXIS):hi(KAXIS), LMDA_VAR)) < 2*lmdaTol) then
+
+                  i = INT(0.5d0*DBLE(lo_tag(IAXIS)+hi_tag(IAXIS)))
+                  j = INT(0.5d0*DBLE(lo_tag(JAXIS)+hi_tag(JAXIS)))
+                  k = INT(0.5d0*DBLE(lo_tag(KAXIS)+hi_tag(KAXIS)))
+
+                  ! Fourth index is 1:1
+                  tagData(i, j, k, 1) = tagval
+               end if
+               nullify (solnData)
+            else
+#endif
+
                refineFilter = gr_refine_filter(l)
                call gr_estimateBlkError(error, tileDesc, iref, refineFilter)
 
