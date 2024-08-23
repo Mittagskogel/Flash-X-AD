@@ -4,4 +4,5 @@ ImBound += ib_readBody.o\
            ib_annSearchTree.o\
            ib_annMap.o\
            ib_interface.o \
-           ib_velGfm2d.o
+           ib_velGfm2d.o \
+           ib_velGfm3d.o

@@ -25,8 +25,9 @@ subroutine ImBound_velForcing(tileDesc, dt)
    use Timers_interface, ONLY: Timers_start, Timers_stop
    use Driver_interface, ONLY: Driver_getNStep, Driver_abort
    use Grid_tile, ONLY: Grid_tile_t
-   use ib_interface, ONLY: ib_velGfm2d
+   use ib_interface, ONLY: ib_velGfm2d, ib_velGfm3d
    use IncompNS_interface, ONLY: IncompNS_getScalarProp, IncompNS_getGridVar
+   use ImBound_data, ONLY: ib_invReynolds, ib_iVelVar
 
    implicit none
    include "Flashx_mpi.h"
@@ -50,22 +51,29 @@ subroutine ImBound_velForcing(tileDesc, dt)
    call tileDesc%getDataPtr(faceyData, FACEY)
    call tileDesc%deltas(del)
 
-   call IncompNS_getScalarProp("REYNOLDS_NUMBER", coeff)
-   call IncompNS_getGridVar("FACE_VELOCITY", iVelVar)
-
 #if NDIM < MDIM
    call ib_velGfm2d(solnData(LMDA_VAR, :, :, :), &
-                    facexData(iVelVar, :, :, :), &
-                    faceyData(iVelVar, :, :, :), &
-                    facexData(VFRC_FACE_VAR, :, :, :), &
-                    faceyData(VFRC_FACE_VAR, :, :, :), &
-                    dt, coeff, &
+                    facexData(ib_iVelVar, :, :, :), &
+                    faceyData(ib_iVelVar, :, :, :), &
+                    (/0., 0./), 0., &
+                    dt, ib_invReynolds, &
                     del(DIR_X), del(DIR_Y), &
                     GRID_ILO, GRID_IHI, &
-                    GRID_JLO, GRID_JHI, tol=0.01)
+                    GRID_JLO, GRID_JHI)
 #else
-   call Driver_abort("[ImBound_velForcing] Forcing not implemented for NDIM /= 2")
    call tileDesc%getDataPtr(facezData, FACEZ)
+
+   call ib_velGfm3d(solnData(LMDA_VAR, :, :, :), &
+                    facexData(ib_iVelVar, :, :, :), &
+                    faceyData(ib_iVelVar, :, :, :), &
+                    facezData(ib_iVelVar, :, :, :), &
+                    dt, ib_invReynolds, &
+                    (/0., 0., 0./),
+                    del(DIR_X), del(DIR_Y), del(DIR_Z), &
+                    GRID_ILO, GRID_IHI, &
+                    GRID_JLO, GRID_JHI, &
+                    GRID_KLO, GRID_KHI)
+
    call tileDesc%releaseDataPtr(facezData, FACEZ)
 #endif
 

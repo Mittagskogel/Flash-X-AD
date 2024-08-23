@@ -88,7 +88,12 @@ subroutine Grid_solveLaplacian (iSoln, iSrc, iCoeff, bcTypes, bcValues, poisfact
     real(amrex_real)       :: err
     logical                :: nodal(1:MDIM)
 
+    if (present(iGrad)) then
+      call Driver_abort("[AmrexMultigridSolver/Grid_solveLaplacian] Configuration with iGrad not implemented")
+    end if
+
     call Timers_start("Grid_solveLaplacian")
+
     if(poisfact .ne. 1) then
       if(gr_globalMe .eq. MASTER_PE) print*,"[WARNING] [Grid_solveLaplacian] Variable poisfact &
                                                                     was set not 1. It is being ignored and set to 1!!!"

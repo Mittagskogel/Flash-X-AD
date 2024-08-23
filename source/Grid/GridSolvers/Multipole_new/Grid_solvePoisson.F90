@@ -87,6 +87,10 @@ subroutine Grid_solvePoisson (iSoln,                   &
   if (any (bcTypes (1:2*NDIM) /= GRID_PDE_BND_ISOLATED) ) then
       call Driver_abort ("FATAL: Multipole Poisson solver requires isolated boundaries")
   end if
+
+  if (present(iGrad)) then
+      call Driver_abort("[Multipole_new/Grid_solvePoisson] Configuration with iGrad not implemented")
+  end if
 !  
 !
 !    ...Start timer.

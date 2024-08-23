@@ -62,4 +62,8 @@ module ImBound_data
    character(len=20), save :: ib_bodyName
    integer, save :: ib_numBodies
 
+   real, save :: ib_invReynolds
+   logical, save :: ib_withIncompNS
+   integer, save :: ib_iVelVar
+
 end module ImBound_data

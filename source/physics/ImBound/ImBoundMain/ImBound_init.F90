@@ -35,7 +35,8 @@ subroutine ImBound_init(restart)
    use ib_interface, ONLY: ib_readBody, ib_annBuildTree
    use RuntimeParameters_interface, ONLY: RuntimeParameters_get
    use Driver_interface, ONLY: Driver_getMype, Driver_getNumProcs, &
-                               Driver_getComm
+                               Driver_getComm, Driver_abort
+   use IncompNS_interface, ONLY: IncompNS_getGridVar
 
    implicit none
    include 'Flashx_mpi.h'
@@ -43,7 +44,10 @@ subroutine ImBound_init(restart)
 
    character(len=30) :: bodyFile
    integer :: ibd
+   logical :: useIncompNS
+
    call RuntimeParameters_get("useImBound", ib_useImBound)
+   call RuntimeParameters_get("useIncompNS", ib_withIncompNS)
 
    if (.NOT. ib_useImBound) RETURN
 
@@ -58,6 +62,14 @@ subroutine ImBound_init(restart)
    call RuntimeParameters_get("ib_bruteForceMapping", ib_bruteForceMapping)
    call RuntimeParameters_get("ib_annQueries", ib_annQueries)
 
+   if (ib_withIncompNS) then
+      call RuntimeParameters_get("ins_invReynolds", ib_invReynolds) 
+      call IncompNS_getGridVar("FACE_VELOCITY", ib_iVelVar)
+   else
+      ib_invReynolds = 1.
+      ib_iVelVar = 0
+   end if
+
    if (ib_meshMe .eq. MASTER_PE) then
       write (*, *) 'ib_lsIt=', ib_lsIt
       write (*, *) 'ib_numBodies=', ib_numBodies
@@ -65,6 +77,7 @@ subroutine ImBound_init(restart)
       write (*, *) 'ib_enableSelectiveMapping', ib_enableSelectiveMapping
       write (*, *) 'ib_bruteForceMapping', ib_bruteForceMapping
       write (*, *) 'ib_annQueries', ib_annQueries
+      write (*, *) 'ib_invReynolds', ib_invReynolds
    end if
 
    allocate (ib_bodyInfo(ib_numBodies))

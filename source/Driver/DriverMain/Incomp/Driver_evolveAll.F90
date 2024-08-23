@@ -542,7 +542,7 @@ subroutine Driver_evolveAll()
       call Grid_solveLaplacian(iSoln=iPresVar, iSrc=iDivVar, iCoeff=iRhoFVar, &
                                bcTypes=ins_pressureBC_types, &
                                bcValues=ins_pressureBC_values, &
-                               poisfact=ins_poisfact)
+                               poisfact=ins_poisfact, iGrad=iPGradVar)
       !------------------------------------------------------------
 #else
       call Driver_abort("[Driver_evolveAll] Missing pressure solver")

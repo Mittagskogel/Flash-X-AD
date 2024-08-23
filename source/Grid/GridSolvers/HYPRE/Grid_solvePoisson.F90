@@ -129,9 +129,12 @@ subroutine Grid_solvePoisson (iSoln, iSrc, bcTypes, bcValues, poisfact, iGrad)
   real :: ET
  
 !!$    character(len=32) :: matfile
-  
-  call Timers_start("Grid_solvePoisson")    
+ 
+  if (present(iGrad)) then
+     call Driver_abort("[HYPRE/Grid_solvePoisson] Configuration with iGrad not implemented")
+  endif
 
+  call Timers_start("Grid_solvePoisson")    
 
   blockType  = LEAF
   call Grid_getNumBlksFromType(blockType,blockCount)

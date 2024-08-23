@@ -200,7 +200,10 @@ subroutine Grid_solvePoisson (iSoln, iSrc, bcTypes, bcValues, poisfact, iGrad)
          call gr_amrexMG_multigrid % set_max_fmg_iter(gr_amrexMG_max_fmg_iter)
 
          err = gr_amrexMG_multigrid % solve([gr_amrexMG_solution(ilev)], [gr_amrexMG_rhs(ilev)],gr_amrexMG_Tol, 0.0_amrex_real)
-         if (present(iGrad)) call Driver_abort("[AmrexMultigridSolver] iGrad not implemented for level-by-level")
+
+         if (present(iGrad)) then
+            call Driver_abort("[AmrexMultigridSolver/Grid_solvePoisson] iGrad not implemented for level-by-level")
+         end if
 
          if(gr_globalMe .eq. MASTER_PE) print*, err
          call amrex_poisson_destroy(gr_amrexMG_poisson)

@@ -38,6 +38,7 @@ subroutine ImBound_advance(bodyInfo, time, dt)
    use ImBound_data, ONLY: ib_bruteForceMapping
    use ImBound_type, ONLY: ImBound_type_t
    use ib_interface, ONLY: ib_annBuildTree
+   use Driver_interface, ONLY: Driver_abort
 
    implicit none
    type(ImBound_type_t), intent(inout) :: bodyInfo
@@ -49,6 +50,8 @@ subroutine ImBound_advance(bodyInfo, time, dt)
    integer :: panelIndex
 
 #if NDIM==MDIM
+
+   call Driver_abort("[ImBound_advance] Not implemented for NDIM == MDIM")
 
 #else
    rotate(:, 1) = (/cos(dt*bodyInfo%theta(3)), -sin(dt*bodyInfo%theta(3))/)
@@ -71,13 +74,14 @@ subroutine ImBound_advance(bodyInfo, time, dt)
          matmul(bodyInfo%elems(panelIndex)%normal(1:2), rotate)
 
    end do
-#endif
 
    bodyInfo%boundBox(:, IAXIS) = (/minval(bodyInfo%elems(:)%center(1)), &
                                    maxval(bodyInfo%elems(:)%center(1))/)
 
    bodyInfo%boundBox(:, JAXIS) = (/minval(bodyInfo%elems(:)%center(2)), &
                                    maxval(bodyInfo%elems(:)%center(2))/)
+#endif
+
    call ib_annBuildTree(bodyInfo)
 
 end subroutine ImBound_advance
