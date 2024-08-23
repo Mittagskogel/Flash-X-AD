@@ -20,7 +20,7 @@
 #include "Multiphase.h"
 #include "Simulation.h"
 
-subroutine ImBound_velForcing(tileDesc, dt)
+subroutine ImBound_velForcing(tileDesc, bodyInfo, dt)
 
    use Timers_interface, ONLY: Timers_start, Timers_stop
    use Driver_interface, ONLY: Driver_getNStep, Driver_abort
@@ -28,11 +28,13 @@ subroutine ImBound_velForcing(tileDesc, dt)
    use ib_interface, ONLY: ib_velGfm2d, ib_velGfm3d
    use IncompNS_interface, ONLY: IncompNS_getScalarProp, IncompNS_getGridVar
    use ImBound_data, ONLY: ib_invReynolds, ib_iVelVar
+   use ImBound_type, ONLY: ImBound_type_t
 
    implicit none
    include "Flashx_mpi.h"
    real, intent(in) :: dt
    type(Grid_tile_t), intent(in) :: tileDesc
+   type(ImBound_type_t), intent(in) :: bodyInfo
 
 !------------------------------------------------------------------------------------------------
    integer, dimension(2, MDIM) :: blkLimits, blkLimitsGC
@@ -55,7 +57,7 @@ subroutine ImBound_velForcing(tileDesc, dt)
    call ib_velGfm2d(solnData(LMDA_VAR, :, :, :), &
                     facexData(ib_iVelVar, :, :, :), &
                     faceyData(ib_iVelVar, :, :, :), &
-                    (/0., 0./), 0., &
+                    bodyInfo%velc(1:2), bodyInfo%theta(3), &
                     dt, ib_invReynolds, &
                     del(DIR_X), del(DIR_Y), &
                     GRID_ILO, GRID_IHI, &
@@ -68,7 +70,7 @@ subroutine ImBound_velForcing(tileDesc, dt)
                     faceyData(ib_iVelVar, :, :, :), &
                     facezData(ib_iVelVar, :, :, :), &
                     dt, ib_invReynolds, &
-                    (/0., 0., 0./),
+                    bodyInfo%velc(1:3),
                     del(DIR_X), del(DIR_Y), del(DIR_Z), &
                     GRID_ILO, GRID_IHI, &
                     GRID_JLO, GRID_JHI, &

@@ -3,4 +3,6 @@
 
 REQUIRES physics/IncompNS/IncompNSMain/constDens
 
+PARAMETER sim_bodyRotation REAL 0.0
+
 GUARDCELLS 2

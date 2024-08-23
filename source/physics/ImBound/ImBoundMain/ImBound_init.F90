@@ -62,6 +62,10 @@ subroutine ImBound_init(restart)
    call RuntimeParameters_get("ib_bruteForceMapping", ib_bruteForceMapping)
    call RuntimeParameters_get("ib_annQueries", ib_annQueries)
 
+   if (ib_numBodies /= 1) then
+       call Driver_abort("[ImBound_init] Current implementation can only handle ib_numBodies == 1")
+   end if
+
    if (ib_withIncompNS) then
       call RuntimeParameters_get("ins_invReynolds", ib_invReynolds) 
       call IncompNS_getGridVar("FACE_VELOCITY", ib_iVelVar)

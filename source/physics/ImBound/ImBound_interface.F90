@@ -134,11 +134,13 @@ Module ImBound_interface
    end interface
    
    interface
-      subroutine ImBound_velForcing(tileDesc, dt)
+      subroutine ImBound_velForcing(tileDesc, bodyInfo, dt)
          use Grid_tile, ONLY: Grid_tile_t
+         use ImBound_type, ONLY: ImBound_type_t
          implicit none
          real, intent(in) :: dt
          type(Grid_tile_t), intent(in) :: tileDesc
+         type(ImBound_type_t), intent(in) :: bodyInfo
       end subroutine ImBound_velForcing
    end interface
 

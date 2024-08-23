@@ -36,4 +36,6 @@ module Simulation_data
 
    integer, save :: sim_meshMe
 
+   real, save :: sim_bodyRotation
+
 end module Simulation_data

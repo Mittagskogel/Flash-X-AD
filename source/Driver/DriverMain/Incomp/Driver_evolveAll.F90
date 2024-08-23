@@ -116,6 +116,10 @@ subroutine Driver_evolveAll()
    use ImBound_data, ONLY: ib_numBodies
 #endif
 
+#ifdef SOLIDMECHANICS_MAIN
+   use SolidMechanics_interface, ONLY: SolidMechanics_updateBodyForce
+#endif
+
    implicit none
 
    ! for logfile output
@@ -143,8 +147,9 @@ subroutine Driver_evolveAll()
    type(Grid_tile_t) :: tileDesc
    logical :: runUnitTest
    type(ImBound_type_t), pointer :: bodyInfo
- 
-   nullify(bodyInfo)
+   logical :: skipBox = .FALSE.
+
+   nullify (bodyInfo)
 
    ! Get grid variables for incompressible Naiver-Stokes
    call IncompNS_getGridVar("FACE_VELOCITY", iVelVar)
@@ -456,7 +461,6 @@ subroutine Driver_evolveAll()
       call Grid_fillGuardCells(CENTER_FACES, ALLDIR, &
                                maskSize=NUNK_VARS+NDIM*NFACE_VARS, mask=gcMask)
 
-
       ! Set predcorr flag to true indicating the start of predictor process
       ins_predcorrflg = .true.
 
@@ -493,7 +497,13 @@ subroutine Driver_evolveAll()
          call IncompNS_diffusion(tileDesc)
          call IncompNS_predictor(tileDesc, dr_dt)
          call Multiphase_velForcing(tileDesc, dr_dt)
-         call ImBound_velForcing(tileDesc, dr_dt)
+#ifdef IMBOUND_MAIN
+         do ibd = 1, ib_numBodies
+            call ImBound_getBodyPtr(bodyInfo, ibd)
+            call ImBound_velForcing(tileDesc, bodyInfo, dr_dt)
+            call ImBound_releaseBodyPtr(bodyInfo, ibd)
+         end do
+#endif
          !---------------------------------------------------------
          call itor%next()
       end do
@@ -653,6 +663,40 @@ subroutine Driver_evolveAll()
          call Grid_releaseTileIterator(itor)
 
       end do
+#endif
+
+#if defined(SOLIDMECHANICS_MAIN) && defined(IMBOUND_MAIN)
+      !------------------------------------------------------------
+      do ibd = 1, ib_numBodies
+         call ImBound_getBodyPtr(bodyInfo, ibd)
+
+         ! Solidmechanics advance and then update body
+         call SolidMechanics_updateBodyForce(bodyInfo, dr_simTime, dr_dt)
+         call ImBound_advance(bodyInfo, dr_simTime, dr_dt)
+
+         ! Remap immersed boundary to the cartesian grid
+         call Grid_getTileIterator(itor, nodetype=LEAF)
+         do while (itor%isValid())
+            call itor%currentTile(tileDesc)
+            call ImBound_skipBox(tileDesc, bodyInfo, skipBox)
+            if (skipBox) then
+               call itor%next()
+               cycle
+            else
+               call ImBound_mapToGrid(tileDesc, bodyInfo)
+               call itor%next()
+            end if
+         end do
+         call Grid_releaseTileIterator(itor)
+         call ImBound_releaseBodyPtr(bodyInfo, ibd)
+      end do
+      !------------------------------------------------------------
+
+      ! Fill GuardCells
+      gcMask(:) = .FALSE.
+      gcMask(LMDA_VAR) = .TRUE.
+      call Grid_fillGuardCells(CENTER, ALLDIR, &
+                               maskSize=NUNK_VARS, mask=gcMask)
 #endif
 
       !------------------------------------------------------------
