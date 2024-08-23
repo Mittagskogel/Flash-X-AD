@@ -45,30 +45,34 @@ subroutine ib_velGfm2d(lmda, velx, vely, frcx, frcy, dt, coeff, dx, dy, ix1, ix2
          vyplus = velx(i, j+1, k)
          vymins = velx(i, j-1, k)
 
-         if (lmda_vxloc*lmda_xplus .le. 0.d0) then
-            vxplus = velx(i, j, k)+(0.-velx(i, j, k))/max(tol, thxp)
-            frcx(i, j, k) = frcx(i, j, k)+coeff*(vxplus-velx(i+1, j, k))/(dx**2)
-         end if
+         !if (lmda_vxloc*lmda_xplus .le. 0.d0) then
+         !   vxplus = velx(i, j, k)+(0.-velx(i, j, k))/max(tol, thxp)
+         !   frcx(i, j, k) = frcx(i, j, k)+coeff*(vxplus-velx(i+1, j, k))/(dx**2)
+         !end if
 
-         if (lmda_vxloc*lmda_xmins .le. 0.d0) then
-            vxmins = velx(i, j, k)+(0.-velx(i, j, k))/max(tol, thxm)
-            frcx(i, j, k) = frcx(i, j, k)+coeff*(vxmins-velx(i-1, j, k))/(dx**2)
-         end if
+         !if (lmda_vxloc*lmda_xmins .le. 0.d0) then
+         !   vxmins = velx(i, j, k)+(0.-velx(i, j, k))/max(tol, thxm)
+         !   frcx(i, j, k) = frcx(i, j, k)+coeff*(vxmins-velx(i-1, j, k))/(dx**2)
+         !end if
 
-         if (lmda_vxloc*lmda_yplus .le. 0.d0) then
-            vyplus = velx(i, j, k)+(0.-velx(i, j, k))/max(tol, thyp)
-            frcx(i, j, k) = frcx(i, j, k)+coeff*(vyplus-velx(i, j+1, k))/(dy**2)
-         end if
+         !if (lmda_vxloc*lmda_yplus .le. 0.d0) then
+         !   vyplus = velx(i, j, k)+(0.-velx(i, j, k))/max(tol, thyp)
+         !   frcx(i, j, k) = frcx(i, j, k)+coeff*(vyplus-velx(i, j+1, k))/(dy**2)
+         !end if
 
-         if (lmda_vxloc*lmda_ymins .le. 0.d0) then
-            vymins = velx(i, j, k)+(0.-velx(i, j, k))/max(tol, thym)
-            frcx(i, j, k) = frcx(i, j, k)+coeff*(vymins-velx(i, j-1, k))/(dy**2)
+         !if (lmda_vxloc*lmda_ymins .le. 0.d0) then
+         !   vymins = velx(i, j, k)+(0.-velx(i, j, k))/max(tol, thym)
+         !   frcx(i, j, k) = frcx(i, j, k)+coeff*(vymins-velx(i, j-1, k))/(dy**2)
+         !end if
+
+         if (lmda_vxloc .ge. 0.d0) then
+            frcx(i, j, k) = -velx(i, j, k)/dt
          end if
 
       end do
    end do
 
-   velx(ix1:ix2+1, jy1:jy2, k) = velx(ix1:ix2+1, jy1:jy2, k) + dt*frcx(ix1:ix2+1, jy1:jy2, k)
+   velx(ix1:ix2+1, jy1:jy2, k) = velx(ix1:ix2+1, jy1:jy2, k)+dt*frcx(ix1:ix2+1, jy1:jy2, k)
 
    do j = jy1, jy2+1
       do i = ix1, ix2
@@ -89,29 +93,33 @@ subroutine ib_velGfm2d(lmda, velx, vely, frcx, frcy, dt, coeff, dx, dy, ix1, ix2
          vyplus = vely(i, j+1, k)
          vymins = vely(i, j-1, k)
 
-         if (lmda_vyloc*lmda_xplus .le. 0.d0) then
-            vxplus = vely(i, j, k)+(0.-vely(i, j, k))/max(tol, thxp)
-            frcy(i, j, k) = frcy(i, j, k)+coeff*(vxplus-vely(i+1, j, k))/(dx**2)
-         end if
+         !if (lmda_vyloc*lmda_xplus .le. 0.d0) then
+         !   vxplus = vely(i, j, k)+(0.-vely(i, j, k))/max(tol, thxp)
+         !   frcy(i, j, k) = frcy(i, j, k)+coeff*(vxplus-vely(i+1, j, k))/(dx**2)
+         !end if
 
-         if (lmda_vyloc*lmda_xmins .le. 0.d0) then
-            vxmins = vely(i, j, k)+(0.-vely(i, j, k))/max(tol, thxm)
-            frcy(i, j, k) = frcy(i, j, k)+coeff*(vxmins-vely(i-1, j, k))/(dx**2)
-         end if
+         !if (lmda_vyloc*lmda_xmins .le. 0.d0) then
+         !   vxmins = vely(i, j, k)+(0.-vely(i, j, k))/max(tol, thxm)
+         !   frcy(i, j, k) = frcy(i, j, k)+coeff*(vxmins-vely(i-1, j, k))/(dx**2)
+         !end if
 
-         if (lmda_vyloc*lmda_yplus .le. 0.d0) then
-            vyplus = vely(i, j, k)+(0.-vely(i, j, k))/max(tol, thyp)
-            frcy(i, j, k) = frcy(i, j, k)+coeff*(vyplus-vely(i, j+1, k))/(dy**2)
-         end if
+         !if (lmda_vyloc*lmda_yplus .le. 0.d0) then
+         !   vyplus = vely(i, j, k)+(0.-vely(i, j, k))/max(tol, thyp)
+         !   frcy(i, j, k) = frcy(i, j, k)+coeff*(vyplus-vely(i, j+1, k))/(dy**2)
+         !end if
 
-         if (lmda_vyloc*lmda_ymins .le. 0.d0) then
-            vymins = vely(i, j, k)+(0.-vely(i, j, k))/max(tol, thym)
-            frcy(i, j, k) = frcy(i, j, k)+coeff*(vymins-vely(i, j-1, k))/(dy**2)
+         !if (lmda_vyloc*lmda_ymins .le. 0.d0) then
+         !   vymins = vely(i, j, k)+(0.-vely(i, j, k))/max(tol, thym)
+         !   frcy(i, j, k) = frcy(i, j, k)+coeff*(vymins-vely(i, j-1, k))/(dy**2)
+         !end if
+
+         if (lmda_vyloc .ge. 0.d0) then
+            frcy(i, j, k) = -vely(i, j, k)/dt
          end if
 
       end do
    end do
 
-   vely(ix1:ix2, jy1:jy2+1, k) = vely(ix1:ix2, jy1:jy2+1, k) + dt*frcy(ix1:ix2, jy1:jy2+1, k)
+   vely(ix1:ix2, jy1:jy2+1, k) = vely(ix1:ix2, jy1:jy2+1, k)+dt*frcy(ix1:ix2, jy1:jy2+1, k)
 
 end subroutine ib_velGfm2d
