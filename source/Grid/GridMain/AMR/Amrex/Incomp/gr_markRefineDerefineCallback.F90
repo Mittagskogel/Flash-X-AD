@@ -244,8 +244,10 @@ subroutine gr_markRefineDerefineCallback(lev, tags, time, tagval, clearval) bind
 
             error = 0.0
 
+            if (.FALSE.) then
+
 #ifdef DFUN_VAR
-            if (iref == DFUN_VAR) then
+            else if (iref == DFUN_VAR) then
                solnData => unk(lev)%dataPtr(mfi)
 #if NDIM == 2
                dfunTol = sqrt(del(IAXIS)**2+del(JAXIS)**2)
@@ -269,11 +271,10 @@ subroutine gr_markRefineDerefineCallback(lev, tags, time, tagval, clearval) bind
                   tagData(i, j, k, 1) = tagval
                end if
                nullify (solnData)
-            else
 #endif
 
 #ifdef LMDA_VAR
-            if (iref == LMDA_VAR) then
+            else if (iref == LMDA_VAR) then
                solnData => unk(lev)%dataPtr(mfi)
 #if NDIM == 2
                lmdaTol = sqrt(del(IAXIS)**2+del(JAXIS)**2)
@@ -297,8 +298,15 @@ subroutine gr_markRefineDerefineCallback(lev, tags, time, tagval, clearval) bind
                   tagData(i, j, k, 1) = tagval
                end if
                nullify (solnData)
-            else
 #endif
+
+#ifdef OMGM_VAR
+            !else if (iref == OMGM_VAR) then
+            !   call gr_markVarBoundsForCallback(OMGM_VAR,  0.1,  1.0, lev, tags, tagval)
+            !   call gr_markVarBoundsForCallback(OMGM_VAR, -1.0, -0.1, lev, tags, tagval)
+#endif
+
+            else
 
                refineFilter = gr_refine_filter(l)
                call gr_estimateBlkError(error, tileDesc, iref, refineFilter)
@@ -340,9 +348,7 @@ subroutine gr_markRefineDerefineCallback(lev, tags, time, tagval, clearval) bind
 #endif
                   EXIT rloop
                end if
-#if defined(DFUN_VAR) || defined(LMDA_VAR)
             end if
-#endif
          end do rloop
 
       end associate

@@ -132,12 +132,12 @@ Module ins_interface
    end interface
 
    interface
-      subroutine ins_indicators(u, v, w, pres, divv, ix1, ix2, jy1, jy2, kz1, kz2, vecminaux, vecmaxaux)
+      subroutine ins_indicators(u, v, w, pres, divv, omgm, ix1, ix2, jy1, jy2, kz1, kz2, vecminaux, vecmaxaux)
          implicit none
          real, dimension(:, :, :), intent(in) :: u, v, w
-         real, dimension(:, :, :), intent(in) :: pres, divv
+         real, dimension(:, :, :), intent(in) :: pres, divv, omgm
          integer, intent(in) :: ix1, ix2, jy1, jy2, kz1, kz2
-         real, dimension(5), intent(inout) :: vecminaux, vecmaxaux
+         real, dimension(6), intent(inout) :: vecminaux, vecmaxaux
       end subroutine ins_indicators
    end interface
 
