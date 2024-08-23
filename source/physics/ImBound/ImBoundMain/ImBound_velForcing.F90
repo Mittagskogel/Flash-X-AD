@@ -69,8 +69,8 @@ subroutine ImBound_velForcing(tileDesc, bodyInfo, dt)
                     facexData(ib_iVelVar, :, :, :), &
                     faceyData(ib_iVelVar, :, :, :), &
                     facezData(ib_iVelVar, :, :, :), &
+                    bodyInfo%velc(1:3), &
                     dt, ib_invReynolds, &
-                    bodyInfo%velc(1:3),
                     del(DIR_X), del(DIR_Y), del(DIR_Z), &
                     GRID_ILO, GRID_IHI, &
                     GRID_JLO, GRID_JHI, &

@@ -25,6 +25,13 @@ module ib_interface
    end interface
 
    interface
+      subroutine ib_annDestroyTree(body)
+         use ImBound_type, ONLY: ImBound_type_t
+         type(ImBound_type_t), intent(INOUT)  :: body
+      end subroutine ib_annDestroyTree
+   end interface
+
+   interface
       subroutine ib_annSearchTree(body, queryPt, annElems, annIdx)
          use ImBound_type, ONLY: ImBound_type_t
          type(ImBound_type_t), intent(IN)  :: body
