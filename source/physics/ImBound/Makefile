@@ -11,5 +11,6 @@ ImBound += ImBound_init.o \
            ImBound_reInitGridVars.o \
            ImBound_advance.o \
            ImBound_skipBox.o \
+           ImBound_initBlk.o \
            ImBound_velForcing.o \
            ImBound_interface.o

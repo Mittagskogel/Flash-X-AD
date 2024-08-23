@@ -142,4 +142,12 @@ Module ImBound_interface
       end subroutine ImBound_velForcing
    end interface
 
+   interface
+      subroutine ImBound_initBlk(tileDesc)
+         use Grid_tile, ONLY: Grid_tile_t
+         implicit none
+         type(Grid_tile_t), intent(in) :: tileDesc
+      end subroutine ImBound_initBlk
+   end interface
+
 end Module ImBound_interface

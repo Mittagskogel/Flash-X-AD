@@ -107,15 +107,14 @@ subroutine Driver_evolveAll()
 
    use RuntimeParameters_interface, ONLY: RuntimeParameters_get
 
-#ifdef IMBOUND_MAIN
    use ImBound_interface, ONLY: ImBound_mapToGrid, ImBound_velForcing, &
                                 ImBound_getBodyPtr, ImBound_releaseBodyPtr
 
-   use ImBound_data, ONLY: ib_numBodies
-#endif
-
    use ImBound_type, ONLY: ImBound_type_t
 
+#ifdef IMBOUND_MAIN
+   use ImBound_data, ONLY: ib_numBodies
+#endif
 
    implicit none
 
@@ -208,25 +207,6 @@ subroutine Driver_evolveAll()
                          dr_simTime, dr_dtOld, dr_dtNew)
    ! store new
    dr_dt = dr_dtNew
-
-#ifdef IMBOUND_MAIN
-   do ibd = 1, ib_numBodies
-      !------------------------------------------------------------
-      call ImBound_getBodyPtr(bodyInfo, ibd)
-      call Grid_getTileIterator(itor, nodetype=LEAF)
-      !------------------------------------------------------------
-      do while (itor%isValid())
-         call itor%currentTile(tileDesc)
-         !---------------------------------------------------------
-         call ImBound_mapToGrid(tileDesc, bodyInfo)
-         call itor%next()
-      end do
-      !------------------------------------------------------------
-      call Grid_releaseTileIterator(itor)
-      call ImBound_releaseBodyPtr(bodyInfo, ibd)
-      !------------------------------------------------------------
-   end do
-#endif
 
    ! TODO find an elegant way to do this
    ! Update grid and notify changes to other units
@@ -513,9 +493,7 @@ subroutine Driver_evolveAll()
          call IncompNS_diffusion(tileDesc)
          call IncompNS_predictor(tileDesc, dr_dt)
          call Multiphase_velForcing(tileDesc, dr_dt)
-#if defined(IMBOUND_MAIN) && defined(INCOMPNS_CONSTDENS)
          call ImBound_velForcing(tileDesc, dr_dt)
-#endif
          !---------------------------------------------------------
          call itor%next()
       end do
