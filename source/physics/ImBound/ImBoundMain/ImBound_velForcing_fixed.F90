@@ -20,21 +20,17 @@
 #include "Multiphase.h"
 #include "Simulation.h"
 
-subroutine ImBound_velForcing(tileDesc, bodyInfo, dt)
+subroutine ImBound_velForcing_fixed(tileDesc, dt)
 
    use Timers_interface, ONLY: Timers_start, Timers_stop
-   use Driver_interface, ONLY: Driver_getNStep, Driver_abort
    use Grid_tile, ONLY: Grid_tile_t
-   use ib_interface, ONLY: ib_velGfm2d, ib_velGfm3d
-   use IncompNS_interface, ONLY: IncompNS_getScalarProp, IncompNS_getGridVar
+   use ib_interface, ONLY: ib_velGfm2d_fixed, ib_velGfm3d_fixed
    use ImBound_data, ONLY: ib_invReynolds, ib_iVelVar
-   use ImBound_type, ONLY: ImBound_type_t
 
    implicit none
    include "Flashx_mpi.h"
    real, intent(in) :: dt
    type(Grid_tile_t), intent(in) :: tileDesc
-   type(ImBound_type_t), intent(in) :: bodyInfo
 
 !------------------------------------------------------------------------------------------------
    integer, dimension(2, MDIM) :: blkLimits, blkLimitsGC
@@ -54,27 +50,25 @@ subroutine ImBound_velForcing(tileDesc, bodyInfo, dt)
    call tileDesc%deltas(del)
 
 #if NDIM < MDIM
-   call ib_velGfm2d(solnData(LMDA_VAR, :, :, :), &
-                    facexData(ib_iVelVar, :, :, :), &
-                    faceyData(ib_iVelVar, :, :, :), &
-                    bodyInfo%velc(1:2), bodyInfo%theta(3), &
-                    dt, ib_invReynolds, &
-                    del(DIR_X), del(DIR_Y), &
-                    GRID_ILO, GRID_IHI, &
-                    GRID_JLO, GRID_JHI)
+   call ib_velGfm2d_fixed(solnData(LMDA_VAR, :, :, :), &
+                          facexData(ib_iVelVar, :, :, :), &
+                          faceyData(ib_iVelVar, :, :, :), &
+                          dt, ib_invReynolds, &
+                          del(DIR_X), del(DIR_Y), &
+                          GRID_ILO, GRID_IHI, &
+                          GRID_JLO, GRID_JHI)
 #else
    call tileDesc%getDataPtr(facezData, FACEZ)
 
-   call ib_velGfm3d(solnData(LMDA_VAR, :, :, :), &
-                    facexData(ib_iVelVar, :, :, :), &
-                    faceyData(ib_iVelVar, :, :, :), &
-                    facezData(ib_iVelVar, :, :, :), &
-                    bodyInfo%velc(1:3), &
-                    dt, ib_invReynolds, &
-                    del(DIR_X), del(DIR_Y), del(DIR_Z), &
-                    GRID_ILO, GRID_IHI, &
-                    GRID_JLO, GRID_JHI, &
-                    GRID_KLO, GRID_KHI)
+   call ib_velGfm3d_fixed(solnData(LMDA_VAR, :, :, :), &
+                          facexData(ib_iVelVar, :, :, :), &
+                          faceyData(ib_iVelVar, :, :, :), &
+                          facezData(ib_iVelVar, :, :, :), &
+                          dt, ib_invReynolds, &
+                          del(DIR_X), del(DIR_Y), del(DIR_Z), &
+                          GRID_ILO, GRID_IHI, &
+                          GRID_JLO, GRID_JHI, &
+                          GRID_KLO, GRID_KHI)
 
    call tileDesc%releaseDataPtr(facezData, FACEZ)
 #endif
@@ -84,4 +78,4 @@ subroutine ImBound_velForcing(tileDesc, bodyInfo, dt)
    call tileDesc%releaseDataPtr(facexData, FACEX)
    call tileDesc%releaseDataPtr(faceyData, FACEY)
 
-end subroutine ImBound_velForcing
+end subroutine ImBound_velForcing_fixed

@@ -1,3 +1,4 @@
+!!***if* source/physics/ImBound/ImBound_velForcing_fixed
 !! NOTICE
 !!  Copyright 2024 UChicago Argonne, LLC and contributors
 !!
@@ -9,11 +10,13 @@
 !!  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 !!  See the License for the specific language governing permissions and
 !!  limitations under the License.
-subroutine ib_velGfm2d(lmda, velx, vely, linear, angular, dt, coeff, dx, dy, ix1, ix2, jy1, jy2)
+!!
+!!
+!!
+!!***
+subroutine ImBound_velForcing_fixed(tileDesc, dt)
+   use Grid_tile, ONLY: Grid_tile_t
    implicit none
-   real, dimension(:, :, :), intent(inout) :: velx, vely
-   real, dimension(:, :, :), intent(in) :: lmda
-   real, intent(in) :: linear(2), angular
-   real, intent(in) :: dt, dx, dy, coeff
-   integer, intent(in) :: ix1, ix2, jy1, jy2
-end subroutine ib_velGfm2d
+   real, intent(in) :: dt
+   type(Grid_tile_t), intent(in) :: tileDesc
+end subroutine ImBound_velForcing_fixed

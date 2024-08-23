@@ -1,6 +1,6 @@
-!!****if* source/physics/ImBound/ImBoundMain/ImBound_advance
+!!****if* source/Simulation/SimulationMain/unitTest/ImBound/ImBound_advance
 !! NOTICE
-!!  Copyright 2022 UChicago Argonne, LLC and contributors
+!!  Copyright 2024 UChicago Argonne, LLC and contributors
 !!
 !!  Licensed under the Apache License, Version 2.0 (the "License");
 !!  you may not use this file except in compliance with the License.
@@ -49,11 +49,7 @@ subroutine ImBound_advance(bodyInfo, time, dt)
    real, dimension(2) :: vector
    integer :: panelIndex
 
-#if NDIM==MDIM
-
-   call Driver_abort("[ImBound_advance] Not implemented for NDIM == MDIM")
-
-#else
+#if NDIM == 2
    rotate(:, 1) = (/cos(dt*bodyInfo%theta(3)), -sin(dt*bodyInfo%theta(3))/)
    rotate(:, 2) = (/sin(dt*bodyInfo%theta(3)), cos(dt*bodyInfo%theta(3))/)
 
@@ -80,8 +76,8 @@ subroutine ImBound_advance(bodyInfo, time, dt)
 
    bodyInfo%boundBox(:, JAXIS) = (/minval(bodyInfo%elems(:)%center(2)), &
                                    maxval(bodyInfo%elems(:)%center(2))/)
-#endif
 
    call ib_annBuildTree(bodyInfo)
+#endif
 
 end subroutine ImBound_advance

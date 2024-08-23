@@ -133,16 +133,23 @@ Module ImBound_interface
       end subroutine ImBound_skipBox
    end interface
    
-   interface
-      subroutine ImBound_velForcing(tileDesc, bodyInfo, dt)
+   interface ImBound_velForcing
+      subroutine ImBound_velForcing_fixed(tileDesc, dt)
+         use Grid_tile, ONLY: Grid_tile_t
+         implicit none
+         real, intent(in) :: dt
+         type(Grid_tile_t), intent(in) :: tileDesc
+      end subroutine ImBound_velForcing_fixed
+
+      subroutine ImBound_velForcing_moving(tileDesc, bodyInfo, dt)
          use Grid_tile, ONLY: Grid_tile_t
          use ImBound_type, ONLY: ImBound_type_t
          implicit none
          real, intent(in) :: dt
          type(Grid_tile_t), intent(in) :: tileDesc
          type(ImBound_type_t), intent(in) :: bodyInfo
-      end subroutine ImBound_velForcing
-   end interface
+      end subroutine ImBound_velForcing_moving
+   end interface ImBound_velForcing
 
    interface
       subroutine ImBound_initBlk(tileDesc)

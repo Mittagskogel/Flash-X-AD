@@ -233,14 +233,12 @@ subroutine Driver_evolveAll()
                                   maskSize=NUNK_VARS, mask=gcMask)
       end do
 
-#if NDIM < MDIM
       do ibd = 1, ib_numBodies
          call ImBound_getBodyPtr(bodyInfo, ibd)
          call SolidMechanics_updateBodyForce(bodyInfo, dr_simTime, dr_dt)
          call ImBound_advance(bodyInfo, dr_simTime, dr_dt)
          call ImBound_releaseBodyPtr(bodyInfo, ibd)
       end do
-#endif
 
       !output a plotfile before the grid changes
       call Timers_start("IO_output")
