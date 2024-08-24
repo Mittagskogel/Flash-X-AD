@@ -80,11 +80,10 @@ subroutine IncompNS_init(restart)
 #endif
 
    call RuntimeParameters_get("ins_pressureCorrect", ins_prescorr)
-   call RuntimeParameters_get("useImBound", useImBound)
    ins_prescoeff = 0.
-
    if (ins_prescorr) ins_prescoeff = 1.
-   if (useImBound .or. useMultiphase) ins_prescoeff = 0.
+
+   call RuntimeParameters_get("useImBound", useImBound)
 
    ! Read gravity acceleration components:
    call RuntimeParameters_get("ins_gravX", ins_gravX)

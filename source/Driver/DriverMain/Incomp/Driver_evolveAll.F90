@@ -468,6 +468,7 @@ subroutine Driver_evolveAll()
       ! Set predcorr flag to true indicating the start of predictor process
       ins_predcorrflg = .true.
 
+#ifdef MULTIPHASE_MAIN
       ! Flux correction for momentum
       !------------------------------------------------------------
       call Grid_getTileIterator(itor, nodetype=LEAF)
@@ -486,6 +487,7 @@ subroutine Driver_evolveAll()
       end do
       call Grid_releaseTileIterator(itor)
       !------------------------------------------------------------
+#endif
 
       ! Fill GuardCells for velocity
       gcMask(:) = .FALSE.

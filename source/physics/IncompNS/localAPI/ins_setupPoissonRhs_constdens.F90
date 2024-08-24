@@ -13,11 +13,9 @@
 !!
 !!**
 subroutine ins_setupPoissonRhs_constdens(divu, &
-                                         sigx, sigy, sigz, &
                                          dt, dx, dy, dz, ix1, ix2, jy1, jy2, kz1, kz2)
    implicit none
    real, dimension(:, :, :), intent(inout) :: divu
-   real, dimension(:, :, :), intent(in) :: sigx, sigy, sigz
    integer, intent(in) :: ix1, ix2, jy1, jy2, kz1, kz2
    real, intent(in) :: dt, dx, dy, dz
 end subroutine ins_setupPoissonRhs_constdens

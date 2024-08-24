@@ -70,9 +70,6 @@ subroutine IncompNS_setupPoisson(tileDesc, dt)
 #endif
 
    call ins_setupPoissonRhs_constdens(solnData(DUST_VAR, :, :, :), &
-                                    facexData(SIGM_FACE_VAR, :, :, :), &
-                                    faceyData(SIGM_FACE_VAR, :, :, :), &
-                                    facezData(SIGM_FACE_VAR, :, :, :), &
                                     dt, &
                                     del(DIR_X), del(DIR_Y), del(DIR_Z), &
                                     GRID_ILO, GRID_IHI, &

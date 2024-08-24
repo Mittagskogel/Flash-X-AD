@@ -32,9 +32,9 @@ subroutine IncompNS_getGridVar(name, value)
       value = PGN0_FACE_VAR
    case ("Face_Vel_Forcing", "face_vel_forcing", "FACE_VEL_FORCING")
       value = VFRC_FACE_VAR
+#ifdef INCOMPNS_VARDENS
    case ("Face_Pressure_Jump", "face_pressure_jump", "FACE_PRESSURE_JUMP")
       value = SIGM_FACE_VAR
-#ifdef INCOMPNS_VARDENS
    case ("Face_Density", "face_density", "FACE_DENSITY")
       value = RHOF_FACE_VAR
    case ("Center_Density", "center_density", "CENTER_DENSITY")

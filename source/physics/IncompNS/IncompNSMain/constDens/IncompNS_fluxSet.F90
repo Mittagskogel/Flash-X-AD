@@ -65,27 +65,14 @@ subroutine IncompNS_fluxSet(tileDesc)
    lo(1:MDIM) = tileDesc%limits(LOW, 1:MDIM)
    hi(1:MDIM) = tileDesc%limits(HIGH, 1:MDIM)
 
-   if (ins_predcorrflg) then
-      fluxxData(MOMT_FLUX, :, :, :) = facexData(SIGM_FACE_VAR, lo(1):hi(1)+1, lo(2):hi(2), lo(3):hi(3))
-      fluxyData(MOMT_FLUX, :, :, :) = faceyData(SIGM_FACE_VAR, lo(1):hi(1), lo(2):hi(2)+1, lo(3):hi(3))
+   fluxxData(MOMT_FLUX, :, :, :) = facexData(PGN0_FACE_VAR, lo(1):hi(1)+1, lo(2):hi(2), lo(3):hi(3))
+   fluxyData(MOMT_FLUX, :, :, :) = faceyData(PGN0_FACE_VAR, lo(1):hi(1), lo(2):hi(2)+1, lo(3):hi(3))
 
 #if NDIM==3
-      fluxzData(MOMT_FLUX, :, :, :) = facezData(SIGM_FACE_VAR, lo(1):hi(1), lo(2):hi(2), lo(3):hi(3)+1)
+   fluxzData(MOMT_FLUX, :, :, :) = facezData(PGN0_FACE_VAR, lo(1):hi(1), lo(2):hi(2), lo(3):hi(3)+1)
 #endif
 
-      call Grid_putFluxData(tileDesc, fluxxData, fluxyData, fluxzData, lo)
-
-   else
-      fluxxData(MOMT_FLUX, :, :, :) = facexData(PGN0_FACE_VAR, lo(1):hi(1)+1, lo(2):hi(2), lo(3):hi(3))
-      fluxyData(MOMT_FLUX, :, :, :) = faceyData(PGN0_FACE_VAR, lo(1):hi(1), lo(2):hi(2)+1, lo(3):hi(3))
-
-#if NDIM==3
-      fluxzData(MOMT_FLUX, :, :, :) = facezData(PGN0_FACE_VAR, lo(1):hi(1), lo(2):hi(2), lo(3):hi(3)+1)
-#endif
-
-      call Grid_putFluxData(tileDesc, fluxxData, fluxyData, fluxzData, lo)
-
-   end if
+   call Grid_putFluxData(tileDesc, fluxxData, fluxyData, fluxzData, lo)
 
    ! Release pointers:
    call tileDesc%releaseDataPtr(facexData, FACEX)

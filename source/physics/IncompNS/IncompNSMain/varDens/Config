@@ -29,6 +29,9 @@ VARIABLE rhoc
 D rhof_variable Inverse density variable at face center
 FACEVAR  rhof
 
+D sigm_variable Pressure jump at face center
+FACEVAR  sigm
+
 D pgn2_facevar Variable to store pressure jump at timestep n-2
 FACEVAR  pgn2
 

@@ -16,7 +16,7 @@
 #include "constants.h"
 
 subroutine ins_corrector_constdens(uni, vni, wni, pxn1, pyn1, pzn1, pxn0, pyn0, pzn0, &
-                                   sigx, sigy, sigz, ix1, ix2, jy1, jy2, kz1, kz2, &
+                                   ix1, ix2, jy1, jy2, kz1, kz2, &
                                    dt, dx, dy, dz)
 
    ! This routine computes the corrected divergence-free velocities.
@@ -25,21 +25,21 @@ subroutine ins_corrector_constdens(uni, vni, wni, pxn1, pyn1, pzn1, pxn0, pyn0, 
 
    INTEGER, INTENT(IN) :: ix1, ix2, jy1, jy2, kz1, kz2
    REAL, INTENT(IN) :: dt, dx, dy, dz
-   REAL, DIMENSION(:, :, :), INTENT(IN) :: pxn0, pyn0, pzn0, sigx, sigy, sigz
+   REAL, DIMENSION(:, :, :), INTENT(IN) :: pxn0, pyn0, pzn0
    REAL, DIMENSION(:, :, :), INTENT(INOUT) :: uni, vni, wni, pxn1, pyn1, pzn1
 
    uni(ix1:ix2 + 1, jy1:jy2, kz1:kz2) = uni(ix1:ix2 + 1, jy1:jy2, kz1:kz2) &
-                                  - dt*pxn0(ix1:ix2 + 1, jy1:jy2, kz1:kz2) + dt*sigx(ix1:ix2 + 1, jy1:jy2, kz1:kz2)
+                                  - dt*pxn0(ix1:ix2 + 1, jy1:jy2, kz1:kz2)
 
    vni(ix1:ix2, jy1:jy2 + 1, kz1:kz2) = vni(ix1:ix2, jy1:jy2 + 1, kz1:kz2) &
-                                  - dt*pyn0(ix1:ix2, jy1:jy2 + 1, kz1:kz2) + dt*sigy(ix1:ix2, jy1:jy2 + 1, kz1:kz2)
+                                  - dt*pyn0(ix1:ix2, jy1:jy2 + 1, kz1:kz2)
 
    pxn1(ix1:ix2 + 1, jy1:jy2, kz1:kz2) = pxn1(ix1:ix2 + 1, jy1:jy2, kz1:kz2) - pxn0(ix1:ix2 + 1, jy1:jy2, kz1:kz2)
    pyn1(ix1:ix2, jy1:jy2 + 1, kz1:kz2) = pyn1(ix1:ix2, jy1:jy2 + 1, kz1:kz2) - pyn0(ix1:ix2, jy1:jy2 + 1, kz1:kz2) 
 
 #if NDIM == MDIM
    wni(ix1:ix2, jy1:jy2, kz1:kz2 + 1) = wni(ix1:ix2, jy1:jy2, kz1:kz2 + 1) &
-                                  - dt*pzn0(ix1:ix2, jy1:jy2, kz1:kz2 + 1) + dt*sigz(ix1:ix2, jy1:jy2, kz1:kz2 + 1)
+                                  - dt*pzn0(ix1:ix2, jy1:jy2, kz1:kz2 + 1)
 
    pzn1(ix1:ix2, jy1:jy2, kz1:kz2 + 1) = pzn1(ix1:ix2, jy1:jy2, kz1:kz2 + 1) - pzn0(ix1:ix2, jy1:jy2, kz1:kz2 + 1)
 #endif
