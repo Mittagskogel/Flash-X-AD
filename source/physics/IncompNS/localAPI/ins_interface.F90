@@ -59,10 +59,14 @@ Module ins_interface
    end interface
 
    interface ins_setupPoissonRhs
-      subroutine ins_setupPoissonRhs_constdens(divu, dt)
+      subroutine ins_setupPoissonRhs_constdens(divu, &
+                                         sigx, sigy, sigz, &
+                                         dt, dx, dy, dz, ix1, ix2, jy1, jy2, kz1, kz2)
          implicit none
          real, dimension(:, :, :), intent(inout) :: divu
-         real, intent(in) :: dt
+         real, dimension(:, :, :), intent(in) :: sigx, sigy, sigz
+         integer, intent(in) :: ix1, ix2, jy1, jy2, kz1, kz2
+         real, intent(in) :: dt, dx, dy, dz
       end subroutine ins_setupPoissonRhs_constdens
 
       subroutine ins_setupPoissonRhs_vardens(divu, &
@@ -83,12 +87,13 @@ Module ins_interface
    end interface
 
    interface ins_corrector
-      subroutine ins_corrector_constdens(uni, vni, wni, pxn1, pyn1, pzn1, pxn0, pyn0, pzn0, ix1, ix2, jy1, jy2, kz1, kz2, &
+      subroutine ins_corrector_constdens(uni, vni, wni, pxn1, pyn1, pzn1, pxn0, pyn0, pzn0, &
+                                         sigx, sigy, sigz, ix1, ix2, jy1, jy2, kz1, kz2, &
                                          dt, dx, dy, dz)
          implicit none
          INTEGER, INTENT(IN) :: ix1, ix2, jy1, jy2, kz1, kz2
          REAL, INTENT(IN) :: dt, dx, dy, dz
-         REAL, DIMENSION(:, :, :), INTENT(IN) :: pxn0, pyn0, pzn0
+         REAL, DIMENSION(:, :, :), INTENT(IN) :: pxn0, pyn0, pzn0, sigx, sigy, sigz
          REAL, DIMENSION(:, :, :), INTENT(INOUT) :: uni, vni, wni, pxn1, pyn1, pzn1
       end subroutine ins_corrector_constdens
 

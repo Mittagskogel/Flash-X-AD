@@ -25,7 +25,7 @@ subroutine ImBound_velForcing_fixed(tileDesc, dt)
    use Timers_interface, ONLY: Timers_start, Timers_stop
    use Grid_tile, ONLY: Grid_tile_t
    use ib_interface, ONLY: ib_velGfm2d_fixed, ib_velGfm3d_fixed
-   use ImBound_data, ONLY: ib_invReynolds, ib_iVelVar
+   use ImBound_data, ONLY: ib_invReynolds, ib_iVelVar, ib_iPJumpVar, ib_iPGradVar
 
    implicit none
    include "Flashx_mpi.h"
@@ -53,6 +53,12 @@ subroutine ImBound_velForcing_fixed(tileDesc, dt)
    call ib_velGfm2d_fixed(solnData(LMDA_VAR, :, :, :), &
                           facexData(ib_iVelVar, :, :, :), &
                           faceyData(ib_iVelVar, :, :, :), &
+                          !----------------------------------
+                          facexData(ib_iPJumpVar, :, :, :), &
+                          faceyData(ib_iPJumpVar, :, :, :), &
+                          !----------------------------------
+                          facexData(ib_iPGradVar, :, :, :), &
+                          faceyData(ib_iPGradVar, :, :, :), &
                           dt, ib_invReynolds, &
                           del(DIR_X), del(DIR_Y), &
                           GRID_ILO, GRID_IHI, &
@@ -64,6 +70,14 @@ subroutine ImBound_velForcing_fixed(tileDesc, dt)
                           facexData(ib_iVelVar, :, :, :), &
                           faceyData(ib_iVelVar, :, :, :), &
                           facezData(ib_iVelVar, :, :, :), &
+                          !----------------------------------
+                          facexData(ib_iPJumpVar, :, :, :), &
+                          faceyData(ib_iPJumpVar, :, :, :), &
+                          facezData(ib_iPJumpVar, :, :, :), &
+                          !----------------------------------
+                          facexData(ib_iPGradVar, :, :, :), &
+                          faceyData(ib_iPGradVar, :, :, :), &
+                          facezData(ib_iPGradVar, :, :, :), &
                           dt, ib_invReynolds, &
                           del(DIR_X), del(DIR_Y), del(DIR_Z), &
                           GRID_ILO, GRID_IHI, &

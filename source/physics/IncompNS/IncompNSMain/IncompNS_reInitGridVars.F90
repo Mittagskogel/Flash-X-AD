@@ -87,8 +87,8 @@ subroutine IncompNS_reInitGridVars(tileDesc)
             facexData(HVN0_FACE_VAR, i, j, k) = 0.
 #ifdef INCOMPNS_VARDENS
             facexData(RHOF_FACE_VAR, i, j, k) = 1.
-            facexData(SIGM_FACE_VAR, i, j, k) = 0.
 #endif
+            facexData(SIGM_FACE_VAR, i, j, k) = 0.
             facexData(VFRC_FACE_VAR, i, j, k) = 0.
          end do
       end do
@@ -103,8 +103,8 @@ subroutine IncompNS_reInitGridVars(tileDesc)
             faceyData(HVN0_FACE_VAR, i, j, k) = 0.
 #ifdef INCOMPNS_VARDENS
             faceyData(RHOF_FACE_VAR, i, j, k) = 1.
-            faceyData(SIGM_FACE_VAR, i, j, k) = 0.
 #endif
+            faceyData(SIGM_FACE_VAR, i, j, k) = 0.
             faceyData(VFRC_FACE_VAR, i, j, k) = 0.
          end do
       end do
@@ -121,8 +121,8 @@ subroutine IncompNS_reInitGridVars(tileDesc)
             facezData(HVN0_FACE_VAR, i, j, k) = 0.
 #ifdef INCOMPNS_VARDENS
             facezData(RHOF_FACE_VAR, i, j, k) = 1.
-            facezData(SIGM_FACE_VAR, i, j, k) = 0.
 #endif
+            facezData(SIGM_FACE_VAR, i, j, k) = 0.
             facezData(VFRC_FACE_VAR, i, j, k) = 0.
          end do
       end do

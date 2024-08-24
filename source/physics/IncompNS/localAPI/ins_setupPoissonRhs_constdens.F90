@@ -1,5 +1,6 @@
+!!
 !! NOTICE
-!!  Copyright 2024 UChicago Argonne, LLC and contributors
+!!  Copyright 2022 UChicago Argonne, LLC and contributors
 !!
 !!  Licensed under the Apache License, Version 2.0 (the "License");
 !!  you may not use this file except in compliance with the License.
@@ -9,12 +10,14 @@
 !!  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 !!  See the License for the specific language governing permissions and
 !!  limitations under the License.
-subroutine ib_velGfm3d_fixed(lmda, velx, vely, velz, sigx, sigy, sigz, px, py, pz, &
-                             dt, coeff, dx, dy, dz, ix1, ix2, jy1, jy2, kz1, kz2)
+!!
+!!**
+subroutine ins_setupPoissonRhs_constdens(divu, &
+                                         sigx, sigy, sigz, &
+                                         dt, dx, dy, dz, ix1, ix2, jy1, jy2, kz1, kz2)
    implicit none
-   real, dimension(:, :, :), intent(inout) :: velx, vely, velz, sigx, sigy, sigz
-   real, dimension(:, :, :), intent(in) :: lmda
-   real, dimension(:, :, :), intent(in) :: px, py, pz
-   real, intent(in) :: dt, dx, dy, dz, coeff
+   real, dimension(:, :, :), intent(inout) :: divu
+   real, dimension(:, :, :), intent(in) :: sigx, sigy, sigz
    integer, intent(in) :: ix1, ix2, jy1, jy2, kz1, kz2
-end subroutine ib_velGfm3d_fixed
+   real, intent(in) :: dt, dx, dy, dz
+end subroutine ins_setupPoissonRhs_constdens

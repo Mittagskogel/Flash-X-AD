@@ -1,4 +1,4 @@
-!!****if* source/physics/IncompNS/IncompNSMain/constdens/IncompNS_setupPoisson
+!!****if* source/physics/IncompNS/IncompNSMain/constDens/IncompNS_setupPoisson
 !! NOTICE
 !!  Copyright 2022 UChicago Argonne, LLC and contributors
 !!
@@ -14,6 +14,7 @@
 !!
 !!
 !!***
+!!REORDER(4): face[xyz]Data
 !!REORDER(4): solnData
 
 #include "Simulation.h"
@@ -36,11 +37,21 @@ subroutine IncompNS_setupPoisson(tileDesc, dt)
 
 !------------------------------------------------------------------------------------------
    integer, dimension(2, MDIM) :: blkLimits, blkLimitsGC
-   real, pointer, dimension(:, :, :, :) :: solnData
+#if NDIM < MDIM
+   real, pointer, dimension(:, :, :, :) :: solnData, facexData, faceyData
+   real, dimension(NFACE_VARS, 1, 1, 1) :: facezData
+#else
+   real, pointer, dimension(:, :, :, :) :: solnData, facexData, faceyData, facezData
+#endif
    real del(MDIM)
    integer :: NStep
+
 !------------------------------------------------------------------------------------------
-   nullify (solnData)
+#if NDIM < MDIM
+   nullify (solnData, facexData, faceyData)
+#else
+   nullify (solnData, facexData, faceyData, facezData)
+#endif
 
    call Timers_start("IncompNS_setupPoisson")
 
@@ -49,13 +60,32 @@ subroutine IncompNS_setupPoisson(tileDesc, dt)
    blkLimitsGC = tileDesc%blkLimitsGC
 
    call tileDesc%deltas(del)
-   call tileDesc%getDataPtr(solnData, CENTER)
 
-   ! Poisson RHS source vector
-   call ins_setupPoissonRhs_constdens(solnData(DUST_VAR, :, :, :), dt)
+   call tileDesc%getDataPtr(solnData, CENTER)
+   call tileDesc%getDataPtr(facexData, FACEX)
+   call tileDesc%getDataPtr(faceyData, FACEY)
+
+#if NDIM == 3
+   call tileDesc%getDataPtr(facezData, FACEZ)
+#endif
+
+   call ins_setupPoissonRhs_constdens(solnData(DUST_VAR, :, :, :), &
+                                    facexData(SIGM_FACE_VAR, :, :, :), &
+                                    faceyData(SIGM_FACE_VAR, :, :, :), &
+                                    facezData(SIGM_FACE_VAR, :, :, :), &
+                                    dt, &
+                                    del(DIR_X), del(DIR_Y), del(DIR_Z), &
+                                    GRID_ILO, GRID_IHI, &
+                                    GRID_JLO, GRID_JHI, &
+                                    GRID_KLO, GRID_KHI)
 
    ! Release pointers:
    call tileDesc%releaseDataPtr(solnData, CENTER)
+   call tileDesc%releaseDataPtr(facexData, FACEX)
+   call tileDesc%releaseDataPtr(faceyData, FACEY)
+#if NDIM ==3
+   call tileDesc%releaseDataPtr(facezData, FACEZ)
+#endif
 
    call Timers_stop("IncompNS_setupPoisson")
 

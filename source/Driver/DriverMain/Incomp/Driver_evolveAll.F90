@@ -446,30 +446,6 @@ subroutine Driver_evolveAll()
       call Grid_fillGuardCells(CENTER_FACES, ALLDIR, &
                                maskSize=NUNK_VARS+NDIM*NFACE_VARS, mask=gcMask)
 
-      ! Set predcorr flag to true indicating the start of predictor process
-      ins_predcorrflg = .true.
-
-#ifdef MULTIPHASE_MAIN
-      ! Flux correction for momentum
-      !------------------------------------------------------------
-      call Grid_getTileIterator(itor, nodetype=LEAF)
-      do while (itor%isValid())
-         call itor%currentTile(tileDesc)
-         call IncompNS_fluxSet(tileDesc)
-         call itor%next()
-      end do
-      call Grid_releaseTileIterator(itor)
-      call Grid_communicateFluxes(ALLDIR, UNSPEC_LEVEL)
-      call Grid_getTileIterator(itor, nodetype=LEAF)
-      do while (itor%isValid())
-         call itor%currentTile(tileDesc)
-         call IncompNS_fluxUpdate(tileDesc)
-         call itor%next()
-      end do
-      call Grid_releaseTileIterator(itor)
-      !------------------------------------------------------------
-#endif
-
       ! Start of fractional-step velocity procedure
       ! Calculate predicted velocity and apply
       ! necessary forcing
@@ -484,6 +460,28 @@ subroutine Driver_evolveAll()
          call Multiphase_velForcing(tileDesc, dr_dt)
          call ImBound_velForcing(tileDesc, dr_dt)
          !---------------------------------------------------------
+         call itor%next()
+      end do
+      call Grid_releaseTileIterator(itor)
+      !------------------------------------------------------------
+
+      ! Set predcorr flag to true indicating the start of predictor process
+      ins_predcorrflg = .true.
+
+      ! Flux correction for momentum
+      !------------------------------------------------------------
+      call Grid_getTileIterator(itor, nodetype=LEAF)
+      do while (itor%isValid())
+         call itor%currentTile(tileDesc)
+         call IncompNS_fluxSet(tileDesc)
+         call itor%next()
+      end do
+      call Grid_releaseTileIterator(itor)
+      call Grid_communicateFluxes(ALLDIR, UNSPEC_LEVEL)
+      call Grid_getTileIterator(itor, nodetype=LEAF)
+      do while (itor%isValid())
+         call itor%currentTile(tileDesc)
+         call IncompNS_fluxUpdate(tileDesc)
          call itor%next()
       end do
       call Grid_releaseTileIterator(itor)

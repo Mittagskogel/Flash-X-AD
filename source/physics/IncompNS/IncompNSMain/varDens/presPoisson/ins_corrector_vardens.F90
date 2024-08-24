@@ -15,19 +15,6 @@
 #include "Simulation.h"
 #include "constants.h"
 
-subroutine ins_corrector_constdens(uni, vni, wni, pxn1, pyn1, pzn1, p, ix1, ix2, jy1, jy2, kz1, kz2, &
-                                   dt, dx, dy, dz)
-
-   ! This routine computes the corrected divergence-free velocities.
-
-   implicit none
-
-   INTEGER, INTENT(IN) :: ix1, ix2, jy1, jy2, kz1, kz2
-   REAL, INTENT(IN) :: dt, dx, dy, dz
-   REAL, DIMENSION(:, :, :), INTENT(IN) :: p
-   REAL, DIMENSION(:, :, :), INTENT(INOUT) :: uni, vni, wni, pxn1, pyn1, pzn1
-end subroutine ins_corrector_constdens
-
 subroutine ins_corrector_vardens(uni, vni, wni, sigx, sigy, sigz, pxn1, pyn1, pzn1, &
                                  pxn2, pyn2, pzn2, &
                                  rhox, rhoy, rhoz, pxn0, pyn0, pzn0, rhoGas, dt, dx, dy, dz, &

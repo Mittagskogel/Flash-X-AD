@@ -69,9 +69,13 @@ subroutine ImBound_init(restart)
    if (ib_withIncompNS) then
       call RuntimeParameters_get("ins_invReynolds", ib_invReynolds) 
       call IncompNS_getGridVar("FACE_VELOCITY", ib_iVelVar)
+      call IncompNS_getGridVar("FACE_PRESSURE_JUMP", ib_iPJumpVar)
+      call IncompNS_getGridVar("FACE_PRESSURE_GRAD", ib_iPGradVar)
    else
       ib_invReynolds = 1.
       ib_iVelVar = 0
+      ib_iPGradVar = 0
+      ib_iPJumpVar = 0
    end if
 
    if (ib_meshMe .eq. MASTER_PE) then

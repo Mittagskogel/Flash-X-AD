@@ -45,7 +45,7 @@ subroutine IncompNS_init(restart)
 
    logical, intent(IN) :: restart
 
-   logical :: useMultiphase
+   logical :: useMultiphase, useImBound
 
    call Driver_getMype(MESH_COMM, ins_meshMe)
    call Driver_getNumProcs(MESH_COMM, ins_meshNumProcs)
@@ -79,6 +79,23 @@ subroutine IncompNS_init(restart)
    call RuntimeParameters_get("ins_advSchm", ins_advSchm)
 #endif
 
+   call RuntimeParameters_get("ins_pressureCorrect", ins_prescorr)
+   call RuntimeParameters_get("useImBound", useImBound)
+   ins_prescoeff = 0.
+
+   if (ins_prescorr) ins_prescoeff = 1.
+   if (useImBound .or. useMultiphase) ins_prescoeff = 0.
+
+   ! Read gravity acceleration components:
+   call RuntimeParameters_get("ins_gravX", ins_gravX)
+   call RuntimeParameters_get("ins_gravY", ins_gravY)
+   call RuntimeParameters_get("ins_gravZ", ins_gravZ)
+
+   ! Read pressure gradients if necessary, constant mass simulation data:
+   call RuntimeParameters_get("ins_dpdx", ins_dpdx)
+   call RuntimeParameters_get("ins_dpdy", ins_dpdy)
+   call RuntimeParameters_get("ins_dpdz", ins_dpdz)
+
    if (ins_meshMe .eq. MASTER_PE) then
       write (*, *) 'ins_cfl   =', ins_cfl
       write (*, *) 'ins_isgs  =', ins_isgs
@@ -91,21 +108,8 @@ subroutine IncompNS_init(restart)
       write (*, *) 'ins_inflowVelScale=', ins_inflowVelScale
       write (*, *) 'ins_intSchm=', ins_intSchm
       write (*, *) 'ins_advSchm=', ins_advSchm
+      write (*, *) 'ins_prescoeff=', ins_prescoeff
    end if
-
-   call RuntimeParameters_get("ins_pressureCorrect", ins_prescorr)
-   ins_prescoeff = 0.
-   if (ins_prescorr) ins_prescoeff = 1.
-
-   ! Read gravity acceleration components:
-   call RuntimeParameters_get("ins_gravX", ins_gravX)
-   call RuntimeParameters_get("ins_gravY", ins_gravY)
-   call RuntimeParameters_get("ins_gravZ", ins_gravZ)
-
-   ! Read pressure gradients if necessary, constant mass simulation data:
-   call RuntimeParameters_get("ins_dpdx", ins_dpdx)
-   call RuntimeParameters_get("ins_dpdy", ins_dpdy)
-   call RuntimeParameters_get("ins_dpdz", ins_dpdz)
 
    call ins_init()
 

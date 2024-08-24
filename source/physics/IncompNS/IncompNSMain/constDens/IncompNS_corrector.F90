@@ -80,6 +80,9 @@ subroutine IncompNS_corrector(tileDesc, dt)
                                 facexData(PGN0_FACE_VAR, :, :, :), &
                                 faceyData(PGN0_FACE_VAR, :, :, :), &
                                 facezData(PGN0_FACE_VAR, :, :, :), &
+                                facexData(SIGM_FACE_VAR, :, :, :), &
+                                faceyData(SIGM_FACE_VAR, :, :, :), &
+                                facezData(SIGM_FACE_VAR, :, :, :), &
                                 GRID_ILO, GRID_IHI, &
                                 GRID_JLO, GRID_JHI, &
                                 GRID_KLO, GRID_KHI, &

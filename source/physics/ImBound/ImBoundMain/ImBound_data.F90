@@ -64,6 +64,6 @@ module ImBound_data
 
    real, save :: ib_invReynolds
    logical, save :: ib_withIncompNS
-   integer, save :: ib_iVelVar
+   integer, save :: ib_iVelVar, ib_iPGradVar, ib_iPJumpVar
 
 end module ImBound_data
