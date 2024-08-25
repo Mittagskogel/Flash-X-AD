@@ -14,6 +14,6 @@ subroutine ib_velGfm2d_fixed(lmda, velx, vely, px, py, dt, coeff, buffer, dx, dy
    real, dimension(:, :, :), intent(inout) :: velx, vely
    real, dimension(:, :, :), intent(in) :: lmda
    real, dimension(:, :, :), intent(in) :: px, py
-   real, intent(in) :: dt, dx, dy, coeff, buffer
+   real, intent(in) :: dt, dx, dy, coeff, buffer(3)
    integer, intent(in) :: ix1, ix2, jy1, jy2
 end subroutine ib_velGfm2d_fixed

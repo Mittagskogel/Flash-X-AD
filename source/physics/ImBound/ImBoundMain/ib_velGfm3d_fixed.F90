@@ -15,7 +15,7 @@ subroutine ib_velGfm3d_fixed(lmda, velx, vely, velz, px, py, pz, &
    real, dimension(:, :, :), intent(inout) :: velx, vely, velz
    real, dimension(:, :, :), intent(in) :: lmda
    real, dimension(:, :, :), intent(in) :: px, py, pz
-   real, intent(in) :: dt, dx, dy, dz, coeff, buffer
+   real, intent(in) :: dt, dx, dy, dz, coeff, buffer(3)
    integer, intent(in) :: ix1, ix2, jy1, jy2, kz1, kz2
 
    integer :: i, j, k
@@ -25,7 +25,7 @@ subroutine ib_velGfm3d_fixed(lmda, velx, vely, velz, px, py, pz, &
       do j = jy1, jy2
          do i = ix1, ix2+1
             lmdax = (1./2)*(lmda(i, j, k)+lmda(i-1, j, k))
-            weight = (2/(1+exp(4*lmdax/buffer)))*(2/(1+exp(-4*lmdax/buffer)))
+            weight = (2/(1+exp(4*lmdax/buffer(1))))*(2/(1+exp(-4*lmdax/buffer(1))))
             velx(i, j, k) = (1-weight)*velx(i, j, k)
          end do
       end do
@@ -35,7 +35,7 @@ subroutine ib_velGfm3d_fixed(lmda, velx, vely, velz, px, py, pz, &
       do j = jy1, jy2+1
          do i = ix1, ix2
             lmday = (1./2)*(lmda(i, j, k)+lmda(i, j-1, k))
-            weight = (2/(1+exp(4*lmday/buffer)))*(2/(1+exp(-4*lmday/buffer)))
+            weight = (2/(1+exp(4*lmday/buffer(2))))*(2/(1+exp(-4*lmday/buffer(2))))
             vely(i, j, k) = (1-weight)*vely(i, j, k)
          end do
       end do
@@ -45,7 +45,7 @@ subroutine ib_velGfm3d_fixed(lmda, velx, vely, velz, px, py, pz, &
       do j = jy1, jy2
          do i = ix1, ix2
             lmdaz = (1./2)*(lmda(i, j, k)+lmda(i, j, k-1))
-            weight = (2/(1+exp(4*lmdaz/buffer)))*(2/(1+exp(-4*lmdaz/buffer)))
+            weight = (2/(1+exp(4*lmdaz/buffer(3))))*(2/(1+exp(-4*lmdaz/buffer(3))))
             velz(i, j, k) = (1-weight)*velz(i, j, k)
          end do
       end do

@@ -45,7 +45,6 @@ subroutine ImBound_init(restart)
 
    character(len=30) :: bodyFile
    integer :: ibd, maxLev
-   real :: del(MDIM)
    logical :: useIncompNS
 
    call RuntimeParameters_get("useImBound", ib_useImBound)
@@ -89,13 +88,7 @@ subroutine ImBound_init(restart)
    end do
 
    call Grid_getMaxRefinement(maxLev)
-   call Grid_getDeltas(maxLev, del)
-
-#if NDIM < MDIM
-   ib_lmdaBuffer = 2*sqrt(del(IAXIS)**2+del(JAXIS)**2)
-#else
-   ib_lmdaBuffer = 2*sqrt(del(IAXIS)**2+del(JAXIS)**2+del(KAXIS)**2)
-#endif
+   call Grid_getDeltas(maxLev, ib_lmdaBuffer)
 
    if (ib_meshMe .eq. MASTER_PE) then
       write (*, *) 'ib_lsIt=', ib_lsIt

@@ -102,7 +102,7 @@ module ib_interface
          real, dimension(:, :, :), intent(inout) :: velx, vely
          real, dimension(:, :, :), intent(in) :: lmda
          real, dimension(:, :, :), intent(in) :: px, py
-         real, intent(in) :: dt, dx, dy, coeff, buffer
+         real, intent(in) :: dt, dx, dy, coeff, buffer(3)
          integer, intent(in) :: ix1, ix2, jy1, jy2
       end subroutine ib_velGfm2d_fixed
    end interface
@@ -114,7 +114,7 @@ module ib_interface
          real, dimension(:, :, :), intent(inout) :: velx, vely, velz
          real, dimension(:, :, :), intent(in) :: lmda
          real, dimension(:, :, :), intent(in) :: px, py, pz
-         real, intent(in) :: dt, dx, dy, dz, coeff, buffer
+         real, intent(in) :: dt, dx, dy, dz, coeff, buffer(3)
          integer, intent(in) :: ix1, ix2, jy1, jy2, kz1, kz2
       end subroutine ib_velGfm3d_fixed
    end interface
