@@ -37,13 +37,15 @@ subroutine ImBound_init(restart)
    use Driver_interface, ONLY: Driver_getMype, Driver_getNumProcs, &
                                Driver_getComm, Driver_abort
    use IncompNS_interface, ONLY: IncompNS_getGridVar
+   use Grid_interface, ONLY: Grid_getMaxRefinement, Grid_getDeltas
 
    implicit none
    include 'Flashx_mpi.h'
    logical, intent(in) :: restart
 
    character(len=30) :: bodyFile
-   integer :: ibd
+   integer :: ibd, maxLev
+   real :: del(MDIM)
    logical :: useIncompNS
 
    call RuntimeParameters_get("useImBound", ib_useImBound)
@@ -62,10 +64,6 @@ subroutine ImBound_init(restart)
    call RuntimeParameters_get("ib_bruteForceMapping", ib_bruteForceMapping)
    call RuntimeParameters_get("ib_annQueries", ib_annQueries)
 
-   if (ib_numBodies /= 1) then
-       call Driver_abort("[ImBound_init] Current implementation can only handle ib_numBodies == 1")
-   end if
-
    if (ib_withIncompNS) then
       call RuntimeParameters_get("ins_invReynolds", ib_invReynolds) 
       call IncompNS_getGridVar("FACE_VELOCITY", ib_iVelFVar)
@@ -81,16 +79,6 @@ subroutine ImBound_init(restart)
       ib_iVFrcVar = -1
    end if
 
-   if (ib_meshMe .eq. MASTER_PE) then
-      write (*, *) 'ib_lsIt=', ib_lsIt
-      write (*, *) 'ib_numBodies=', ib_numBodies
-      write (*, *) 'ib_bodyName=', ib_bodyName
-      write (*, *) 'ib_enableSelectiveMapping', ib_enableSelectiveMapping
-      write (*, *) 'ib_bruteForceMapping', ib_bruteForceMapping
-      write (*, *) 'ib_annQueries', ib_annQueries
-      write (*, *) 'ib_invReynolds', ib_invReynolds
-   end if
-
    allocate (ib_bodyInfo(ib_numBodies))
    allocate (ib_annIdx(ib_annQueries))
 
@@ -99,5 +87,25 @@ subroutine ImBound_init(restart)
       call ib_readBody(ib_bodyInfo(ibd), bodyFile)
       call ib_annBuildTree(ib_bodyInfo(ibd))
    end do
+
+   call Grid_getMaxRefinement(maxLev)
+   call Grid_getDeltas(maxLev, del)
+
+#if NDIM < MDIM
+   ib_lmdaBuffer = 2*sqrt(del(IAXIS)**2+del(JAXIS)**2)
+#else
+   ib_lmdaBuffer = 2*sqrt(del(IAXIS)**2+del(JAXIS)**2+del(KAXIS)**2)
+#endif
+
+   if (ib_meshMe .eq. MASTER_PE) then
+      write (*, *) 'ib_lsIt=', ib_lsIt
+      write (*, *) 'ib_numBodies=', ib_numBodies
+      write (*, *) 'ib_bodyName=', ib_bodyName
+      write (*, *) 'ib_enableSelectiveMapping', ib_enableSelectiveMapping
+      write (*, *) 'ib_bruteForceMapping', ib_bruteForceMapping
+      write (*, *) 'ib_annQueries', ib_annQueries
+      write (*, *) 'ib_invReynolds', ib_invReynolds
+      write (*, *) 'ib_lmdaBuffer', ib_lmdaBuffer
+   end if
 
 end subroutine ImBound_init

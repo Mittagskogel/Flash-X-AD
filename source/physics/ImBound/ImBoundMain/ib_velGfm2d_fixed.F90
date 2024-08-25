@@ -9,19 +9,17 @@
 !!  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 !!  See the License for the specific language governing permissions and
 !!  limitations under the License.
-subroutine ib_velGfm2d_fixed(lmda, velx, vely, px, py, dt, coeff, dx, dy, ix1, ix2, jy1, jy2)
+subroutine ib_velGfm2d_fixed(lmda, velx, vely, px, py, dt, coeff, buffer, dx, dy, ix1, ix2, jy1, jy2)
 
    implicit none
    real, dimension(:, :, :), intent(inout) :: velx, vely
    real, dimension(:, :, :), intent(in) :: lmda
    real, dimension(:, :, :), intent(in) :: px, py
-   real, intent(in) :: dt, dx, dy, coeff
+   real, intent(in) :: dt, dx, dy, coeff, buffer
    integer, intent(in) :: ix1, ix2, jy1, jy2
 
    integer :: i, j, k
-   real :: lmdax, lmday, buffer, weight
-
-   buffer = 2*sqrt(dx**2+dy**2)
+   real :: lmdax, lmday, weight
 
    k = 1
    do j = jy1, jy2

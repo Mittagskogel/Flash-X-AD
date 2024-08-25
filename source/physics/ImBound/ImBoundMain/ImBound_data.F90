@@ -65,4 +65,6 @@ module ImBound_data
    integer, save :: ib_iVelFVar, ib_iPGradVar, ib_iVFrcVar
    integer, save :: ib_iVelXVar, ib_iVelYVar, ib_iVelZVar
 
+   real, save :: ib_lmdaBuffer
+
 end module ImBound_data
