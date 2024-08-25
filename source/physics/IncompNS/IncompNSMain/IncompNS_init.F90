@@ -73,17 +73,18 @@ subroutine IncompNS_init(restart)
       call RuntimeParameters_get("mph_muGas", ins_muGas)
    end if
 
-#ifdef INCOMPNS_CONSTDENS
-   ins_advSchm = 2
-#else
    call RuntimeParameters_get("ins_advSchm", ins_advSchm)
-#endif
 
    call RuntimeParameters_get("ins_pressureCorrect", ins_prescorr)
    ins_prescoeff = 0.
    if (ins_prescorr) ins_prescoeff = 1.
 
    call RuntimeParameters_get("useImBound", useImBound)
+
+   if (useImBound .or. useMultiphase) then
+      ins_prescoeff = 0.
+      ins_advSchm = 105
+   end if
 
    ! Read gravity acceleration components:
    call RuntimeParameters_get("ins_gravX", ins_gravX)

@@ -97,9 +97,9 @@ module ib_interface
    end interface
 
    interface
-      subroutine ib_velGfm2d_fixed(lmda, velx, vely, sigx, sigy, px, py, dt, coeff, dx, dy, ix1, ix2, jy1, jy2)
+      subroutine ib_velGfm2d_fixed(lmda, velx, vely, px, py, dt, coeff, dx, dy, ix1, ix2, jy1, jy2)
          implicit none
-         real, dimension(:, :, :), intent(inout) :: velx, vely, sigx, sigy
+         real, dimension(:, :, :), intent(inout) :: velx, vely
          real, dimension(:, :, :), intent(in) :: lmda
          real, dimension(:, :, :), intent(in) :: px, py
          real, intent(in) :: dt, dx, dy, coeff
@@ -108,10 +108,10 @@ module ib_interface
    end interface
 
    interface
-      subroutine ib_velGfm3d_fixed(lmda, velx, vely, velz, sigx, sigy, sigz, px, py, pz, &
+      subroutine ib_velGfm3d_fixed(lmda, velx, vely, velz, px, py, pz, &
                                    dt, coeff, dx, dy, dz, ix1, ix2, jy1, jy2, kz1, kz2)
          implicit none
-         real, dimension(:, :, :), intent(inout) :: velx, vely, velz, sigx, sigy, sigz
+         real, dimension(:, :, :), intent(inout) :: velx, vely, velz
          real, dimension(:, :, :), intent(in) :: lmda
          real, dimension(:, :, :), intent(in) :: px, py, pz
          real, intent(in) :: dt, dx, dy, dz, coeff

@@ -446,6 +446,9 @@ subroutine Driver_evolveAll()
       call Grid_fillGuardCells(CENTER_FACES, ALLDIR, &
                                maskSize=NUNK_VARS+NDIM*NFACE_VARS, mask=gcMask)
 
+      ! Set predcorr flag to true indicating the start of predictor process
+      ins_predcorrflg = .true.
+
       ! Start of fractional-step velocity procedure
       ! Calculate predicted velocity and apply
       ! necessary forcing
@@ -465,8 +468,15 @@ subroutine Driver_evolveAll()
       call Grid_releaseTileIterator(itor)
       !------------------------------------------------------------
 
-      ! Set predcorr flag to true indicating the start of predictor process
-      ins_predcorrflg = .true.
+      ! Fill GuardCells for velocity
+      gcMask(:) = .FALSE.
+      gcMask(iVelVar) = .TRUE.
+      gcMask(1*NFACE_VARS+iVelVar) = .TRUE.
+#if NDIM == 3
+      gcMask(2*NFACE_VARS+iVelVar) = .TRUE.
+#endif
+      call Grid_fillGuardCells(FACES, ALLDIR, &
+                               maskSize=NDIM*NFACE_VARS, mask=gcMask)
 
 #ifdef MULTIPHASE_MAIN
       ! Flux correction for momentum
@@ -488,16 +498,6 @@ subroutine Driver_evolveAll()
       call Grid_releaseTileIterator(itor)
       !------------------------------------------------------------
 #endif
-
-      ! Fill GuardCells for velocity
-      gcMask(:) = .FALSE.
-      gcMask(iVelVar) = .TRUE.
-      gcMask(1*NFACE_VARS+iVelVar) = .TRUE.
-#if NDIM == 3
-      gcMask(2*NFACE_VARS+iVelVar) = .TRUE.
-#endif
-      call Grid_fillGuardCells(FACES, ALLDIR, &
-                               maskSize=NDIM*NFACE_VARS, mask=gcMask)
 
       ! Reset predcorr flag to false
       ins_predcorrflg = .false.

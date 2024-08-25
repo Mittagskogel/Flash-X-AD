@@ -42,6 +42,14 @@ subroutine IncompNS_getGridVar(name, value)
    case ("Center_Viscosity", "center_viscosity", "CENTER_VISCOSITY")
       value = VISC_VAR
 #endif
+#ifdef INCOMPNS_EXTRAS
+   case ("Center_Velx", "center_velx", "CENTER_VELX")
+      value = VELX_VAR
+   case ("Center_Vely", "center_vely", "CENTER_VELY")
+      value = VELY_VAR
+   case ("Center_Velz", "center_velz", "CENTER_VELZ")
+      value = VELZ_VAR
+#endif
    case default
       value = -1
       print *, "Error in setting grid var: ", name

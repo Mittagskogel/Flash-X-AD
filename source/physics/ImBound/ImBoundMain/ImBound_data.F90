@@ -55,8 +55,6 @@ module ImBound_data
    real, save :: ib_rhoa
    real, save :: ib_gama
 
-   integer, save :: ib_iVelFVar
-
    type(ImBound_type_t), save, dimension(:), allocatable, target :: ib_bodyInfo
 
    character(len=20), save :: ib_bodyName
@@ -64,6 +62,7 @@ module ImBound_data
 
    real, save :: ib_invReynolds
    logical, save :: ib_withIncompNS
-   integer, save :: ib_iVelVar, ib_iPGradVar, ib_iPJumpVar
+   integer, save :: ib_iVelFVar, ib_iPGradVar, ib_iVFrcVar
+   integer, save :: ib_iVelXVar, ib_iVelYVar, ib_iVelZVar
 
 end module ImBound_data

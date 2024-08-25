@@ -9,10 +9,10 @@
 !!  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 !!  See the License for the specific language governing permissions and
 !!  limitations under the License.
-subroutine ib_velGfm2d_fixed(lmda, velx, vely, sigx, sigy, px, py, dt, coeff, dx, dy, ix1, ix2, jy1, jy2)
+subroutine ib_velGfm2d_fixed(lmda, velx, vely, px, py, dt, coeff, dx, dy, ix1, ix2, jy1, jy2)
 
    implicit none
-   real, dimension(:, :, :), intent(inout) :: velx, vely, sigx, sigy
+   real, dimension(:, :, :), intent(inout) :: velx, vely
    real, dimension(:, :, :), intent(in) :: lmda
    real, dimension(:, :, :), intent(in) :: px, py
    real, intent(in) :: dt, dx, dy, coeff
@@ -25,25 +25,24 @@ subroutine ib_velGfm2d_fixed(lmda, velx, vely, sigx, sigy, px, py, dt, coeff, dx
    do j = jy1-1, jy2
       do i = ix1-1, ix2
 
-         if (lmda(i, j, k) .lt. 0. .and. lmda(i+1, j, k) .ge. 0.) then
-            velx(i+1, j, k) = 0.
-            sigx(i+1, j, k) = sigx(i+1, j, k) + px(i+1, j, k)
-         end if
+         if (0.5*(lmda(i,j,k)+lmda(i+1,j,k)) .ge. 0) velx(i+1,j,k)=0.
+         if (0.5*(lmda(i,j,k)+lmda(i,j+1,k)) .ge. 0) vely(i,j+1,k)=0.
 
-         if (lmda(i, j, k) .ge. 0. .and. lmda(i+1, j, k) .lt. 0.) then
-            velx(i+1, j, k) = 0.
-            sigx(i+1, j, k) = sigx(i+1, j, k) + px(i+1, j, k)
-         end if
+         !if (lmda(i, j, k) .lt. 0. .and. lmda(i+1, j, k) .ge. 0.) then
+         !   velx(i+1, j, k) = dt*px(i+1, j, k)
+         !end if
 
-         if (lmda(i, j, k) .lt. 0. .and. lmda(i, j+1, k) .ge. 0.) then
-            vely(i, j+1, k) = 0.
-            sigy(i, j+1, k) = sigy(i, j+1, k) + py(i, j+1, k)
-         end if
+         !if (lmda(i, j, k) .ge. 0. .and. lmda(i+1, j, k) .lt. 0.) then
+         !   velx(i+1, j, k) = dt*px(i+1, j, k)
+         !end if
 
-         if (lmda(i, j, k) .ge. 0. .and. lmda(i, j+1, k) .lt. 0.) then
-            vely(i, j+1, k) = 0.
-            sigy(i, j+1, k) = sigy(i, j+1, k) + py(i, j+1, k)
-         end if
+         !if (lmda(i, j, k) .lt. 0. .and. lmda(i, j+1, k) .ge. 0.) then
+         !   vely(i, j+1, k) = dt*py(i, j+1, k)
+         !end if
+
+         !if (lmda(i, j, k) .ge. 0. .and. lmda(i, j+1, k) .lt. 0.) then
+         !   vely(i, j+1, k) = dt*py(i, j+1, k)
+         !end if
 
       end do
    end do
