@@ -31,6 +31,8 @@ subroutine ins_omgToCenter(uf,vf,wf,omgm,ix1,ix2,jy1,jy2,kz1,kz2,dx,dy,dz)
     real, dimension(ix2,jy2,kz2) :: omgverty,omgy
 #endif
 
+    ! TODO: Change the stencil to fully cell centered. using velx, vely cell
+    !       centered variables.
     ! Compute omgvert on z direction, minimum number of NGUARD == 2.
     omgvertz(ix1+1:ix2,jy1+1:jy2,kz1:kz2) = (vf(ix1+1:ix2,jy1+1:jy2,kz1:kz2)-vf(ix1:ix2-1,jy1+1:jy2,kz1:kz2))/dx + &
                                             (uf(ix1+1:ix2,jy1+1:jy2,kz1:kz2)-uf(ix1+1:ix2,jy1:jy2-1,kz1:kz2))/dy
