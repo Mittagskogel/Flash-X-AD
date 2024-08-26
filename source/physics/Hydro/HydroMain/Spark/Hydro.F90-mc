@@ -65,8 +65,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
                          hy_geometry, hy_tiny, hy_hybridRiemann, hy_maxCells, &
                          hy_cvisc, hy_smallE, hy_smalldens, hy_smallpres, hy_smallX, &
                          hy_limRad, hy_mp5ZeroTol
-  @M hy_scratch_use
-
+  use Hydro_data,ONLY : @M hy_scratch_arrays
   use hy_rk_interface, ONLY : hy_rk_initSolnScratch, &
                               hy_rk_getFaceFlux, &
                               hy_rk_getGraveAccel, &
