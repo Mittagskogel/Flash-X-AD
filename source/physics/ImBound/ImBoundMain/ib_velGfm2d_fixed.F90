@@ -22,21 +22,6 @@ subroutine ib_velGfm2d_fixed(lmda, velx, vely, px, py, dt, coeff, buffer, dx, dy
    real :: lmdax, lmday, weight
 
    k = 1
-   do j = jy1, jy2
-      do i = ix1, ix2+1
-         lmdax = (1./2)*(lmda(i, j, k)+lmda(i-1, j, k))
-         weight = (2/(1+exp(4*lmdax/buffer(1))))*(2/(1+exp(-4*lmdax/buffer(1))))
-         velx(i, j, k) = (1-weight)*velx(i, j, k)
-      end do
-   end do
-
-   do j = jy1, jy2+1
-      do i = ix1, ix2
-         lmday = (1./2)*(lmda(i, j, k)+lmda(i, j-1, k))
-         weight = (2/(1+exp(4*lmday/buffer(2))))*(2/(1+exp(-4*lmday/buffer(2))))
-         vely(i, j, k) = (1-weight)*vely(i, j, k)
-      end do
-   end do
 
    do j = jy1-1, jy2
       do i = ix1-1, ix2
@@ -55,6 +40,22 @@ subroutine ib_velGfm2d_fixed(lmda, velx, vely, px, py, dt, coeff, buffer, dx, dy
          if (lmda(i, j, k) .ge. 0. .and. lmda(i, j+1, k) .lt. 0.) then
             vely(i, j+1, k) = vely(i, j+1, k)+dt*py(i, j+1, k)
          end if
+      end do
+   end do
+
+   do j = jy1, jy2
+      do i = ix1, ix2+1
+         lmdax = (1./2)*(lmda(i, j, k)+lmda(i-1, j, k))
+         weight = (2/(1+exp(4*lmdax/buffer(1))))*(2/(1+exp(-4*lmdax/buffer(1))))
+         velx(i, j, k) = (1-weight)*velx(i, j, k)
+      end do
+   end do
+
+   do j = jy1, jy2+1
+      do i = ix1, ix2
+         lmday = (1./2)*(lmda(i, j, k)+lmda(i, j-1, k))
+         weight = (2/(1+exp(4*lmday/buffer(2))))*(2/(1+exp(-4*lmday/buffer(2))))
+         vely(i, j, k) = (1-weight)*vely(i, j, k)
       end do
    end do
 
