@@ -85,6 +85,7 @@ subroutine gr_markRefineDerefineCallback(lev, tags, time, tagval, clearval) bind
    use gr_physicalMultifabs, ONLY: unk
    use Grid_tile, ONLY: Grid_tile_t
    use Simulation_data, ONLY: sim_xMin, sim_xMax, sim_yMin, sim_yMax, sim_zMin, sim_zMax
+   use Outlet_data, ONLY: out_buffer
 
    implicit none
 
@@ -221,9 +222,12 @@ subroutine gr_markRefineDerefineCallback(lev, tags, time, tagval, clearval) bind
             end do
          end do
 
+#ifdef IMBOUND_MAIN
+      call gr_markInRectangleForCallback(-0.6, 3.0, -0.3, 0.3, sim_zMin, sim_zMax, 0, lev, tags, tagval)
+#else
       call gr_markInRectangleForCallback(sim_xMin, sim_xMax, sim_yMin, sim_yMin+0.1, sim_zMin, sim_zMax, 0, lev, tags, tagval)
       call gr_markInRectangleForCallback(sim_xMin, sim_xMax, sim_yMax-0.1, sim_yMax, sim_zMin, sim_zMax, 0, lev, tags, tagval)
-
+#endif
       end associate
 
       nullify (tagData)
