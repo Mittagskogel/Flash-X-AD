@@ -1,0 +1,41 @@
+!> @copyright Copyright 2023 UChicago Argonne, LLC and contributors
+!!
+!! @licenseblock
+!!   Licensed under the Apache License, Version 2.0 (the "License");
+!!   you may not use this file except in compliance with the License.
+!!
+!!   Unless required by applicable law or agreed to in writing, software
+!!   distributed under the License is distributed on an "AS IS" BASIS,
+!!   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+!!   See the License for the specific language governing permissions and
+!!   limitations under the License.
+!! @endlicenseblock
+!!
+!! @file
+
+!> @ingroup HydroSpark
+!!
+!! @brief Main implementations of Spark Hydro solver
+!!
+!! @stubref{Hydro_prepBlock}
+!<
+
+!!Reorder(4): hy_fl[xyz],hy_fluxBuf[XYZ],hy_starState,hy_tmpState,Uin
+!!Reorder(4): hy_rope,hy_flux,hy_uPlus,hy_uMinus
+!!NOVARIANTS
+
+#ifdef DEBUG_ALL
+#define DEBUG_HYDRO
+#define DEBUG_HYDRO_OFFLOADING
+#endif
+#define DEBUG_GRID_GCMASK
+
+subroutine Hydro_prepBlock(Uin,blkLimits, blkLimitsGC,&
+     @M hy_impl_specific_args)
+
+  integer, dimension(LOW:HIGH,MDIM) :: blkLimits, blkLimitsGC
+  real,dimension(@M bounds_3d(blkLimitsGC)),intent(IN) :: Uin
+  @M hy_impl_specific_declarations
+  
+  
+end subroutine Hydro_prepBlock

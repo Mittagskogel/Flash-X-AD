@@ -92,7 +92,8 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
   integer, dimension(MDIM) :: lo, loGC
   real, dimension(MDIM) :: deltas
 
-  @M hy_declare_scr_ptr
+  @M hy_scratch_ptr_declare
+  
 #ifdef DEBUG_GRID_GCMASK
   logical,save :: gcMaskLogged =.FALSE.
 #else
@@ -102,10 +103,8 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
   real :: wt
 
   ! telescoping variables
-  integer, dimension(MDIM) :: gCells
-  integer, dimension(LOW:HIGH, MDIM, NDIM, MAXSTAGE) :: lim, limgc
-  integer, dimension(LOW:HIGH, MDIM, MAXSTAGE) :: limits
-
+  @M hy_bounds_declare
+  
   integer :: i, j, k, v, lev, dir, stage, ng
   integer :: xLo, xHi, yLo, yHi, zLo, zHi
 
