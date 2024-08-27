@@ -63,7 +63,7 @@ module ImBound_data
    real, save :: ib_invReynolds
    logical, save :: ib_withIncompNS
    integer, save :: ib_iVelFVar, ib_iPGradVar, ib_iVFrcVar
-   integer, save :: ib_iVelXVar, ib_iVelYVar, ib_iVelZVar
+   integer, save :: ib_iVelXVar, ib_iVelYVar, ib_iVelZVar, ib_iPresVar
 
    real, save :: ib_lmdaBuffer(MDIM)
 

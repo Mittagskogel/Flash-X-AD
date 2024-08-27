@@ -71,11 +71,13 @@ subroutine ImBound_init(restart)
       call IncompNS_getGridVar("CENTER_VELX", ib_iVelXVar)
       call IncompNS_getGridVar("CENTER_VELY", ib_iVelYVar)
       call IncompNS_getGridVar("CENTER_VELZ", ib_iVelZVar)
+      call IncompNS_getGridVar("CENTER_PRESSURE", ib_iPresVar)
    else
       ib_invReynolds = 1.
       ib_iVelFVar = -1
       ib_iPGradVar = -1
       ib_iVFrcVar = -1
+      ib_iPresVar = -1
    end if
 
    allocate (ib_bodyInfo(ib_numBodies))
