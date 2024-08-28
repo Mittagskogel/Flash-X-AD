@@ -478,7 +478,7 @@ subroutine Driver_evolveAll()
       call Grid_fillGuardCells(FACES, ALLDIR, &
                                maskSize=NDIM*NFACE_VARS, mask=gcMask)
 
-#ifdef MULTIPHASE_MAIN
+#if defined(MULTIPHASE_MAIN) && defined(USE_AMREX_FLASHFLUXREGISTER)
       ! Flux correction for momentum
       !------------------------------------------------------------
       call Grid_getTileIterator(itor, nodetype=LEAF)
@@ -537,6 +537,7 @@ subroutine Driver_evolveAll()
       call Driver_abort("[Driver_evolveAll] Missing pressure solver")
 #endif
 
+#if defined(USE_AMREX_FLASHFLUXREGISTER)
       ! Flux correction for momentum
       !------------------------------------------------------------
       call Grid_getTileIterator(itor, nodetype=LEAF)
@@ -555,6 +556,7 @@ subroutine Driver_evolveAll()
       end do
       call Grid_releaseTileIterator(itor)
       !------------------------------------------------------------
+#endif
 
       ! Final step of fractional step velocity
       ! formulation - calculate corrected velocity
