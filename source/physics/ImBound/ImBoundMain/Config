@@ -43,4 +43,7 @@ D nmlz_variable Level set normal in z-direction
 VARIABLE nmlz TYPE:GENERIC
 END IF
 
+D lcrv_variable Variable to store curvature for lmda level set
+VARIABLE lcrv
+
 LIBRARY ANN
