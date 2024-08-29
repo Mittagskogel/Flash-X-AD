@@ -1,4 +1,4 @@
-!!****if* source/physics/IncompNS/IncompNS_fluxSet
+!!****if* source/Simulation/SimulationMain/incompFlow/RisingBubble/Simulation_data
 !! NOTICE
 !!  Copyright 2022 UChicago Argonne, LLC and contributors
 !!
@@ -11,12 +11,28 @@
 !!  See the License for the specific language governing permissions and
 !!  limitations under the License.
 !!
+!! NAME
 !!
+!!  Simulation_data
 !!
+!! SYNOPSIS
+!!
+!!  use Simulation_data
+!!
+!! DESCRIPTION
+!!
+!!  Stores the local data for Simulation setup: INS-iso-turb
 !!
 !!***
-subroutine IncompNS_fluxSet(tileDesc)
-   use Grid_tile, ONLY: Grid_tile_t
+
+module Simulation_data
+
    implicit none
-   type(Grid_tile_t), INTENT(IN) :: tileDesc
-end subroutine IncompNS_fluxSet
+
+#include "constants.h"
+
+   real, save    :: sim_xMin, sim_xMax, sim_yMin, sim_yMax, sim_zMin, sim_zMax
+   integer, save :: sim_meshMe
+   real, save :: sim_initAmplitude, sim_initEta
+
+end module Simulation_data
