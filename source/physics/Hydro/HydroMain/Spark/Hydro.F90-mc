@@ -159,6 +159,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         end if
 
         if (hy_geometry /= CARTESIAN) then
+	   @M hy_map_geom
            @M hy_fill_geom
            @M hy_DIR_TARGET_enter_data(to, [hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol])
            @M hy_DIR_TARGET_enter_data(to, [hy_xCenter, hy_xLeft, hy_xRight])
@@ -311,6 +312,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
                 blkLimits(LOW,:),isFluxDensity=(/hy_telescoping/))
 
            if (hy_geometry /= CARTESIAN) then
+	      @M hy_map_geom
               @M hy_fill_geom
            endif
 
