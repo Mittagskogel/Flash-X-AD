@@ -1,4 +1,4 @@
-subroutine ins_omgToCenter(uc, vc, wc, omgm, ix1, ix2, jy1, jy2, kz1, kz2, dx, dy, dz)
+subroutine ins_omgToCenter(uf,vf,wf,omgm,ix1,ix2,jy1,jy2,kz1,kz2,dx,dy,dz)
 !! NOTICE
 !!  Copyright 2022 UChicago Argonne, LLC and contributors
 !!
@@ -14,26 +14,34 @@ subroutine ins_omgToCenter(uc, vc, wc, omgm, ix1, ix2, jy1, jy2, kz1, kz2, dx, d
 #include "constants.h"
 #include "Simulation.h"
 
-   implicit none
+    implicit none
 
-   !-------Arguments---------!
-   real, dimension(:, :, :), intent(in)  :: uc, vc, wc
-   real, dimension(:, :, :), intent(out) :: omgm
-   integer, intent(in) :: ix1, jy1, kz1
-   integer, intent(in) :: ix2, jy2, kz2
-   real, intent(in) :: dx, dy, dz
+    !-------Arguments---------!
+    real, dimension(:,:,:), intent(in)  :: uf,vf,wf
+    real, dimension(:,:,:), intent(out) :: omgm
+    integer, intent(in) :: ix1,jy1,kz1
+    integer, intent(in) :: ix2,jy2,kz2
+    real, intent(in) :: dx,dy,dz
 
-   !-------Local Variables-----!
-   integer :: i, j, k
-   real, dimension(ix2, jy2, kz2) :: omgz
+    !-------Local Variables-----!
+    integer :: i,j,k
+    real, dimension(ix2,jy2,kz2) :: omgvertz,omgz
 #if NDIM == MDIM
-   real, dimension(ix2, jy2, kz2) :: omgx
-   real, dimension(ix2, jy2, kz2) :: omgy
+    real, dimension(ix2,jy2,kz2) :: omgvertx,omgx
+    real, dimension(ix2,jy2,kz2) :: omgverty,omgy
 #endif
 
-   omgz(ix1+1:ix2-1, jy1+1:jy2-1, kz1:kz2) = (vc(ix1+2:ix2, jy1+1:jy2-1, kz1:kz2)-vc(ix1:ix2-2, jy1+1:jy2-1, kz1:kz2))/(2*dx)+ &
-                                             (uc(ix1+1:ix2-1, jy1+2:jy1, kz1:kz2)-uc(ix1+1:ix2-1, jy1:jy2-2, kz1:kz2))/(2*dy)
+    ! Compute omgvert on z direction, minimum number of NGUARD == 2.
+    omgvertz(ix1+1:ix2,jy1+1:jy2,kz1:kz2) = (vf(ix1+1:ix2,jy1+1:jy2,kz1:kz2)-vf(ix1:ix2-1,jy1+1:jy2,kz1:kz2))/dx + &
+                                            (uf(ix1+1:ix2,jy1+1:jy2,kz1:kz2)-uf(ix1+1:ix2,jy1:jy2-1,kz1:kz2))/dy
 
-   omgm(ix1+1:ix2-1, jy1+1:jy2-1, kz1:kz2) = omgz(ix1+1:ix2-1, jy1+1:jy2-1, kz1:kz2)
+      
+    omgz(ix1+1:ix2-1,jy1+1:jy2-1,kz1:kz2) = &
+    0.25*(omgvertz(ix1+1:ix2-1,jy1+1:jy2-1,kz1:kz2)+ &
+          omgvertz(ix1+2:ix2  ,jy1+1:jy2-1,kz1:kz2)+ &
+          omgvertz(ix1+1:ix2-1,jy1+2:jy2  ,kz1:kz2)+ &
+          omgvertz(ix1+2:ix2  ,jy1+2:jy2  ,kz1:kz2))
+
+   omgm(ix1+1:ix2-1,jy1+1:jy2-1,kz1:kz2) = omgz(ix1+1:ix2-1,jy1+1:jy2-1,kz1:kz2)
 
 end subroutine ins_omgToCenter
