@@ -156,17 +156,8 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         end if
 
         if (hy_geometry /= CARTESIAN) then
-	   hy_fareaX(@M bounds_3d(blkLimitsGC))=>hya_fareaX
-           hy_fareaY(@M bounds_3d(blkLimitsGC))=>hya_fareaY
-           hy_fareaZ(@M bounds_3d(blkLimitsGC))=>hya_fareaZ
-           hy_cvol(@M bounds_3d(blkLimitsGC))=>hya_cvol
-           hy_xCenter(@M bounds_1d(blkLimitsGC,IAXIS))=>hya_xCenter
-           hy_xLeft(@M bounds_1d(blkLimitsGC,IAXIS))=>hya_xLeft
-           hy_xRight(@M bounds_1d(blkLimitsGC,IAXIS))=>hya_xRight
-           hy_yCenter(@M bounds_1d(blkLimitsGC,JAXIS))=>hya_yCenter
-           hy_yLeft(@M bounds_1d(blkLimitsGC,JAXIS))=>hya_yLeft
-           hy_yRight(@M bounds_1d(blkLimitsGC,JAXIS))=>hya_yRight
-           hy_zCenter(@M bounds_1d(blkLimitsGC,KAXIS))=>hya_zCenter
+	   @M hy_map_fareas
+           @M hy_map_geom
            @M hy_fill_geom
            @M hy_DIR_TARGET_enter_data(to, [hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol])
            @M hy_DIR_TARGET_enter_data(to, [hy_xCenter, hy_xLeft, hy_xRight])
@@ -174,6 +165,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
            @M hy_DIR_TARGET_enter_data(to, [hy_zCenter])
         endif
         if ((.not. hy_telescoping) .and. hy_geometry == CARTESIAN) then
+           @M hy_map_fareas
            @M hy_fill_fareas
            @M hy_DIR_TARGET_enter_data(to, [hy_fareaX, hy_fareaY, hy_fareaZ])
         end if
@@ -319,17 +311,8 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
                 blkLimits(LOW,:),isFluxDensity=(/hy_telescoping/))
 
            if (hy_geometry /= CARTESIAN) then
-	      hy_fareaX(@M bounds_3d(blkLimitsGC))=>hya_fareaX
-              hy_fareaY(@M bounds_3d(blkLimitsGC))=>hya_fareaY
-              hy_fareaZ(@M bounds_3d(blkLimitsGC))=>hya_fareaZ
-              hy_cvol(@M bounds_3d(blkLimitsGC))=>hya_cvol
-              hy_xCenter(@M bounds_1d(blkLimitsGC,IAXIS))=>hya_xCenter
-              hy_xLeft(@M bounds_1d(blkLimitsGC,IAXIS))=>hya_xLeft
-              hy_xRight(@M bounds_1d(blkLimitsGC,IAXIS))=>hya_xRight
-              hy_yCenter(@M bounds_1d(blkLimitsGC,JAXIS))=>hya_yCenter
-              hy_yLeft(@M bounds_1d(blkLimitsGC,JAXIS))=>hya_yLeft
-              hy_yRight(@M bounds_1d(blkLimitsGC,JAXIS))=>hya_yRight
-              hy_zCenter(@M bounds_1d(blkLimitsGC,KAXIS))=>hya_zCenter
+	      @M hy_map_fareas
+              @M hy_map_geom
               @M hy_fill_geom
            endif
 
