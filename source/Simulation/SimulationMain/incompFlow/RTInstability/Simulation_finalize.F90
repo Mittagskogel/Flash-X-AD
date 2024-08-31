@@ -1,4 +1,4 @@
-!!****if* source/physics/IncompNS/IncompNS_fluxSet
+!!****f* source/Simulation/SimulationMain/incompFlow/RisingBubble/Simulation_finalize
 !! NOTICE
 !!  Copyright 2022 UChicago Argonne, LLC and contributors
 !!
@@ -11,12 +11,26 @@
 !!  See the License for the specific language governing permissions and
 !!  limitations under the License.
 !!
+!! NAME
+!!  Simulation_finalize
+!!
+!! SYNOPSIS
+!!
+!!  Simulation_finalize()
+!!
+!! DESCRIPTION
+!!
+!!  This dummy function cleans up the Simulation unit, deallocates memory, etc.
+!!  However, as nothing needs to be done, only this stub is included.
+!!
+!! ARGUMENTS
 !!
 !!
 !!
 !!***
-subroutine IncompNS_fluxSet(tileDesc)
-   use Grid_tile, ONLY: Grid_tile_t
+
+#include "Simulation.h"
+
+subroutine Simulation_finalize()
    implicit none
-   type(Grid_tile_t), INTENT(IN) :: tileDesc
-end subroutine IncompNS_fluxSet
+end subroutine Simulation_finalize

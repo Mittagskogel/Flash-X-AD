@@ -1,46 +1,42 @@
 # 	Runtime parameters for the Rising Bubble problem.
-enableMaskedGCFill = .TRUE.
-gr_gcFillSingleVarRange = .FALSE.
 
 # Inverse of Reynolds Number
-ins_invReynolds     = .01
+ins_invReynolds     = 0.00082
 
 # 1/Fr**2, Fr (Froude Number)
 ins_gravY           = -1.0
 
 # Gas density and viscosity scaled by liquid
-mph_rhoGas = 0.005
-mph_muGas  = 0.1
-mph_iPropSmear = 1.0
+mph_rhoGas = 0.1383
+mph_muGas  = 1.0
+mph_iPropSmear = 1.5
 
 # Inverse Weber Number
-mph_invWeber = 0.01
-mph_presTol = 0.0
-
-# outlfow parameter
-out_buffer = 0.1
+mph_invWeber = 0.083
 
 #       Grid dimensionality and geometry
 geometry	= "cartesian"
 
 #       Size of computational volume
-xmin		= -1.0
-xmax		=  1.0
-ymin		= -1.0
+xmin		= -0.5
+xmax		=  0.5
+ymin		= -2.0
 ymax		=  2.0
-zmin            = -1.0
-zmax            =  1.0
+zmin            = -0.5
+zmax            =  0.5
 
 #       Boundary conditions
-xl_boundary_type = "noslip_ins"
-xr_boundary_type = "noslip_ins"
+xl_boundary_type = "slip_ins"
+xr_boundary_type = "slip_ins"
 yl_boundary_type = "noslip_ins"
-yr_boundary_type = "outflow_ins"
-zl_boundary_type = "noslip_ins"
-zr_boundary_type = "noslip_ins"
+yr_boundary_type = "noslip_ins"
+zl_boundary_type = "slip_ins"
+zr_boundary_type = "slip_ins"
 
 #       Simulation (grid, time, I/O) parameters
 run_comment	= "Rising Bubble problem"
+log_file	= "INS_Rising_Bubble.log"
+basenm		= "INS_Rising_Bubble_"
 restart         = .false.
 nend            = 3000
 tmax            = 100. 
@@ -57,14 +53,15 @@ plot_var_2      = "velx"
 plot_var_3      = "vely"
 plot_var_4      = "dfun"
   
-checkpointFileIntervalTime = 0.
-checkpointFileIntervalStep = 0
-plotFileIntervalTime = 0.
-plotFileIntervalStep = 0
+checkpointFileIntervalTime = 100.
+checkpointFileIntervalStep = 5000
+
+plotFileIntervalTime = 100.
+plotFileIntervalStep = 1000
 
 # AMR parameters
 nblockx	= 2
-nblocky	= 3
+nblocky	= 8
 nblockz = 2
 nfres   = 10
 
