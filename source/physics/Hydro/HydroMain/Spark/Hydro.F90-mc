@@ -307,7 +307,9 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
            loGC(:) = blkLimitsGC(LOW, :)
            !           !Get 'Flux deltas' on coarse side of fine coarse boundaries;
            !           !all other values are 0.
-           @M hy_mapFluxBuf
+           hy_fluxBufX(1:NFLUXES,@M bounds_3d_plus(blkLimits,1,0,0))=>hya_fluxBufX
+           hy_fluxBufY(1:NFLUXES,@M bounds_3d_plus(blkLimits,0,1,0))=>hya_fluxBufY
+           hy_fluxBufZ(1:NFLUXES,@M bounds_3d_plus(blkLimits,0,0,1))=>hya_fluxBufZ
            call Grid_getFluxCorrData_block(tileDesc,hy_fluxBufX,hy_fluxBufY,hy_fluxBufZ,&
                 blkLimits(LOW,:),isFluxDensity=(/hy_telescoping/))
 
