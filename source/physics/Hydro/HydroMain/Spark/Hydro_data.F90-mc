@@ -30,7 +30,7 @@ module Hydro_data
   implicit none
   save
 
-  real,allocatable,dimension(:),target :: @M hy_scratch_arrays
+  real,allocatable,dimension(:),target :: @M hy_scratch_arrays_list
   !Flux buffers
 
   real :: hy_dt, hy_dtmin
