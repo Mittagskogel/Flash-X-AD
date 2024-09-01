@@ -9,23 +9,25 @@
 !!  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 !!  See the License for the specific language governing permissions and
 !!  limitations under the License.
-subroutine ib_velGfm2d_fixed(lmda, velx, vely, px, py, dt, coeff, buffer, dx, dy, ix1, ix2, jy1, jy2)
+subroutine ib_velGfm2d_fixed(lmda, velx, vely, px, py, dt, coeff, buffer, gfactor, &
+                             dx, dy, ix1, ix2, jy1, jy2)
 
    implicit none
    real, dimension(:, :, :), intent(inout) :: velx, vely
    real, dimension(:, :, :), intent(in) :: lmda
    real, dimension(:, :, :), intent(in) :: px, py
-   real, intent(in) :: dt, dx, dy, coeff, buffer(3)
+   real, intent(in) :: dt, dx, dy, coeff, buffer(3), gfactor
    integer, intent(in) :: ix1, ix2, jy1, jy2
 
    integer :: i, j, k
    real :: lmdax, lmday, weight
 
    k = 1
+
    do j = jy1, jy2
       do i = ix1, ix2+1
          lmdax = (1./2)*(lmda(i, j, k)+lmda(i-1, j, k))
-         weight = (2/(1+exp(2*lmdax/buffer(1))))*(2/(1+exp(-2*lmdax/buffer(1))))
+         weight = (2/(1+exp(gfactor*lmdax/buffer(1))))*(2/(1+exp(-gfactor*lmdax/buffer(1))))
          velx(i, j, k) = (1-weight)*velx(i, j, k)
       end do
    end do
@@ -33,7 +35,7 @@ subroutine ib_velGfm2d_fixed(lmda, velx, vely, px, py, dt, coeff, buffer, dx, dy
    do j = jy1, jy2+1
       do i = ix1, ix2
          lmday = (1./2)*(lmda(i, j, k)+lmda(i, j-1, k))
-         weight = (2/(1+exp(2*lmday/buffer(2))))*(2/(1+exp(-2*lmday/buffer(2))))
+         weight = (2/(1+exp(gfactor*lmday/buffer(2))))*(2/(1+exp(-gfactor*lmday/buffer(2))))
          vely(i, j, k) = (1-weight)*vely(i, j, k)
       end do
    end do
