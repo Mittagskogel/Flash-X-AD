@@ -92,8 +92,6 @@ subroutine ImBound_init(restart)
    call Grid_getMaxRefinement(maxLev)
    call Grid_getDeltas(maxLev, ib_forceBuffer)
 
-   ib_forceFactor = 2.5
-
    if (ib_meshMe .eq. MASTER_PE) then
       write (*, *) 'ib_lsIt=', ib_lsIt
       write (*, *) 'ib_numBodies=', ib_numBodies
@@ -103,7 +101,6 @@ subroutine ImBound_init(restart)
       write (*, *) 'ib_annQueries', ib_annQueries
       write (*, *) 'ib_invReynolds', ib_invReynolds
       write (*, *) 'ib_forceBuffer', ib_forceBuffer
-      write (*, *) 'ib_forceFactor', ib_forceFactor
    end if
 
 end subroutine ImBound_init

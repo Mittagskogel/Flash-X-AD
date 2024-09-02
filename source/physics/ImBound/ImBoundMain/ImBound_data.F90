@@ -65,6 +65,6 @@ module ImBound_data
    integer, save :: ib_iVelFVar, ib_iPGradVar, ib_iVFrcVar
    integer, save :: ib_iVelXVar, ib_iVelYVar, ib_iVelZVar, ib_iPresVar
 
-   real, save :: ib_forceBuffer(MDIM), ib_forceFactor
+   real, save :: ib_forceBuffer(MDIM)
 
 end module ImBound_data

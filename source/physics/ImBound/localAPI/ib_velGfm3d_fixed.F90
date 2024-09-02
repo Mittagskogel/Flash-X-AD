@@ -10,11 +10,11 @@
 !!  See the License for the specific language governing permissions and
 !!  limitations under the License.
 subroutine ib_velGfm3d_fixed(lmda, velx, vely, velz, px, py, pz, &
-                             dt, coeff, buffer, gfactor, dx, dy, dz, ix1, ix2, jy1, jy2, kz1, kz2)
+                             dt, coeff, buffer, dx, dy, dz, ix1, ix2, jy1, jy2, kz1, kz2)
    implicit none
    real, dimension(:, :, :), intent(inout) :: velx, vely, velz
    real, dimension(:, :, :), intent(in) :: lmda
    real, dimension(:, :, :), intent(in) :: px, py, pz
-   real, intent(in) :: dt, dx, dy, dz, coeff, buffer(3), gfactor
+   real, intent(in) :: dt, dx, dy, dz, coeff, buffer(3)
    integer, intent(in) :: ix1, ix2, jy1, jy2, kz1, kz2
 end subroutine ib_velGfm3d_fixed
