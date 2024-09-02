@@ -33,7 +33,7 @@ subroutine Hydro_init()
   use Logfile_interface,           ONLY : Logfile_stampMessage, &
        Logfile_stampVarMask, &
        Logfile_stamp
-  use Grid_interface,              ONLY : Grid_setFluxHandling, Grid_getMaxRefinement, Grid_getMaxCells
+  use Grid_interface,              ONLY : Grid_setFluxHandling, Grid_getMaxRefinement, Grid_getMaxCells, Grid_getDomainBoundBox
   use IO_interface,                ONLY : IO_getScalar, IO_setScalar
 
   implicit none
@@ -48,7 +48,7 @@ subroutine Hydro_init()
   logical :: threadBlockListBuild, threadWithinBlockBuild
   integer, dimension(LOW:HIGH,MDIM) :: blkLimits,blkLimitsGC
   integer :: max_edge, max_edge_y, max_edge_z, space
-
+  real,dimension(LOW:HIGH,MDIM) :: domainbb
 
   ! Everybody should know these
   call Driver_getMype(MESH_COMM,hy_meshMe)
@@ -236,30 +236,14 @@ subroutine Hydro_init()
 #endif
   call Grid_getMaxcells(hy_maxCells)
   hy_maxCells=2*NGUARD+hy_maxCells
-
-
-  !! TODO: Eos-specific constants are copied to Hydro data module scope
-  !!       to make them available on device.
-  call PhysicalConstants_get("ideal gas constant", hy_eos_gasConstant)
-
-  call RuntimeParameters_get("gamma", hy_eos_gamma)
-  call RuntimeParameters_get("eos_singleSpeciesA", hy_eos_singleSpeciesA)
-  call RuntimeParameters_get("eos_singleSpeciesZ", hy_eos_singleSpeciesZ)
-  call RuntimeParameters_get("smalle", hy_eos_smalle)
-  call RuntimeParameters_get("eintSwitch", hy_eos_eintSwitch)
-  hy_eos_gammam1 = 1.0/(hy_eos_gamma-1.0)
-
-  @M hy_DIR_TARGET_update_to([hy_eos_gasConstant, hy_eos_gamma])
-  @M hy_DIR_TARGET_update_to([hy_eos_singleSpeciesA, hy_eos_singleSpeciesZ])
-  @M hy_DIR_TARGET_update_to([hy_eos_eintSwitch, hy_eos_smalle])
-  @M hy_DIR_TARGET_update_to([hy_eos_gammam1])
-
+  call Grid_getDomainBoundBox(domainbb)
+  hy_globalLBnd=domainbb(LOW,:)
 
   @M hy_DIR_TARGET_update_to([hy_cvisc, hy_limRad, hy_tiny, hy_gravConst, hy_4piGinv, hy_bref])
   @M hy_DIR_TARGET_update_to([hy_smalldens, hy_smallE, hy_smallpres, hy_smallX, hy_smallu])
   @M hy_DIR_TARGET_update_to([hy_fluxCorrect, hy_fluxCorrectPerLevel, hy_fluxCorVars, hy_geometry])
   @M hy_DIR_TARGET_update_to([hy_hybridRiemann, hy_flattening, hy_alphaGLM, hy_lChyp])
-  @M hy_DIR_TARGET_update_to([hy_coeffs, hy_weights, hy_limitsArray, hy_coeffArray])
+  @M hy_DIR_TARGET_update_to([hy_coeffs, hy_weights, hy_limitsArray, hy_coeffArray,hy_globalLBnd])
   @M hy_DIR_TARGET_update_to([hy_cfl, hy_telescoping, hy_addFluxArray, hy_maxLev, hy_maxCells])
 
   call check_if_omp_offload()

@@ -54,7 +54,7 @@ subroutine Eos_getFromEosData( vecB, vecE, eosData,range, solnData)
   @M eos_map
   n = vecB-1
   !! DEV: If / when we add a ptr dummy argument for passing in an offset, this will be n = ptr
-  @M loop_3d(range)
+  @M loop_3d(range,i,j,k)
   !! account for kinetic energy
             n=n+1
              @M eos_unpack(eosData,n)

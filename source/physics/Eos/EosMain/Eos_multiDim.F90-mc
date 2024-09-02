@@ -66,7 +66,7 @@ subroutine Eos_multiDim(mode,range,solnData)
   
   call Eos_fillEosData(range, solnData,1, vecLen, eosData)
   n = 0
-  @M loop_3d(range)
+  @M loop_3d(range,i,j,k)
              n=n+1
              massFrac(1:NSPECIES,n) = solnData(SPECIES_BEGIN:SPECIES_END,i,j,k)
   @M loop_end_3d   

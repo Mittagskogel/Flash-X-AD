@@ -155,7 +155,7 @@ subroutine Simulation_initBlock(Uin,tileDesc)
     !$omp private(i,j,k,rcc)
 
     !$omp do schedule(guided) collapse(3)
-    @M loop_3d(limits)
+    @M loop_3d(limits,i,j,k)
 
                 ! Computing radius is geometry dependent
                 ! Note that at present this routines assumes that ALL 1D sims
@@ -203,7 +203,7 @@ subroutine Simulation_initBlock(Uin,tileDesc)
     ! renormalize the abundances -- interpolation can do wacky things to them
 #if NSPECIES>0
     call Grid_renormAbundance(blockID, limits, Uin)
-    @M loop_3d(limits)
+    @M loop_3d(limits,i,j,k)
                 ! put all H1 in protons. The redundancy confuses me....
                 Uin(PROT_SPEC, i, j, k) = Uin(PROT_SPEC, i, j, k) + Uin(H1_SPEC, i, j, k)
                 Uin(H1_SPEC, i, j, k) = 0.0
@@ -451,7 +451,7 @@ contains
         Ay = 0.
         Az = 0.
         zLoc = 0.
-        @M loop_3d(blkLimitsGC)
+        @M loop_3d(blkLimitsGC,i,j,k)
 
                     ! TODO: think about units of B....
                     ! Ax, Az will be defined at cell centers
