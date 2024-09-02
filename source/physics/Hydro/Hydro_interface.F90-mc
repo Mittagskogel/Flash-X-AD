@@ -214,6 +214,21 @@ Module Hydro_interface
       end subroutine Hydro_molPostRegrid
    end interface
 
+   interface
+     subroutine Hydro_prepBlock(Uin, hy_Vc, blkLimits, blkLimitsGC, hy_starState, hy_tmpState, &
+                                stage, lo, loGC)
+        implicit none
+        integer, intent(IN) :: lo(3), loGC(3)
+        real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(IN OUT) :: Uin
+        real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(OUT) :: hy_starState, hy_tmpState
+        real, dimension(loGC(1):, loGC(2):, loGC(3):), intent(OUT) :: hy_Vc
+        integer, dimension(LOW:HIGH, MDIM), intent(IN) :: blkLimits, blkLimitsGC
+        integer, intent(IN) :: stage
+     end subroutine Hydro_prepBlock
+  end interface
+      
    @M Hydro_interface_implementation_specific
 
+
+   
 end Module Hydro_interface
