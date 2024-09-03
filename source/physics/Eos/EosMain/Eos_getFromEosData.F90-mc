@@ -32,7 +32,7 @@
 !!REORDER(4): solnData
 
 
-subroutine Eos_getFromEosData( vecB, vecE, eosData,range, solnData)
+subroutine Eos_getFromEosData( vecB, vecE, eosData,range, lo, solnData)
 
   use Eos_data, ONLY: eos_mapLookup
   use Driver_interface, ONLY : Driver_abort
@@ -42,8 +42,9 @@ subroutine Eos_getFromEosData( vecB, vecE, eosData,range, solnData)
   integer,intent(inout) :: vecE
   integer, dimension(LOW:HIGH,MDIM), intent(in) :: range
   real, dimension(vecB:vecE,EOS_VARS),intent(in) :: eosData
-  real,pointer,dimension(:,:,:,:), intent(in) :: solnData
-
+  integer, dimension(MDIM) :: lo
+  real,dimension(1:,lo(1):,lo(2):,lo(3):), intent(inout) :: solnData
+  !!real,dimension(:,:,:,:), pointer :: solnData
   integer :: i,j,k,n
   real :: @M eos_args, ekin
   @M eos_map_declare

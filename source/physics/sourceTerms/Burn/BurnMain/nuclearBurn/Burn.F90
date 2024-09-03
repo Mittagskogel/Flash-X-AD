@@ -111,6 +111,7 @@ subroutine Burn (  dt  )
   type(Grid_iterator_t)  :: itor
   type(Grid_tile_t) :: tileDesc
 
+
   ! ----------------------- check if burning is requested in runtime parameters -------
   if (.not. bn_useBurn) return
 
@@ -243,8 +244,8 @@ subroutine Burn (  dt  )
 
      ! we've altered the EI, let's equilabrate
      if (burnedZone) then
-
-        call Eos_multiDim(MODE_DENS_EI,tileDesc%limits,solnData)
+        lo(:) = tileDesc%blkLimitsGC(LOW,:)
+        call Eos_multiDim(MODE_DENS_EI,tileDesc%limits,lo,solnData)
 
 
      end if

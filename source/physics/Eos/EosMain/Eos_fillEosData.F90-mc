@@ -27,7 +27,7 @@
 !!REORDER(4): solnData
 
 
-subroutine Eos_fillEosData(range, solnData, vecB, vecE, eosData)
+subroutine Eos_fillEosData(range, lo, solnData, vecB, vecE, eosData)
 
   use Eos_data, ONLY: eos_eintSwitch, eos_smalle, eos_mapLookup
   use Driver_interface, ONLY : Driver_abort
@@ -36,15 +36,18 @@ subroutine Eos_fillEosData(range, solnData, vecB, vecE, eosData)
   integer, intent(in) :: vecB
   integer,intent(inout) :: vecE
   integer, dimension(LOW:HIGH,MDIM), intent(in) :: range
-  real,pointer,dimension(:,:,:,:), intent(in) :: solnData
+  integer, intent(in) :: lo(MDIM)
+  real,dimension(1:,lo(1):,lo(2):,lo(3):),intent(inout) :: solnData
   real, dimension(vecB:vecE,EOS_VARS),intent(out) :: eosData
+  integer, dimension(MDIM+1) :: lob
 
   integer :: i,j,k,n
   real :: @M eos_args, ekin
   @M eos_map_declare
   !! ---------------------------------------------------------------------------------
   ! Test calling arguments
-  
+
+
   !! get the map of eos indices to state variable indices
   @M eos_map
   @M eos_args_init

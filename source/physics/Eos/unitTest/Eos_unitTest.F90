@@ -167,7 +167,7 @@ subroutine Eos_unitTest(fileUnit, perfect)
      call Grid_getBlkType(blockId,nodeType)
      call tileDesc%getDataPtr(solnData, CENTER)
      blkLimits = tileDesc%limits
-     
+     blkLimitsGC=tileDesc%blkLimitsGC
      
      mask = .true.
      
@@ -200,7 +200,7 @@ subroutine Eos_unitTest(fileUnit, perfect)
      end if
      
      solnData(TEMP_VAR,ib:ie,jb:je,kb:ke)=solnData(CTMP_VAR,ib:ie,jb:je,kb:ke)
-     call Eos_multiDim(eos_testTempMode, blkLimits,solnData, CENTER)
+     call Eos_multiDim(eos_testTempMode, blkLimits,blkLimitsGC(LOW,:),solnData, CENTER)
      !! Summarize results of MODE_DENS_TEMP (or similar) call
      if (eos_meshMe<maxPrintPE) then
         print*,ap,'The resulting extreme values are '
@@ -229,7 +229,7 @@ subroutine Eos_unitTest(fileUnit, perfect)
      !  Zero output variables
      solnData(TEMP_VAR,ib:ie,jb:je,kb:ke)=1.e-10  ! don't zero TEMP or eos_helm cannot converge in MODE_DENS_EI
      solnData(PRES_VAR,:,:,:)=0 
-     call Eos_multiDim(eos_testEintMode,blkLimits,solnData,CENTER)
+     call Eos_multiDim(eos_testEintMode,blkLimits,blkLimitsGC(LOW,:),solnData,CENTER)
      
      
      if (eos_meshMe<maxPrintPE) then !! Summarize results of MODE_DENS_EI (or similar) call
@@ -271,7 +271,7 @@ subroutine Eos_unitTest(fileUnit, perfect)
           eos_testPresMode,eos_testPresModeStr
      solnData(EINT_VAR,ib:ie,jb:je,kb:ke)=0
      solnData(TEMP_VAR,ib:ie,jb:je,kb:ke)=1.1e4  ! don't zero TEMP or eos_helm cannot converge in any mode
-     call Eos_multiDim(eos_testPresMode,blkLimits,solnData,CENTER)
+     call Eos_multiDim(eos_testPresMode,blkLimits,blkLimitsGC(LOW,:),solnData,CENTER)
      
      !! Summarize results of MODE_DENS_PRES (or similar) call;
      !! calculate error from MODE_DENS_PRES (or similar) call.
@@ -309,7 +309,7 @@ subroutine Eos_unitTest(fileUnit, perfect)
      ! Density and pressure in, energy and temperature out
      !solnData(TEMP_VAR,ib:ie,jb:je,kb:ke)=0   ! don't zero TEMP or eos_helm cannot converge
      solnData(EINT_VAR,ib:ie,jb:je,kb:ke)=0 
-     call Eos_multiDim(MODE_DENS_PRES, blkLimits,solnData)
+     call Eos_multiDim(MODE_DENS_PRES, blkLimits,blkLimitsGC(LOW,:),solnData)
      if (eos_meshMe<maxPrintPE) then
         print*,ap,'The resulting extreme values from MODE_DENS_PRES are '
         print*,ap,'Resulting Pressure min',minval(solnData(PRES_VAR,ib:ie,jb:je,kb:ke))
@@ -336,7 +336,7 @@ subroutine Eos_unitTest(fileUnit, perfect)
      !! zero output values to make sure they're being calculated
      solnData(PRES_VAR,ib:ie,jb:je,kb:ke)=0.0
      !solnData(TEMP_VAR,ib:ie,jb:je,kb:ke)=1.0e-11   ! don't zero TEMP or eos_helm cannot converge
-     call Eos_multiDim(MODE_DENS_EI,blkLimits,solnData,CENTER)
+     call Eos_multiDim(MODE_DENS_EI,blkLimits,blkLimitsGC(LOW,:),solnData,CENTER)
      presErr1 = maxval(solnData(PRES_VAR,ib:ie,jb:je,kb:ke))
      presErr2 = maxval(solnData(OPRS_VAR,ib:ie,jb:je,kb:ke))
      if (eos_meshMe<maxPrintPE) print *,ap,'maxval PRES_VAR OPRS_VAR',presErr1,presErr2
@@ -361,7 +361,7 @@ subroutine Eos_unitTest(fileUnit, perfect)
      
      solnData(EINT_VAR,ib:ie,jb:je,kb:ke)=0
      solnData(PRES_VAR,ib:ie,jb:je,kb:ke)=0 
-     call Eos_multiDim(MODE_DENS_TEMP,blkLimits,solnData,CENTER)
+     call Eos_multiDim(MODE_DENS_TEMP,blkLimits,blkLimitsGC(LOW,:),solnData,CENTER)
      presErr = maxval(abs((solnData(PRES_VAR,ib:ie,jb:je,kb:ke)-&
           solnData(OPRS_VAR,ib:ie,jb:je,kb:ke))/solnData(PRES_VAR,ib:ie,jb:je,kb:ke)))
      eintErr = maxval(abs((solnData(EINT_VAR,ib:ie,jb:je,kb:ke)-&

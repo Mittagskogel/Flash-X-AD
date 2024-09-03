@@ -385,7 +385,7 @@ subroutine RadTrans( dt, pass )
   do while( itor % isValid() )
     call itor%currentTile(tileDesc)
     call tileDesc % getDataPtr( Uin, CENTER )
-    call Eos_multiDim(MODE_DENS_EI,tileDesc%limits,Uin,CENTER)
+    call Eos_multiDim(MODE_DENS_EI,tileDesc%limits,tileDesc%blkLimitsGC(LOW,:),Uin,CENTER)
     call itor % next()
   end do
   call Grid_releaseTileIterator( itor )
