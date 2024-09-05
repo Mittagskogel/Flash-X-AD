@@ -195,13 +195,6 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         ! compute the gradients. I ain't doing more communication for a diagnostic...
 
 
-        call Timers_start("Offloaded Section")
-
-!!$        if (hy_telescoping .OR. stage==1) call hy_rk_shockDetect(Uin, hy_Vc, blkLimitsGC, loGC)
-
-        call Timers_start("scratch")
-!!$        call hy_rk_initSolnScratch(stage, Uin, hy_starState, hy_tmpState, &
-!!$                                   blkLimits, blkLimitsGC, lo, loGC)
         if (.not. hy_telescoping .and. stage == 1) then
            @M hy_DIR_TARGET_update_from([hy_tmpState])
         end if
@@ -226,61 +219,6 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
              hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
              hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
 
-!!$          call hy_rk_getGraveAccel(hy_starState, hy_grav, &
-!!$                                    hy_xCenter, hy_yCenter, deltas, &
-!!$                                    blkLimitsGC, loGC)
-!!$
-!!$           call hy_rk_getFlatteningLimiter(stage, hy_starState, hy_flat3d, limits, loGC)
-!!$
-!!$           call Timers_start("getFaceFlux")
-!!$           call hy_rk_getFaceFlux(stage, hy_starState, hy_flat3d, hy_flx, hy_fly, hy_flz, &
-!!$                                  limits, deltas, &
-!!$                                  hy_rope, hy_flux, hy_uPlus, hy_uMinus, &
-!!$                                  loGC)
-!!$           call Timers_stop("getFaceFlux")
-!!$           !------- Add this in -----
-!!$
-!!$           ! Now update solution based on conservative fluxes
-!!$           ! See select_RK_scheme() for explicit outline of C1, C2, & C3
-!!$           ! U* = C1 * U0 + C2 * U* + C3 * dt*L(U*)
-!!$
-!!$           call Timers_start("updateSoln")
-!!$           call hy_rk_updateSoln(stage, hy_starState, hy_tmpState, &
-!!$                                 hy_grav, hy_flx, hy_fly, hy_flz, &
-!!$                                 deltas, hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol, hy_xCenter, &
-!!$                                 hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
-!!$                                 dt, dtOld, limits, lo, loGC)
-!!$           call Timers_stop("updateSoln")
-!!$           call hy_rk_saveFluxBuf(stage, hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
-!!$                                  hy_flx, hy_fly, hy_flz, &
-!!$                                  hy_fareaX, hy_fareaY, hy_fareaZ, &
-!!$                                  blkLimits, lo, loGC)
-!!$#if NSPECIES>0
-!!$           !Properly normalize species after the update
-!!$           call hy_rk_renormAbundance(blkLimitsGC, hy_starState, loGC)
-!!$#endif
-!!$
-!!$           ! Update EOS based on intermediate solution
-!!$           @M hy_DIR_TARGET_update_from([hy_starState, limits])
-!!$           call Timers_start("eos")
-!!$           call Eos_multiDim(MODE_DENS_EI, limits(:, :, stage),lo, hy_starState)
-!!$           call Timers_stop("eos")
-!!$           @M hy_DIR_TARGET_update_to([hy_starState])
-!!$           !Finally update the state
-!!$           if (stage == last_stage) then !! this is only needed for telescoping version
-!!$              @M hy_updateState
-!!$           endif
-!!$           if ((.not. hy_telescoping) .and. hy_fluxCorrect) then
-!!$              @M hy_DIR_TARGET_update_from([hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ])
-!!$              call Grid_putFluxData_block(tileDesc, &
-!!$                                          hy_fluxBufX, &
-!!$                                          hy_fluxBufY, &
-!!$                                          hy_fluxBufZ, &
-!!$                                          blkLimits(LOW,:), &
-!!$                                          add=hy_addFluxArray(stage))
-!!$            end if
-!!$
-!!$        @M hy_end_stages_t
         if ((.not. hy_telescoping) .and. hy_geometry == CARTESIAN) then
            @M hy_DIR_TARGET_exit_data(release, [hy_fareaX, hy_fareaY, hy_fareaZ])
            @M hy_release_fareas

@@ -214,7 +214,10 @@ Module Hydro_interface
       end subroutine Hydro_molPostRegrid
    end interface
 
+   @M milhoja_hydro_common
+
    interface
+     @M milhoja_hydro_prepBlock 
      subroutine Hydro_prepBlock(Uin, hy_Vc, blkLimits, blkLimitsGC, hy_starState, hy_tmpState, &
                                 stage, lo, loGC)
         implicit none
@@ -224,10 +227,12 @@ Module Hydro_interface
         real, dimension(loGC(1):, loGC(2):, loGC(3):), intent(OUT) :: hy_Vc
         integer, dimension(LOW:HIGH, MDIM), intent(IN) :: blkLimits, blkLimitsGC
         integer, intent(IN) :: stage
-     end subroutine Hydro_prepBlock
+      end subroutine Hydro_prepBlock
+      @M milhoja_end
   end interface
 
-  interface 
+  interface
+     @M milhoja_hydro_advance
      subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
           hy_starState, hy_tmpState, &
           hy_flx, hy_fly, hy_flz, &
@@ -239,7 +244,8 @@ Module Hydro_interface
           lo, loGC, &
           hy_xCenter, hy_yCenter, hy_zCenter, &
           hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
-          hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
+          hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol&
+          @M milhoja_dependent_args)
        implicit none
        integer, intent(IN) :: stage_in, lo(3), loGC(3)
        real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(IN OUT) :: Uin
@@ -261,12 +267,13 @@ Module Hydro_interface
        real, dimension(loGC(1):), intent(IN) :: hy_xLeft, hy_xRight
        real, dimension(loGC(2):), intent(IN) :: hy_yLeft, hy_yRight
        real, dimension(loGC(1):, loGC(2):, loGC(3):), intent(IN) :: hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol
-
+       @M milhoja_declare_dependent_args
      end subroutine Hydro_advance
+     @M milhoja_end
   end interface
   
   
-  @M Hydro_interface_implementation_specific
+  
   
   
   
