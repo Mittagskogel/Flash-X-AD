@@ -144,3 +144,7 @@ IF nontelescoping
 	REQUIRES physics/Hydro/HydroMain/Spark/NonTelescoping
 ENDIF
 
+USESETUPVARS Milhoja
+IF Milhoja
+	REQUIRES physics/Hydro/HydroMain/Spark/milhoja
+ENDIF

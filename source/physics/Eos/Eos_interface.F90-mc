@@ -44,30 +44,35 @@ Module Eos_interface
   end interface
   
   interface
-     subroutine Eos_multiDim(mode,range,solnData)
+     subroutine Eos_multiDim(mode,range,lo,solnData)
        integer, intent(in) :: mode
-       integer, dimension(2,MDIM), intent(in) :: range
-       real, POINTER_INTENT_IN :: solnData(:,:,:,:)
+       integer, dimension(LOW:HIGH,MDIM), intent(in) :: range
+       integer, intent(in) :: lo(MDIM)
+       real,dimension(1:,lo(1):,lo(2):,lo(3):),intent(inout) :: solnData(:,:,:,:)
+       !!real,dimension(:,:,:,:), pointer :: solnData
      end subroutine 
   end interface
 
   interface 
-     subroutine Eos_fillEosData(range, solnData, vecB, vecE, eosData)
+     subroutine Eos_fillEosData(range,lo, solnData, vecB, vecE, eosData)
        integer, dimension(LOW:HIGH,MDIM), intent(in) :: range
        integer, intent(in) :: vecB
        integer, intent(inout) :: vecE
-       real, POINTER_INTENT_IN :: solnData(:,:,:,:)
+       integer, intent(in) :: lo(MDIM)
+       real,dimension(1:,lo(1):,lo(2):,lo(3):),intent(inout) :: solnData
        real, dimension(vecB:vecE,EOS_VARS), intent(out) :: eosData
      end subroutine Eos_fillEosData
   end interface
 
   interface 
-     subroutine Eos_getFromEosData( vecB, vecE, eosData, range, solnData)
+     subroutine Eos_getFromEosData( vecB, vecE, eosData, range, lo, solnData)
        integer, intent(in) :: vecB
-       integer, intent(inout) :: vecE
-       real, POINTER_INTENT_IN :: solnData(:,:,:,:)
+       integer,intent(inout) :: vecE
        integer, dimension(LOW:HIGH,MDIM), intent(in) :: range
-       real, dimension(vecB:vecE,EOS_VARS), intent(in) :: eosData
+       real, dimension(vecB:vecE,EOS_VARS),intent(in) :: eosData
+       integer, dimension(MDIM) :: lo
+       real,dimension(1:,lo(1):,lo(2):,lo(3):), intent(inout) :: solnData
+       !!real,dimension(:,:,:,:), pointer :: solnData
      end subroutine Eos_getFromEosData
   end interface
 

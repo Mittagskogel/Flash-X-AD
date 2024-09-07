@@ -415,7 +415,7 @@ subroutine Burn (  dt  )
      ! we've altered the EI, let's equilabrate
      if (any(burnedZone(:,:,:,thisBlock))) then
 
-        call Eos_multiDim(MODE_DENS_EI,tileDesc%limits,solnData)
+        call Eos_multiDim(MODE_DENS_EI,tileDesc%limits,tileDesc%blkLimitsGC(LOW,:),solnData)
 
      end if
 

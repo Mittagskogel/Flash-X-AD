@@ -1,0 +1,5 @@
+USESETUPVARS cpuonly
+IF cpuonly
+  REQUIRES physics/Hydro/HydroMain/Spark/milhoja/cpuonly
+ENDIF
+

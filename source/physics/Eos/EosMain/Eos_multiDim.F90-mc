@@ -29,7 +29,7 @@
 #include "constants.h"
 #include "Simulation.h"
  
-subroutine Eos_multiDim(mode,range,solnData)
+subroutine Eos_multiDim(mode,range,lo,solnData)
 
   use Driver_interface, ONLY : Driver_abort
   use Logfile_interface, ONLY: Logfile_stampMessage 
@@ -39,8 +39,9 @@ subroutine Eos_multiDim(mode,range,solnData)
 
   integer, intent(in) :: mode
   integer, dimension(2,MDIM), intent(in) :: range
-  real, POINTER_INTENT_IN :: solnData(:,:,:,:)
-
+  integer, intent(in) :: lo(MDIM)
+  real,dimension(1:,lo(1):,lo(2):,lo(3):),intent(inout) :: solnData
+  !!real,dimension(:,:,:,:), pointer :: solnData		
   integer :: ierr
   integer :: i,j,k, vecLen
 
@@ -64,14 +65,14 @@ subroutine Eos_multiDim(mode,range,solnData)
   allocate(massFrac(NSPECIES,vecLen))
   allocate(eosData(vecLen, EOS_VARS))
   
-  call Eos_fillEosData(range, solnData,1, vecLen, eosData)
+  call Eos_fillEosData(range, lo, solnData,1, vecLen, eosData)
   n = 0
   @M loop_3d(range,i,j,k)
              n=n+1
              massFrac(1:NSPECIES,n) = solnData(SPECIES_BEGIN:SPECIES_END,i,j,k)
   @M loop_end_3d   
   call Eos_vector(mode,vecLen,eosData, massFrac)
-  call Eos_getFromEosData( 1, vecLen, eosData, range, solnData)
+  call Eos_getFromEosData( 1, vecLen, eosData, range, lo, solnData)
   
   deallocate(massFrac)
   deallocate(eosData)
