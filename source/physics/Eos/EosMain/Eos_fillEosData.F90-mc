@@ -27,7 +27,7 @@
 !!REORDER(4): solnData
 
 
-subroutine Eos_fillEosData(range, lo, solnData, vecB, vecE, eosData)
+subroutine @M Eos_fillEosData_name @M pb range, lo, solnData, vecB, vecE, eosData @M pe
 
   use Eos_data, ONLY: eos_eintSwitch, eos_smalle, eos_mapLookup
   use Driver_interface, ONLY : Driver_abort
@@ -62,7 +62,7 @@ subroutine Eos_fillEosData(range, lo, solnData, vecB, vecE, eosData)
   @M loop_end_3d
   vecE=n
   return
-end subroutine Eos_fillEosData
+end subroutine @M Eos_fillEosData_name
 
 
 

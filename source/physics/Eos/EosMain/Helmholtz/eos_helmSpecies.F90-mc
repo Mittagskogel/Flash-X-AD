@@ -58,7 +58,7 @@
 #include "Multispecies.h"
 #endif
 
-subroutine eos_helmSpecies(mode,@M eos_args, massFrac,derivs)
+subroutine @M eos_name @M pb mode,@M eos_args, massFrac,derivs @M pe
 
   use Driver_interface, ONLY : Driver_abort
   use Multispecies_interface, ONLY : Multispecies_getSumInv, &
@@ -143,7 +143,7 @@ subroutine eos_helmSpecies(mode,@M eos_args, massFrac,derivs)
   
   if (mode==MODE_DENS_TEMP) then
      
-     call eos_helm()
+     call @M eos_helm_name
      pres=ptotRow
      eint=etotRow
      gamc=gamcRow
@@ -173,7 +173,7 @@ subroutine eos_helmSpecies(mode,@M eos_args, massFrac,derivs)
         esaveRow = ewantRow
      end if
      !  ewantRow is our desired EI input
-     call eos_helm()
+     call @M eos_helm_name
      
      tnew = tempRow - (etotRow - ewantRow)  & 
           &           / detRow
@@ -201,7 +201,7 @@ subroutine eos_helmSpecies(mode,@M eos_args, massFrac,derivs)
      do i = 2, eos_maxNewton
         if (error< eos_tol) goto 70
         
-        call eos_helm()
+        call @M eos_helm_name
         
         tnew = tempRow - (etotRow - ewantRow)  & 
              &              / detRow
@@ -255,7 +255,7 @@ subroutine eos_helmSpecies(mode,@M eos_args, massFrac,derivs)
      
      
      ! Crank through the entire eos one last time
-     call eos_helm()
+     call @M eos_helm_name
      !  In MODE_DENS_EI, we should be generating temperature and pressure (plus gamma and entropy)
      temp=tempRow
      pres=ptotRow
@@ -285,7 +285,7 @@ subroutine eos_helmSpecies(mode,@M eos_args, massFrac,derivs)
         psaveRow = pwantRow
      end if
      ! Initialize the errors
-     call eos_helm()
+     call @M eos_helm_name
      
      tnew = tempRow - (ptotRow - pwantRow)  & 
           &           / dptRow
@@ -315,7 +315,7 @@ subroutine eos_helmSpecies(mode,@M eos_args, massFrac,derivs)
         if (error .LT. eos_tol) goto 170
         
         ! do eos only over this single item
-        call eos_helm()
+        call @M eos_helm_name
         
         tnew = tempRow - (ptotRow - pwantRow)  & 
              &              / dptRow
@@ -367,7 +367,7 @@ subroutine eos_helmSpecies(mode,@M eos_args, massFrac,derivs)
      
      
      ! Crank through the entire eos one last time
-     call eos_helm()
+     call @M eos_helm_name
      
      ! Fill the FLASH arrays with the results.  
      temp=tempRow
@@ -415,7 +415,7 @@ subroutine eos_helmSpecies(mode,@M eos_args, massFrac,derivs)
 
   return
 
-end subroutine eos_helmSpecies
+end subroutine @M eos_name 
 
 
 

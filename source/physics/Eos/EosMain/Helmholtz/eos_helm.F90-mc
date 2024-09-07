@@ -33,12 +33,12 @@
 !!  
 !!  references: cox & giuli chapter 24 ; timmes & swesty apj 1999
 !!
-
+!!NOVARIANTS
 #ifdef DEBUG_ALL
 #define DEBUG_EOS
 #endif
 
-subroutine eos_helm()
+subroutine @M eos_helm_name
 
   use eos_helmData, ONLY: eos_f, eos_ft, eos_ftt, eos_fd, eos_fdd, eos_fdt, &
        eos_fddt, eos_fdtt, eos_fddtt, &
@@ -852,4 +852,4 @@ subroutine eos_helm()
 
   return
 
-end subroutine eos_helm
+end subroutine @M eos_helm_name

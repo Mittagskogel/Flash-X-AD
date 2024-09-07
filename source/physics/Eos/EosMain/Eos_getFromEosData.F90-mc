@@ -32,7 +32,7 @@
 !!REORDER(4): solnData
 
 
-subroutine Eos_getFromEosData( vecB, vecE, eosData,range, lo, solnData)
+subroutine @M Eos_getFromEosData_name @M pb vecB, vecE, eosData,range, lo, solnData @M pe
 
   use Eos_data, ONLY: eos_mapLookup
   use Driver_interface, ONLY : Driver_abort
@@ -63,7 +63,7 @@ subroutine Eos_getFromEosData( vecB, vecE, eosData,range, lo, solnData)
             !! consolidate the data at the point into eosData
    @M loop_end_3d
   return
-end subroutine Eos_getFromEosData
+end subroutine @M Eos_getFromEosData_name
 
 
 

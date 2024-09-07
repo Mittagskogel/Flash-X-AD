@@ -26,7 +26,7 @@
 #include "Eos.h"
 #include "Simulation.h"
 
-subroutine Eos_vector(mode, vecLen, eosData, massFrac1, derivs)
+subroutine @M Eos_vector_name @M pb mode, vecLen, eosData, massFrac1, derivs @M pe
 
 !==============================================================================
   use Driver_interface, ONLY : Driver_abort
@@ -101,6 +101,6 @@ subroutine Eos_vector(mode, vecLen, eosData, massFrac1, derivs)
 #endif   
 
   return
-end subroutine Eos_Vector
+end subroutine @M Eos_vector_name
 
 

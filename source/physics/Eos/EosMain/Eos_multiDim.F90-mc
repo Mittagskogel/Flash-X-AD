@@ -29,7 +29,7 @@
 #include "constants.h"
 #include "Simulation.h"
  
-subroutine Eos_multiDim(mode,range,lo,solnData)
+subroutine @M Eos_multidim_name @M pb mode,range,lo,solnData @M eos_scratchArgs @M pe
 
   use Driver_interface, ONLY : Driver_abort
   use Logfile_interface, ONLY: Logfile_stampMessage 
@@ -47,7 +47,7 @@ subroutine Eos_multiDim(mode,range,lo,solnData)
 
   integer :: n,m
   real :: @M eos_args
-
+  @M eos_scratchArgs_declare
   real, allocatable, dimension(:,:) :: eosData, massFrac
 
   @M eos_debug
@@ -77,4 +77,4 @@ subroutine Eos_multiDim(mode,range,lo,solnData)
   deallocate(massFrac)
   deallocate(eosData)
   
-end subroutine Eos_multiDim
+end subroutine @M Eos_multidim_name
