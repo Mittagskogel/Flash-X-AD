@@ -46,7 +46,7 @@
 #include "Simulation.h"
   
 
-subroutine @M eos_name @M pb mode, @M eos_args, massFrac, derivs @M pe
+subroutine @M eos_gam_name @M pb mode, @M eos_args, massFrac, derivs @M pe
   
   !==============================================================================
   use Eos_data, ONLY : eos_gasConstant, eos_gamma, &
@@ -156,7 +156,7 @@ subroutine @M eos_name @M pb mode, @M eos_args, massFrac, derivs @M pe
   
   
   return
-end subroutine @M eos_name
+end subroutine @M eos_gam_name
 
 !! FOR FUTURE  : This section is not in use in FLASH 3 yet. none
 !! of the current setups use entropy. This will be taken care of 

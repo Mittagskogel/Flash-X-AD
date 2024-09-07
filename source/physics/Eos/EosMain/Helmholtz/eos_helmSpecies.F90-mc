@@ -58,7 +58,7 @@
 #include "Multispecies.h"
 #endif
 
-subroutine @M eos_name @M pb mode,@M eos_args, massFrac,derivs @M pe
+subroutine @M eos_hh_name @M pb mode,@M eos_args, massFrac,derivs @M pe
 
   use Driver_interface, ONLY : Driver_abort
   use Multispecies_interface, ONLY : Multispecies_getSumInv, &
@@ -415,7 +415,7 @@ subroutine @M eos_name @M pb mode,@M eos_args, massFrac,derivs @M pe
 
   return
 
-end subroutine @M eos_name 
+end subroutine @M eos_hh_name 
 
 
 
