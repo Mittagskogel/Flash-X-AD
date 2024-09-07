@@ -47,6 +47,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
   use Logfile_interface, ONLY : Logfile_stampVarMask
   use Eos_interface, ONLY : Eos_multiDim
   use IO_interface, ONLY : IO_setScalar
+  use Hydro_interface, ONLY : Hydro_prepBlock, Hydro_advance
 
 
   use Hydro_data, ONLY : hy_useHydro, &
@@ -154,15 +155,22 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         if (hy_geometry /= CARTESIAN) then
 	   @M hy_map_fareas
            @M hy_map_geom
-           @M hy_fill_geom
         elseif (.not. hy_telescoping) then
            @M hy_map_fareas
+        end if
+        if (hy_geometry /= CARTESIAN) then
+           @M hy_fill_geom
+        elseif (.not. hy_telescoping) then
            @M hy_fill_fareas
         end if
+
+        call Hydro_prepBlock(Uin, hy_Vc, blkLimits, blkLimitsGC, hy_starState, hy_tmpState, &
+                                stage, lo, loGC)
         if (.not. hy_telescoping) then
            @M hy_DIR_TARGET_enter_data(to, [Uin])
         end if
 
+        
         if (hy_geometry /= CARTESIAN) then
            @M hy_DIR_TARGET_enter_data(to, [hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol])
            @M hy_DIR_TARGET_enter_data(to, [hy_xCenter, hy_xLeft, hy_xRight])
@@ -186,79 +194,31 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         ! DivB will technically be lagged by 1 step, but we need ghost zones to
         ! compute the gradients. I ain't doing more communication for a diagnostic...
 
-        @M hy_calcDivB
 
-        call Timers_start("Offloaded Section")
-
-        if (hy_telescoping .OR. stage==1) call hy_rk_shockDetect(Uin, hy_Vc, blkLimitsGC, loGC)
-
-        call Timers_start("scratch")
-        call hy_rk_initSolnScratch(stage, Uin, hy_starState, hy_tmpState, &
-                                   blkLimits, blkLimitsGC, lo, loGC)
         if (.not. hy_telescoping .and. stage == 1) then
            @M hy_DIR_TARGET_update_from([hy_tmpState])
         end if
         call Timers_stop("scratch")
 
+
+        
         !! Begin loop over stages for the telescoping mode.
-        @M hy_stages_t !! this is the do loop statement for telescoping version
+        !!@M hy_stages_t !! this is the do loop statement for telescoping version
            ! calculate gravitational acceleration based on current value of GPOT_VAR
            ! This is stored in module-scope variable hy_grav
-           call hy_rk_getGraveAccel(hy_starState, hy_grav, &
-                                    hy_xCenter, hy_yCenter, deltas, &
-                                    blkLimitsGC, loGC)
+        call Hydro_advance(stage, Uin, dt, dtOld, &
+             hy_starState, hy_tmpState, &
+             hy_flx, hy_fly, hy_flz, &
+             hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
+             hy_grav, hy_flat3d, &
+             hy_rope, hy_flux, hy_uPlus, hy_uMinus, &
+             deltas, &
+             blkLimits, blkLimitsGC, &
+             lo, loGC, &
+             hy_xCenter, hy_yCenter, hy_zCenter, &
+             hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
+             hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
 
-           call hy_rk_getFlatteningLimiter(stage, hy_starState, hy_flat3d, limits, loGC)
-
-           call Timers_start("getFaceFlux")
-           call hy_rk_getFaceFlux(stage, hy_starState, hy_flat3d, hy_flx, hy_fly, hy_flz, &
-                                  limits, deltas, &
-                                  hy_rope, hy_flux, hy_uPlus, hy_uMinus, &
-                                  loGC)
-           call Timers_stop("getFaceFlux")
-           !------- Add this in -----
-
-           ! Now update solution based on conservative fluxes
-           ! See select_RK_scheme() for explicit outline of C1, C2, & C3
-           ! U* = C1 * U0 + C2 * U* + C3 * dt*L(U*)
-
-           call Timers_start("updateSoln")
-           call hy_rk_updateSoln(stage, hy_starState, hy_tmpState, &
-                                 hy_grav, hy_flx, hy_fly, hy_flz, &
-                                 deltas, hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol, hy_xCenter, &
-                                 hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
-                                 dt, dtOld, limits, lo, loGC)
-           call Timers_stop("updateSoln")
-           call hy_rk_saveFluxBuf(stage, hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
-                                  hy_flx, hy_fly, hy_flz, &
-                                  hy_fareaX, hy_fareaY, hy_fareaZ, &
-                                  blkLimits, lo, loGC)
-           if ((.not. hy_telescoping) .and. hy_fluxCorrect) then
-              @M hy_DIR_TARGET_update_from([hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ])
-              call Grid_putFluxData_block(tileDesc, &
-                                          hy_fluxBufX, &
-                                          hy_fluxBufY, &
-                                          hy_fluxBufZ, &
-                                          blkLimits(LOW,:), &
-                                          add=hy_addFluxArray(stage))
-            end if
-#if NSPECIES>0
-           !Properly normalize species after the update
-           call hy_rk_renormAbundance(blkLimitsGC, hy_starState, loGC)
-#endif
-
-           ! Update EOS based on intermediate solution
-           @M hy_DIR_TARGET_update_from([hy_starState, limits])
-           call Timers_start("eos")
-           call Eos_multiDim(MODE_DENS_EI, limits(:, :, stage), hy_starState)
-           call Timers_stop("eos")
-           @M hy_DIR_TARGET_update_to([hy_starState])
-           !Finally update the state
-           if (stage == last_stage) then !! this is only needed for telescoping version
-              @M hy_updateState
-           endif
-
-        @M hy_end_stages_t
         if ((.not. hy_telescoping) .and. hy_geometry == CARTESIAN) then
            @M hy_DIR_TARGET_exit_data(release, [hy_fareaX, hy_fareaY, hy_fareaZ])
            @M hy_release_fareas
@@ -353,6 +313,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
             @M hy_DIR_TARGET_enter_data(to, [Uin])
 
             if (hy_geometry /= CARTESIAN) then
+               @M hy_map_geom
                @M hy_fill_geom
                @M hy_DIR_TARGET_enter_data(to, [hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol])
                @M hy_DIR_TARGET_enter_data(to, [hy_xCenter, hy_xLeft, hy_xRight])
@@ -360,6 +321,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
                @M hy_DIR_TARGET_enter_data(to, [hy_zCenter])
             endif
             if ((.not. hy_telescoping) .and. hy_geometry == CARTESIAN) then
+               @M hy_map_fareas
                @M hy_fill_fareas
                @M hy_DIR_TARGET_enter_data(to, [hy_fareaX, hy_fareaY, hy_fareaZ])
             end if
@@ -432,7 +394,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
                ! Update EOS based on intermediate solution
                @M hy_DIR_TARGET_update_from([hy_starState, limits])
                call Timers_start("eos")
-               call Eos_multiDim(MODE_DENS_EI, limits(:, :, stage), hy_starState)
+               call Eos_multiDim(MODE_DENS_EI, limits(:, :, stage),lo, hy_starState)
                call Timers_stop("eos")
                @M hy_DIR_TARGET_update_to([hy_starState])
 

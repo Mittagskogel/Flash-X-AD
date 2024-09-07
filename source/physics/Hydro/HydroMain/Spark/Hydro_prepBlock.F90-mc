@@ -15,27 +15,38 @@
 
 !> @ingroup HydroSpark
 !!
-!! @brief Main implementations of Spark Hydro solver
-!!
-!! @stubref{Hydro_prepBlock}
 !<
 
-!!Reorder(4): hy_fl[xyz],hy_fluxBuf[XYZ],hy_starState,hy_tmpState,Uin
-!!Reorder(4): hy_rope,hy_flux,hy_uPlus,hy_uMinus
 !!NOVARIANTS
+!!Reorder(4): Uin,hy_starState,hy_tmpState
+subroutine Hydro_prepBlock(Uin, hy_Vc, blkLimits, blkLimitsGC, hy_starState, hy_tmpState, &
+                           stage, lo, loGC)
 
-#ifdef DEBUG_ALL
-#define DEBUG_HYDRO
-#define DEBUG_HYDRO_OFFLOADING
-#endif
-#define DEBUG_GRID_GCMASK
+#include "Simulation.h"
+#include "constants.h"
 
-subroutine Hydro_prepBlock(Uin,blkLimits, blkLimitsGC,&
-     @M hy_impl_specific_args)
+   use hy_rk_interface, ONLY: hy_rk_shockDetect, &
+                              hy_rk_initSolnScratch
+   use Hydro_data, ONLY: hy_telescoping
 
-  integer, dimension(LOW:HIGH,MDIM) :: blkLimits, blkLimitsGC
-  real,dimension(@M bounds_3d(blkLimitsGC)),intent(IN) :: Uin
-  @M hy_impl_specific_declarations
-  
-  
+!!$   @M hy_DIR_TARGET_routine(vector)
+!!$
+!!$   @M hy_DIR_TARGET_routine_vector(hy_rk_shockDetect)
+!!$   @M hy_DIR_TARGET_routine_vector(hy_rk_initSolnScratch)
+
+   implicit none
+
+   integer, intent(IN) :: lo(3), loGC(3)
+   real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(IN OUT) :: Uin
+   real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(OUT) :: hy_starState, hy_tmpState
+   real, dimension(loGC(1):, loGC(2):, loGC(3):), intent(OUT) :: hy_Vc
+   integer, dimension(LOW:HIGH, MDIM), intent(IN) :: blkLimits, blkLimitsGC
+   integer, intent(IN) :: stage
+
+   @M hy_calcDivB
+   if (hy_telescoping .OR. stage == 1) call hy_rk_shockDetect(Uin, hy_Vc, blkLimitsGC, loGC)
+   call hy_rk_initSolnScratch(stage, Uin, hy_starState, hy_tmpState, &
+                              blkLimits, blkLimitsGC, lo, loGC)
+
 end subroutine Hydro_prepBlock
+
