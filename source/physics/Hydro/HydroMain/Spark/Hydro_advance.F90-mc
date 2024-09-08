@@ -124,7 +124,7 @@ subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
 #endif
       range(LOW:HIGH,1:MDIM) = limits(LOW:HIGH,1:MDIM,stage)
       solnData=>hy_starState
-      call Eos_multiDim(MODE_DENS_EI, range, loGC, solnData)
+      call Eos_multiDim(MODE_DENS_EI, range, loGC, solnData @M hy_eos_args)
 
    @M hy_end_stages_t
 

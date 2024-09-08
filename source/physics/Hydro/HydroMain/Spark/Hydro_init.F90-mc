@@ -250,6 +250,7 @@ subroutine Hydro_init()
 
   @M hy_allocate_scr
   @M hy_allocate_flx_scr
+  @M hy_allocate_eos_scr
 
 contains
 
