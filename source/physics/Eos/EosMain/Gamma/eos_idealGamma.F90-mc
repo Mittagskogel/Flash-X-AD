@@ -35,7 +35,7 @@
 !!
 !!  For Gamma routines, the entropy and entropy derivatives 
 !!  calculations have not been confirmed to be correct.  Use with caution.
-!!NOVARIANTS
+!!
 
 !#ifdef DEBUG_ALL
 #define DEBUG_EOS

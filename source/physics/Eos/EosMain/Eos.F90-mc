@@ -20,20 +20,20 @@
 !! @subref{Eos}
 !!
 !!
-!!NOVARIANTS
+!!
 
 #include "constants.h"
 #include "Eos.h"
 #include "Simulation.h"
 
 
-subroutine Eos(mode, @M eos_args, massFrac, derivs)
+subroutine @M Eos_name @M pb mode, @M eos_args, massFrac, derivs @M pe
 
 !==============================================================================
   use Driver_interface, ONLY : Driver_abort
   use Eos_data, ONLY : eos_meshMe, eos_type
-  use eos_localInterface, ONLY : eos_idealGamma, eos_helmSpecies, eos_weakLib
-
+  use eos_localInterface, ONLY : eos_idealGamma, eos_helmSpecies, eos_weakLib,&
+        eos_idealGamma_GPU, eos_helmSpecies_GPU, eos_weakLib_GPU   
 
   implicit none
   integer, INTENT(in) :: mode
@@ -71,7 +71,7 @@ subroutine Eos(mode, @M eos_args, massFrac, derivs)
   end if
 
   return
-end subroutine Eos
+end subroutine @M Eos_name
 
 
 ! Ugly hack to prevent this version of Eos.F90 from compiling if

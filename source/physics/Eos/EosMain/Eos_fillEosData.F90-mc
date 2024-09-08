@@ -16,7 +16,7 @@
 !!
 !! @subref{Eos_fillEosData}
 !!***
-!!NOVARIANTS
+!!
 #include "Eos.h"
 #include "Eos_map.h"
 #include "constants.h"

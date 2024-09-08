@@ -33,7 +33,7 @@
 !!  
 !!  references: cox & giuli chapter 24 ; timmes & swesty apj 1999
 !!
-!!NOVARIANTS
+!!
 #ifdef DEBUG_ALL
 #define DEBUG_EOS
 #endif

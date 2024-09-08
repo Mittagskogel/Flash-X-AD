@@ -53,6 +53,8 @@ Module Eos_interface
      end subroutine 
   end interface
 
+  @M Eos_multiDim_GPU_interface
+
   interface 
      subroutine Eos_fillEosData(range,lo, solnData, vecB, vecE, eosData)
        integer, dimension(LOW:HIGH,MDIM), intent(in) :: range
@@ -63,6 +65,8 @@ Module Eos_interface
        real, dimension(vecB:vecE,EOS_VARS), intent(out) :: eosData
      end subroutine Eos_fillEosData
   end interface
+
+  @M Eos_fillEosData_GPU_interface
 
   interface 
      subroutine Eos_getFromEosData( vecB, vecE, eosData, range, lo, solnData)
@@ -76,7 +80,8 @@ Module Eos_interface
      end subroutine Eos_getFromEosData
   end interface
 
-  
+  @M Eos_getFromEosData_GPU_interface
+
   interface
      subroutine Eos(mode,  @M eos_args, massFrac, derivs)
        integer, INTENT(in) :: mode
@@ -85,6 +90,8 @@ Module Eos_interface
        real, optional, INTENT(out),dimension(EOS_VARS+1:EOS_NUM) :: derivs
      end subroutine Eos
   end interface
+
+   @M Eos_GPU_interface
   
   interface	
      subroutine Eos_vector(mode, vecLen, eosData,  massFrac, derivs)
@@ -95,7 +102,8 @@ Module Eos_interface
      end subroutine Eos_Vector
   end interface
 
-  
+  @M Eos_vector_GPU_interface
+
   interface Eos_init
      subroutine Eos_init()
      end subroutine Eos_init

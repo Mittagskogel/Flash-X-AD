@@ -19,7 +19,7 @@
 !! @subref{Eos_vector}
 !!
 !!
-!!NOVARIANTS
+!!
 
 
 #include "constants.h"
@@ -31,7 +31,8 @@ subroutine @M Eos_vector_name @M pb mode, vecLen, eosData, massFrac1, derivs @M 
 !==============================================================================
   use Driver_interface, ONLY : Driver_abort
   use Eos_data, ONLY : eos_meshMe, eos_type
-  use eos_localInterface, ONLY : eos_helmSpecies, eos_idealGamma, eos_weakLib
+  use eos_localInterface, ONLY : eos_idealGamma, eos_helmSpecies, eos_weakLib,&
+        eos_idealGamma_GPU, eos_helmSpecies_GPU, eos_weakLib_GPU   
 
 
   implicit none

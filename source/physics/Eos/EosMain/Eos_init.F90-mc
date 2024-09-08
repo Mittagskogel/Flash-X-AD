@@ -20,7 +20,7 @@
 !!
 !!
 !!***
-!!NOVARIANTS
+!!
 subroutine Eos_init()
 
   use Eos_data

@@ -24,7 +24,7 @@
 !!   10/17/2018
 !!
 
-!!NOVARIANTS
+!!
 
 #include "constants.h"
 #include "Simulation.h"
