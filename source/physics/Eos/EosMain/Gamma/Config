@@ -17,4 +17,9 @@ PPDEFINE FLASH_EOS_GAMMA
 # that only this implementation has been loaded if the Hybrid EOS has not
 PPDEFINE EOS_GAMMA_INCLUDED
 
-VARIANTS Null GPU
+VARIANTS Null
+
+USESETUPVARS Milhoja
+IF Milhoja
+  VARIANTS GPU
+ENDIF
