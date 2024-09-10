@@ -451,14 +451,14 @@ subroutine Eos_unitTest(fileUnit, perfect)
                  call assertEqual(derivedVariables(i,j,k,EOS_DED), 0.0, &
                                   cpos//"Bad dE/drho for Gamma Eos")
                  call assertAlmostEqual(derivedVariables(i,j,k,EOS_DET), &
-                                        solnData(EOS_EINT,i,j,k) / solnData(EOS_TEMP,i,j,k), &
-                                        tolerance, cpos//"Bad dE/dT for Gamma Eos")
+                                        solnData(EINT_VAR,i,j,k) / solnData(TEMP_VAR,i,j,k), &
+                                        cpos//"Bad dE/dT for Gamma Eos")
                  if (derivedVariables(i,j,k,EOS_CV) == 0.0) then
                     call assertFalse(derivedVariables(i,j,k,EOS_CV) == 0.0, &
                                      cpos//"Cv is zero for Gamma Eos")
                  else
                     call assertAlmostEqual(derivedVariables(i,j,k,EOS_CP) / derivedVariables(i,j,k,EOS_CV), &
-                                        solnData(EOS_GAMC,i,j,k), &
+                                        solnData(GAMC_VAR,i,j,k), &
                                         tolerance, cpos//"Bad Cp/Cv for Gamma Eos")
                  end if
               end do
