@@ -85,7 +85,7 @@ subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
    integer :: stage, ng, dir
    integer, parameter :: last_stage = MAXSTAGE
 
-   @M hy_declare_eos_scr
+   @M hy_eos_declare_scr
 
 
 

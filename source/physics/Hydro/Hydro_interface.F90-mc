@@ -214,67 +214,6 @@ Module Hydro_interface
       end subroutine Hydro_molPostRegrid
    end interface
 
-   @M milhoja_hydro_common
+   @M Hydro_interface_implementation_specific
 
-   interface
-     @M milhoja_hydro_prepBlock 
-     subroutine Hydro_prepBlock(Uin, hy_Vc, blkLimits, blkLimitsGC, hy_starState, hy_tmpState, &
-                                stage, lo, loGC)
-        implicit none
-        integer, intent(IN) :: lo(3), loGC(3)
-        real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(IN OUT) :: Uin
-        real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(OUT) :: hy_starState, hy_tmpState
-        real, dimension(loGC(1):, loGC(2):, loGC(3):), intent(OUT) :: hy_Vc
-        integer, dimension(LOW:HIGH, MDIM), intent(IN) :: blkLimits, blkLimitsGC
-        integer, intent(IN) :: stage
-      end subroutine Hydro_prepBlock
-      @M milhoja_end
-  end interface
-
-  interface
-     @M milhoja_hydro_advance
-     subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
-          hy_starState, hy_tmpState, &
-          hy_flx, hy_fly, hy_flz, &
-          hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
-          hy_grav, hy_flat3d, &
-          hy_rope, hy_flux, hy_uPlus, hy_uMinus, &
-          deltas, &
-          blkLimits, blkLimitsGC, &
-          lo, loGC, &
-          hy_xCenter, hy_yCenter, hy_zCenter, &
-          hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
-          hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol&
-          @M milhoja_dependent_args)
-       implicit none
-       integer, intent(IN) :: stage_in, lo(3), loGC(3)
-       real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(IN OUT) :: Uin
-       real, intent(IN) :: dt, dtold
-       real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(IN OUT) :: hy_starState
-       real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(OUT) :: hy_flx, hy_fly, hy_flz
-       real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(IN) :: hy_tmpState
-       real, dimension(1:, lo(1):, lo(2):, lo(3):), intent(OUT) :: hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ
-       real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(OUT) :: hy_rope, hy_flux, hy_uPlus, hy_uMinus
-       real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(OUT) :: hy_grav
-       real, dimension(loGC(1):, loGC(2):, loGC(3):), intent(OUT) :: hy_flat3d
-       
-       integer, dimension(LOW:HIGH, MDIM), intent(IN) :: blkLimits, blkLimitsGC
-       
-       real, dimension(MDIM), intent(IN)  :: deltas
-       real, dimension(loGC(1):), intent(IN) :: hy_xCenter
-       real, dimension(loGC(2):), intent(IN) :: hy_yCenter
-       real, dimension(loGC(3):), intent(IN) :: hy_zCenter
-       real, dimension(loGC(1):), intent(IN) :: hy_xLeft, hy_xRight
-       real, dimension(loGC(2):), intent(IN) :: hy_yLeft, hy_yRight
-       real, dimension(loGC(1):, loGC(2):, loGC(3):), intent(IN) :: hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol
-       @M milhoja_declare_dependent_args
-     end subroutine Hydro_advance
-     @M milhoja_end
-  end interface
-  
-  
-  
-  
-  
-  
 end Module Hydro_interface
