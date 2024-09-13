@@ -32,7 +32,8 @@ subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
                          lo, loGC, &
                          hy_xCenter, hy_yCenter, hy_zCenter, &
                          hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
-                         hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
+                         hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol &
+                         @M hy_eos_args)
 
 #include "Simulation.h"
 #include "constants.h"
@@ -47,22 +48,22 @@ subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
    use Eos_interface, ONLY : Eos_multiDim
 
 
-!!$   @M hy_DIR_TARGET_routine(vector)
-!!$
-!!$   @M hy_DIR_TARGET_routine_vector(hy_rk_getGraveAccel)
-!!$   @M hy_DIR_TARGET_routine_vector(hy_rk_getFlatteningLimiter)
-!!$   @M hy_DIR_TARGET_routine_vector(hy_rk_getFaceFlux)
-!!$   @M hy_DIR_TARGET_routine_vector(hy_rk_updateSoln)
-!!$   @M hy_DIR_TARGET_routine_vector(hy_rk_saveFluxBuf)
-!!$   @M hy_DIR_TARGET_routine_vector(hy_rk_renormAbundance)
-!!$   @M hy_DIR_TARGET_routine_vector(hy_rk_eos_wrapped)
+   @M hy_DIR_TARGET_routine(vector)
+
+   @M hy_DIR_TARGET_routine_vector(hy_rk_getGraveAccel)
+   @M hy_DIR_TARGET_routine_vector(hy_rk_getFlatteningLimiter)
+   @M hy_DIR_TARGET_routine_vector(hy_rk_getFaceFlux)
+   @M hy_DIR_TARGET_routine_vector(hy_rk_updateSoln)
+   @M hy_DIR_TARGET_routine_vector(hy_rk_saveFluxBuf)
+   @M hy_DIR_TARGET_routine_vector(hy_rk_renormAbundance)
+   @M hy_DIR_TARGET_routine_vector(hy_rk_eos_wrapped)
 
    implicit none
 
    integer, intent(IN) :: stage_in, lo(3), loGC(3)
    real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(IN OUT) :: Uin
    real, intent(IN) :: dt, dtold
-   real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(IN OUT),target :: hy_starState
+   real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(IN OUT) :: hy_starState
    real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(OUT) :: hy_flx, hy_fly, hy_flz
    real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(IN) :: hy_tmpState
    real, dimension(1:, lo(1):, lo(2):, lo(3):), intent(OUT) :: hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ
@@ -81,16 +82,16 @@ subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
    real, dimension(loGC(1):, loGC(2):, loGC(3):), intent(IN) :: hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol
 
    integer, dimension(LOW:HIGH, MDIM, MAXSTAGE) :: limits
-   integer,dimension(LOW:HIGH,MDIM) :: range
    integer :: stage, ng, dir
-   real,pointer,dimension(:,:,:,:) :: solnData
    integer, parameter :: last_stage = MAXSTAGE
 
-   stage=stage_in
+   @M hy_declare_eos_scr
 
+
+
+   @M hy_setStage_nt
 
    @M hy_setLimits
-
 
    !! Begin loop over stages for the telescoping mode.
    @M hy_stages_t
@@ -122,9 +123,7 @@ subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
       !Properly normalize species after the update
       call hy_rk_renormAbundance(blkLimitsGC, hy_starState, loGC)
 #endif
-      range(LOW:HIGH,1:MDIM) = limits(LOW:HIGH,1:MDIM,stage)
-      solnData=>hy_starState
-      call Eos_multiDim(MODE_DENS_EI, range, loGC, solnData @M hy_eos_args)
+      call Eos_multiDim(MODE_DENS_EI, limits(LOW:HIGH,1:MDIM,stage), loGC, hy_starState @M hy_eos_args)
 
    @M hy_end_stages_t
 

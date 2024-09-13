@@ -29,10 +29,10 @@ subroutine Hydro_prepBlock(Uin, hy_Vc, blkLimits, blkLimitsGC, hy_starState, hy_
                               hy_rk_initSolnScratch
    use Hydro_data, ONLY: hy_telescoping
 
-!!$   @M hy_DIR_TARGET_routine(vector)
-!!$
-!!$   @M hy_DIR_TARGET_routine_vector(hy_rk_shockDetect)
-!!$   @M hy_DIR_TARGET_routine_vector(hy_rk_initSolnScratch)
+   @M hy_DIR_TARGET_routine(vector)
+
+   @M hy_DIR_TARGET_routine_vector(hy_rk_shockDetect)
+   @M hy_DIR_TARGET_routine_vector(hy_rk_initSolnScratch)
 
    implicit none
 
