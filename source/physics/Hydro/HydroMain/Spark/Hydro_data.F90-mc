@@ -73,14 +73,12 @@ module Hydro_data
   integer, dimension(3) :: hy_limitsArray
   real, dimension(3,3) :: hy_coeffArray
   real, dimension(MDIM) :: hy_globalLBnd
-  real,allocatable,dimension(:,:) :: hy_eosData, hy_eosMfrac
-  @M hy_declare_eos_scr
 
    @M hy_DIR_TARGET_declare_data([hy_cvisc, hy_limRad, hy_tiny, hy_gravConst, hy_4piGinv, hy_bref])
    @M hy_DIR_TARGET_declare_data([hy_smalldens, hy_smallE, hy_smallpres, hy_smallX, hy_smallu])
    @M hy_DIR_TARGET_declare_data([hy_fluxCorrect, hy_fluxCorrectPerLevel, hy_fluxCorVars, hy_geometry])
    @M hy_DIR_TARGET_declare_data([hy_hybridRiemann, hy_flattening, hy_alphaGLM, hy_lChyp])
-   @M hy_DIR_TARGET_declare_data([hy_coeffs, hy_weights, hy_limitsArray, hy_coeffArray, hy_glbalLbnd])
+   @M hy_DIR_TARGET_declare_data([hy_coeffs, hy_weights, hy_limitsArray, hy_coeffArray, hy_globalLBnd])
    @M hy_DIR_TARGET_declare_data([hy_cfl, hy_telescoping, hy_addFluxArray, hy_maxLev, hy_maxCells])
 
    @M hy_DIR_TARGET_declare_data([hya_tmpState, hya_starState, hya_flx, hya_fly, hya_flz])
