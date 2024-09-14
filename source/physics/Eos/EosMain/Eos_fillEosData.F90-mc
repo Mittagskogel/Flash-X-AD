@@ -42,6 +42,7 @@ subroutine @M Eos_fillEosData_name @M pb range, lo, solnData, vecB, vecE, eosDat
   integer, dimension(MDIM+1) :: lob
 
   integer :: i,j,k,n
+  integer :: ilo, ihi, jlo, jhi, klo, khi, base_n
   real :: @M eos_args, ekin
   @M eos_map_declare
   !! ---------------------------------------------------------------------------------
@@ -51,11 +52,21 @@ subroutine @M Eos_fillEosData_name @M pb range, lo, solnData, vecB, vecE, eosDat
   !! get the map of eos indices to state variable indices
   @M eos_map
   @M eos_args_init
-  n = vecB-1
+  base_n = vecB-1
+  !! for readability
+  ilo = range(LOW,  IAXIS)
+  ihi = range(HIGH, IAXIS)
+  jlo = range(LOW,  JAXIS)
+  jhi = range(HIGH, JAXIS)
+  klo = range(LOW,  KAXIS)
+  khi = range(HIGH, KAXIS)
   !! DEV: If / when we add a ptr dummy argument for passing in an offset, this will be n = ptr
   @M loop_3d(range,i,j,k)
   !! account for kinetic energy
-            n=n+1
+            n = base_n + &
+                ((k - klo) * (jhi - jlo + 1) * (ihi - ilo + 1)) + &
+                ((j - jlo) * (ihi - ilo + 1)) + &
+                (i - ilo) + 1
             @M eos_preprocess
             !! consolidate the data at the point into eosData
             @M eos_pack(eosData,n)

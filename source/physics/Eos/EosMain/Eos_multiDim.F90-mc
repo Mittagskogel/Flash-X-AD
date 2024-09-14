@@ -44,6 +44,7 @@ subroutine @M Eos_multidim_name @M pb mode,range,lo,solnData @M eos_scratchArgs 
   !!real,dimension(:,:,:,:), pointer :: solnData		
   integer :: ierr
   integer :: i,j,k, vecLen
+  integer :: ilo, ihi, jlo, jhi, klo, khi, base_n
   @M eos_scratch_args_declare
 
   integer :: n,m
@@ -65,9 +66,19 @@ subroutine @M Eos_multidim_name @M pb mode,range,lo,solnData @M eos_scratchArgs 
   @M eos_scratch_alloc
   
   call @M Eos_fillEosData_name @M pb range, lo, solnData,1, vecLen, eosData @M pe
-  n = 0
+  base_n = 0
+  !! for readability
+  ilo = range(LOW,  IAXIS)
+  ihi = range(HIGH, IAXIS)
+  jlo = range(LOW,  JAXIS)
+  jhi = range(HIGH, JAXIS)
+  klo = range(LOW,  KAXIS)
+  khi = range(HIGH, KAXIS)
   @M loop_3d(range,i,j,k)
-             n=n+1
+             n = base_n + &
+                 ((k - klo) * (jhi - jlo + 1) * (ihi - ilo + 1)) + &
+                 ((j - jlo) * (ihi - ilo + 1)) + &
+                 (i - ilo) + 1
              massFrac(1:NSPECIES,n) = solnData(SPECIES_BEGIN:SPECIES_END,i,j,k)
   @M loop_end_3d   
   call @M Eos_vector_name @M pb mode,vecLen,eosData, massFrac @M pe
