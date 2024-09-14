@@ -52,4 +52,10 @@ DATAFILES helm_table.dat
 # that only this implementation has been loaded if the Hybrid EOS has not
 PPDEFINE EOS_HELMHOLTZ_INCLUDED
 
-VARIANTS NULL GPU
+VARIANTS Null
+
+USESETUPVARS Milhoja
+IF Milhoja
+  VARIANTS GPU
+ENDIF
+

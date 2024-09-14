@@ -42,4 +42,10 @@ PARAMETER eos_wl_muShift   BOOLEAN      FALSE
 # that only this implementation has been loaded if the Hybrid EOS has not
 PPDEFINE EOS_WEAKLIB_INCLUDED
 
-VARIANTS NULL GPU
+VARIANTS Null
+
+USESETUPVARS Milhoja
+IF Milhoja
+  VARIANTS GPU
+ENDIF
+
