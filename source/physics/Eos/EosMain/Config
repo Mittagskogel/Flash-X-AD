@@ -60,5 +60,6 @@ VARIANTS Null
 
 USESETUPVARS Milhoja
 IF Milhoja
+  REQUESTS physics/Eos/EosMain/GPU_interface
   VARIANTS GPU
 ENDIF
