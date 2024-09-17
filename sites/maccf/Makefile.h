@@ -26,8 +26,8 @@ MPE_PATH   =
 
 FCOMP   = mpif90
 CCOMP   = mpicc
-CPPCOMP = mpicxx
-LINK    = mpif90
+CPPCOMP = mpicxx -std=c++11
+LINK    = mpif90 -std=c++11
 
 # pre-processor flag
 PP      = -D
