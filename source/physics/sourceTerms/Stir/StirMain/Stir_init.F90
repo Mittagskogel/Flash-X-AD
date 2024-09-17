@@ -23,7 +23,7 @@
 !!        whether to restrict timestep based on stirring
 !!
 !! AUTHOR
-!!  Christoph Federrath, 2008-2023
+!!  Christoph Federrath, 2008-2024
 !!
 !!***
 
@@ -33,6 +33,7 @@ subroutine Stir_init(restart)
   use Driver_data, ONLY : dr_globalMe
   use Driver_interface, ONLY : Driver_getSimTime
   use RuntimeParameters_interface, ONLY : RuntimeParameters_get
+  use iso_c_binding, ONLY : c_double
 
   implicit none
 
@@ -57,7 +58,7 @@ subroutine Stir_init(restart)
 
   ! initialise the turbulence generator based on parameter file provided in st_infilename
   ! and time (in case of restart and automatic amplitude adjustment; ampl_auto_adjust = 1)
-  call st_stir_init_driving_c(trim(st_infilename)//char(0), real(time,kind=8), dt_update_accel);
+  call st_stir_init_driving_c(trim(st_infilename)//char(0), real(time,kind=c_double), dt_update_accel);
 
   return
 
