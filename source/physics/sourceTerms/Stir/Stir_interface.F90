@@ -41,14 +41,4 @@ Module Stir_interface
     end subroutine Stir_init
   end interface
 
-  interface Stir_computeDt
-     subroutine Stir_computeDt(blockID, blkLimits, blkLimitsGC, solnData, dt_stir, dt_minloc)
-      integer, intent(IN) :: blockID
-      integer, intent(IN), dimension(2,MDIM) :: blkLimits, blkLimitsGC
-      real, pointer :: solnData(:,:,:,:) 
-      real, intent(INOUT) :: dt_stir
-      integer, intent(INOUT) :: dt_minloc(5)
-     end subroutine Stir_computeDt
-  end interface
-
 end Module Stir_interface
