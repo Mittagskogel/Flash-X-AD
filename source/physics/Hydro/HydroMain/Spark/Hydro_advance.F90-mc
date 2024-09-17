@@ -56,7 +56,7 @@ subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
    @M hy_DIR_TARGET_routine_vector(hy_rk_updateSoln)
    @M hy_DIR_TARGET_routine_vector(hy_rk_saveFluxBuf)
    @M hy_DIR_TARGET_routine_vector(hy_rk_renormAbundance)
-   @M hy_DIR_TARGET_routine_vector(hy_rk_eos_wrapped)
+   @M hy_DIR_TARGET_routine_vector(Eos_multiDim_GPU)
 
    implicit none
 
