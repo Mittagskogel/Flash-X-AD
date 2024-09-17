@@ -49,7 +49,7 @@ subroutine Stir(dt, pass)
   real, intent(in)              :: dt
   integer, intent(in), optional :: pass
 
-  @M iter_declare(blkLimits, blkLimitsGC, grownLimits)
+  @M iter_declare(blkLimits, blkLimitsGC, grownLimits, Uin)
   logical, save              :: firstCall=.true., driving_stopped=.false.
   real, save                 :: last_time = HUGE(real(1.0))
   integer                    :: i, j, k, ii, jj, kk
@@ -107,11 +107,11 @@ subroutine Stir(dt, pass)
     accy(:,:,:) = 0.0
     accz(:,:,:) = 0.0
 #ifdef ACCX_VAR
-    @M iter_all_begin(ALL_BLKS, .false., blkLimits, blkLimitsGC, del)
+    @M iter_all_begin(ALL_BLKS, .false., blkLimits, blkLimitsGC, del, Uin)
       Uin(ACCX_VAR,:,:,:) = 0.0
       Uin(ACCY_VAR,:,:,:) = 0.0
       Uin(ACCZ_VAR,:,:,:) = 0.0
-    @M iter_end
+    @M iter_end(Uin)
 #endif
     if (dr_globalMe == MASTER_PE) print *, 'Stir: TURBULENCE DRIVING STOPPED!'
     return
@@ -125,7 +125,7 @@ subroutine Stir(dt, pass)
   locSumVars (:) = 0.0
   globSumVars(:) = 0.0
 
-  @M iter_all_begin(LEAF, .false., blkLimits, blkLimitsGC, del)
+  @M iter_all_begin(LEAF, .false., blkLimits, blkLimitsGC, del, Uin)
 
 #if NDIM == 1
     dvol = del(IAXIS)
@@ -162,7 +162,7 @@ subroutine Stir(dt, pass)
 #endif
 
     @M loop_end_3d
-  @M iter_end
+  @M iter_end(Uin)
 
   ! now communicate all global summed quantities to all processors
   call MPI_AllReduce(locSumVars(1:7), globSumVars(1:7), 7, FLASH_DOUBLE, MPI_Sum, MPI_Comm_World, error)
@@ -189,7 +189,7 @@ subroutine Stir(dt, pass)
   globSumVars(:) = 0.0
 
   ! sum quantities over list of blocks (to determine global mean force and momentum)
-  @M iter_all_begin(LEAF, .false., blkLimits, blkLimitsGC, del)
+  @M iter_all_begin(LEAF, .false., blkLimits, blkLimitsGC, del, Uin)
 
 #if NDIM == 1
     dvol = del(IAXIS)
@@ -243,7 +243,7 @@ subroutine Stir(dt, pass)
 #endif
 
     @M loop_end_3d
-  @M iter_end
+  @M iter_end(Uin)
 
   ! now communicate all global summed quantities to all processors
   call MPI_AllReduce(locSumVars(1:3), globSumVars(1:3), 3, FLASH_DOUBLE, MPI_Sum, MPI_Comm_World, error)
@@ -258,7 +258,7 @@ subroutine Stir(dt, pass)
 
   ! Loop over local blocks again to actually apply the turbulent acceleration
   !! nullify (Uin)
-  @M iter_all_begin(LEAF, .false., blkLimits, blkLimitsGC, del)
+  @M iter_all_begin(LEAF, .false., blkLimits, blkLimitsGC, del, Uin)
 
 #if NDIM == 1
     dvol = del(IAXIS)
@@ -363,7 +363,7 @@ subroutine Stir(dt, pass)
 #endif
 
     @M loop_end_3d
-  @M iter_end
+  @M iter_end(Uin)
 
   ! write time evolution of ekin_added to file
   if (io_integralFreq .gt. 0) then
