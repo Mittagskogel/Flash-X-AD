@@ -34,6 +34,11 @@ subroutine @M Eos_vector_name @M pb mode, vecLen, eosData, massFrac1, derivs @M 
   use eos_localInterface, ONLY : eos_idealGamma, eos_helmSpecies, eos_weakLib,&
         eos_idealGamma_GPU, eos_helmSpecies_GPU, eos_weakLib_GPU   
 
+  @M eos_DIR_routine(vector)
+
+  @M eos_DIR_routine_none(Driver_abort_GPU)
+  @M eos_DIR_routine_none(eos_idealGamma_GPU)
+  @M eos_DIR_routine_none(eos_helmSpecies_GPU)
 
   implicit none
   integer, INTENT(in) :: mode, vecLen
@@ -41,7 +46,7 @@ subroutine @M Eos_vector_name @M pb mode, vecLen, eosData, massFrac1, derivs @M 
   real, optional, INTENT(out),target,dimension(1:vecLen,EOS_VARS+1:EOS_NUM) :: derivs
   real, optional, INTENT(in),target, dimension(NSPECIES,vecLen)    :: massFrac1
 
-  real,pointer,dimension(:) :: massFrac
+  real, dimension(NSPECIES) :: massFrac
   integer :: i
   real :: @M eos_args, ekin
   @M eos_map_declare
@@ -58,22 +63,28 @@ subroutine @M Eos_vector_name @M pb mode, vecLen, eosData, massFrac1, derivs @M 
 
 #ifndef EOS_WEAKLIB_INCLUDED
   if(pMassFrac_and_derivs) then
+     @M eos_DIR_parallel_loop(1) &
+     @M eos_DIR_private([massFrac, pres, temp, dens, gamc, eint, entr, abar, zbar, ye, ekin])
      do i = 1,vecLen
-        massFrac(1:NSPECIES) => massFrac1(1:NSPECIES,i)
+        massFrac(1:NSPECIES) = massFrac1(1:NSPECIES,i)
         @M eos_unpack(eosData,i)
         @M eos_idealGamma_massFrac_derivs
         @M eos_helmSpecies_massFrac_derivs
         @M eos_pack(eosData,i)
      end do
   else if (pMassFrac) then
+     @M eos_DIR_parallel_loop(1) &
+     @M eos_DIR_private([massFrac, pres, temp, dens, gamc, eint, entr, abar, zbar, ye, ekin])
      do i = 1,vecLen
-        massFrac(1:NSPECIES) => massFrac1(1:NSPECIES,i)
+        massFrac(1:NSPECIES) = massFrac1(1:NSPECIES,i)
         @M eos_unpack(eosData,i)
         @M eos_idealGamma_massFrac
         @M eos_helmSpecies_massFrac
         @M eos_pack(eosData,i)
      end do
   else if (pDerivs) then
+     @M eos_DIR_parallel_loop(1) &
+     @M eos_DIR_private([pres, temp, dens, gamc, eint, entr, abar, zbar, ye, ekin])
      do i = 1,vecLen
         @M eos_unpack(eosData,i)
         @M eos_idealGamma_derivs
@@ -81,6 +92,8 @@ subroutine @M Eos_vector_name @M pb mode, vecLen, eosData, massFrac1, derivs @M 
         @M eos_pack(eosData,i)
      end do
   else
+     @M eos_DIR_parallel_loop(1) &
+     @M eos_DIR_private([pres, temp, dens, gamc, eint, entr, abar, zbar, ye, ekin])
      do i = 1,vecLen
         @M eos_unpack(eosData,i)
         @M eos_idealGamma

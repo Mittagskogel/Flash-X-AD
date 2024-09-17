@@ -31,9 +31,15 @@
  
 subroutine @M Eos_multidim_name @M pb mode,range,lo,solnData @M eos_scratchArgs @M pe
 
-  use Driver_interface, ONLY : Driver_abort
-  use Logfile_interface, ONLY: Logfile_stampMessage 
-  use Eos_interface, ONLY : Eos_fillEosData, Eos_getFromEosData, Eos_vector
+  use Driver_interface, ONLY : @M eos_driver_abort_name
+  use Eos_interface, ONLY : @M Eos_fillEosData_name, @M Eos_getFromEosData_name, @M Eos_vector_name
+
+  @M eos_DIR_routine(vector)
+
+  @M eos_DIR_routine_none(Driver_abort_GPU)
+  @M eos_DIR_routine_vector(Eos_fillEosData_GPU)
+  @M eos_DIR_routine_vector(Eos_vector_GPU)
+  @M eos_DIR_routine_vector(Eos_getFromEosData_GPU)
 
 #include "FortranLangFeatures.fh"
 
@@ -74,6 +80,8 @@ subroutine @M Eos_multidim_name @M pb mode,range,lo,solnData @M eos_scratchArgs 
   jhi = range(HIGH, JAXIS)
   klo = range(LOW,  KAXIS)
   khi = range(HIGH, KAXIS)
+  @M eos_DIR_parallel_loop(3) &
+  @M eos_DIR_private([i, j, k, n])
   @M loop_3d(range,i,j,k)
              n = base_n + &
                  ((k - klo) * (jhi - jlo + 1) * (ihi - ilo + 1)) + &

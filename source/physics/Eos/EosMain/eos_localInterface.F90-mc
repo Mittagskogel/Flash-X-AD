@@ -20,6 +20,8 @@
 !!
 !!
 
+!!NOVARIANTS
+
 module eos_localInterface
   implicit none
 #include "Eos.h"
