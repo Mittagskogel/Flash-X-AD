@@ -22,4 +22,7 @@ VARIANTS Null
 USESETUPVARS Milhoja
 IF Milhoja
   VARIANTS GPU
+  REQUESTS physics/Eos/EosMain/Gamma/GPU_interface
+ELSE
+  REQUESTS physics/Eos/EosMain/Gamma/Null_interface
 ENDIF
