@@ -25,7 +25,7 @@ subroutine Simulation_initBlock(solnData, tileDesc)
   use Simulation_data
   use Grid_tile, ONLY : Grid_tile_t
   use Driver_data, ONLY : dr_globalMe
-  use Eos_interface, ONLY : Eos_wrapped
+  use Eos_interface, ONLY : Eos_multiDim
 
   implicit none 
 
@@ -74,7 +74,7 @@ subroutine Simulation_initBlock(solnData, tileDesc)
    enddo ! k
 
   ! update temp, eint, ener, etc.. by calling EOS
-  call Eos_wrapped(MODE_DENS_PRES, tileDesc%limits, solnData)
+  call Eos_multiDim(MODE_DENS_PRES, tileDesc%limits, solnData)
 
   if (Debug) print *, '[', dr_globalMe, '] Simulation_initBlock exiting.'
 
