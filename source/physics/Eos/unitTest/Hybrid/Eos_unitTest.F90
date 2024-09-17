@@ -252,6 +252,7 @@ contains
             call itor%currentTile(tileDesc)
 
             blkLimits = tileDesc%limits
+            blkLimitsGC = tileDesc%blkLimitsGC
 
             call tileDesc%getDataPtr(solnData, CENTER)
 
@@ -400,6 +401,7 @@ contains
          call itor%currentTile(tileDesc)
 
          blkLimits = tileDesc%limits
+         blkLimitsGC = tileDesc%blkLimitsGC
 
          call tileDesc%getDataPtr(solnData, CENTER)
 
