@@ -171,6 +171,7 @@ subroutine Eos_unitTest(fileUnit, perfect)
      call Grid_getBlkType(blockId,nodeType)
      call tileDesc%getDataPtr(solnData, CENTER)
      blkLimits = tileDesc%limits
+     blkLimitsGC=tileDesc%blkLimitsGC
 
      !! In Simulation_initBlock,
      !! temperature is initialized in CTMP_VAR and pressure is
@@ -241,6 +242,7 @@ subroutine Eos_unitTest(fileUnit, perfect)
      call Grid_getBlkType(blockId,nodeType)
      call tileDesc%getDataPtr(solnData, CENTER)
      blkLimits = tileDesc%limits
+     blkLimitsGC=tileDesc%blkLimitsGC
 
      ib=blkLimits(LOW,IAXIS)
      ie=blkLimits(HIGH,IAXIS)
@@ -310,6 +312,7 @@ subroutine Eos_unitTest(fileUnit, perfect)
      call Grid_getBlkType(blockId,nodeType)
      call tileDesc%getDataPtr(solnData, CENTER)
      blkLimits = tileDesc%limits
+     blkLimitsGC=tileDesc%blkLimitsGC
 
      ib=blkLimits(LOW,IAXIS)
      ie=blkLimits(HIGH,IAXIS)
@@ -372,6 +375,7 @@ subroutine Eos_unitTest(fileUnit, perfect)
      call Grid_getBlkType(blockId,nodeType)
      call tileDesc%getDataPtr(solnData, CENTER)
      blkLimits = tileDesc%limits
+     blkLimitsGC=tileDesc%blkLimitsGC
 
      ib=blkLimits(LOW,IAXIS)
      ie=blkLimits(HIGH,IAXIS)
