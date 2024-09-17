@@ -50,6 +50,7 @@ subroutine Stir(dt, pass)
   integer, intent(in), optional :: pass
 
   @M iter_declare(blkLimits, blkLimitsGC, grownLimits, Uin)
+  integer :: level ! this should not be here as it is part of the macros
   logical, save              :: firstCall=.true., driving_stopped=.false.
   real, save                 :: last_time = HUGE(real(1.0))
   integer                    :: i, j, k, ii, jj, kk
