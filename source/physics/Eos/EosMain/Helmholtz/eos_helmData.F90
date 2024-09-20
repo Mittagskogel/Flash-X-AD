@@ -23,8 +23,9 @@ module eos_helmData
 
 #include "constants.h"
 #include "Simulation.h"
-#include "Eos.h"  
+#include "Eos.h"
 #include "Eos_map.h"
+#include "Eos_helm.h"
 
   ! maximum number of iterations for the Newton loop to find T from e
   integer, save :: eos_maxNewton
@@ -48,7 +49,7 @@ module eos_helmData
   logical, save :: eos_coulombAbort
  
   logical, save :: eos_useMultiSpecies
-  integer,parameter :: EOSIMAX=541,EOSJMAX=201
+  ! integer,parameter :: EOSIMAX=541,EOSJMAX=201
 
   ! Minimum vecLen value to use OpenACC implementation of starkiller
   integer, save :: eos_vecLenACC
@@ -63,7 +64,7 @@ module eos_helmData
 !..for the pressure derivative with density tables
 !..for the chemical potential tables
   !..for the number density tables
-  integer, parameter :: EOST = 22, EOST_END=27
+  ! integer, parameter :: EOST = 22, EOST_END=27
   real,save,dimension(EOSIMAX,EOSJMAX,EOST_END) :: eos_table
   integer, parameter:: eos_f=1,eos_fd=2,eos_ft=3,eos_fdd=4,&
              eos_ftt=5,eos_fdt=6,eos_fddt=7,eos_fdtt=8,eos_fddtt=9, & 
