@@ -68,9 +68,6 @@ subroutine @M eos_hh_name @M pb mode,@M eos_args, massFrac,derivs @M pe
   use eos_helmData, ONLY: eos_tol, eos_maxNewton,&
        eos_forceConstantInput, eos_useMultiSpecies
   use Eos_data, ONLY : eos_smallt, eos_meshMe, eos_singleSpeciesA, eos_singleSpeciesZ,eos_doYe
-  use eos_helmData, ONLY:  tempRow, denRow, etotRow, abarRow, zbarRow, &
-       gamcRow, ptotRow, deaRow, dezRow, stotRow, dsdRow, dstRow, &
-       detRow, dptRow, dpdRow, dedRow, pelRow, neRow, etaRow, detatRow, cvRow, cpRow
   !$ use omp_lib
   implicit none
 
@@ -85,6 +82,10 @@ subroutine @M eos_hh_name @M pb mode,@M eos_args, massFrac,derivs @M pe
   integer ::  dst, dsd
   integer :: dpt, dpd, det, ded, dea, dez, pel, ne, eta, detat, c_v, c_p
   real    :: abarInv, zbarFrac
+
+  real :: tempRow, denRow, etotRow, abarRow, zbarRow
+  real :: gamcRow, ptotRow, deaRow, dezRow, stotRow, dsdRow, dstRow
+  real :: detRow, dptRow, dpdRow, dedRow, pelRow, neRow, etaRow, detatRow, cvRow, cpRow
 
   ! declare some local storage for the results of the Newton iteration
   real ::  ewantRow, tnew, error,pwantRow
@@ -143,7 +144,10 @@ subroutine @M eos_hh_name @M pb mode,@M eos_args, massFrac,derivs @M pe
   
   if (mode==MODE_DENS_TEMP) then
      
-     call @M eos_helm_name
+     call @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
+                            dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
+                            deaRow, dezRow, &
+                            pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
      pres=ptotRow
      eint=etotRow
      gamc=gamcRow
@@ -173,7 +177,10 @@ subroutine @M eos_hh_name @M pb mode,@M eos_args, massFrac,derivs @M pe
         esaveRow = ewantRow
      end if
      !  ewantRow is our desired EI input
-     call @M eos_helm_name
+     call @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
+                            dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
+                            deaRow, dezRow, &
+                            pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
      
      tnew = tempRow - (etotRow - ewantRow)  & 
           &           / detRow
@@ -201,7 +208,10 @@ subroutine @M eos_hh_name @M pb mode,@M eos_args, massFrac,derivs @M pe
      do i = 2, eos_maxNewton
         if (error< eos_tol) goto 70
         
-        call @M eos_helm_name
+        call @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
+                               dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
+                               deaRow, dezRow, &
+                               pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
         
         tnew = tempRow - (etotRow - ewantRow)  & 
              &              / detRow
@@ -255,7 +265,10 @@ subroutine @M eos_hh_name @M pb mode,@M eos_args, massFrac,derivs @M pe
      
      
      ! Crank through the entire eos one last time
-     call @M eos_helm_name
+     call @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
+                            dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
+                            deaRow, dezRow, &
+                            pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
      !  In MODE_DENS_EI, we should be generating temperature and pressure (plus gamma and entropy)
      temp=tempRow
      pres=ptotRow
@@ -285,7 +298,10 @@ subroutine @M eos_hh_name @M pb mode,@M eos_args, massFrac,derivs @M pe
         psaveRow = pwantRow
      end if
      ! Initialize the errors
-     call @M eos_helm_name
+     call @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
+                            dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
+                            deaRow, dezRow, &
+                            pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
      
      tnew = tempRow - (ptotRow - pwantRow)  & 
           &           / dptRow
@@ -315,7 +331,10 @@ subroutine @M eos_hh_name @M pb mode,@M eos_args, massFrac,derivs @M pe
         if (error .LT. eos_tol) goto 170
         
         ! do eos only over this single item
-        call @M eos_helm_name
+        call @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
+                               dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
+                               deaRow, dezRow, &
+                               pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
         
         tnew = tempRow - (ptotRow - pwantRow)  & 
              &              / dptRow
@@ -367,7 +386,10 @@ subroutine @M eos_hh_name @M pb mode,@M eos_args, massFrac,derivs @M pe
      
      
      ! Crank through the entire eos one last time
-     call @M eos_helm_name
+     call @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
+                            dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
+                            deaRow, dezRow, &
+                            pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
      
      ! Fill the FLASH arrays with the results.  
      temp=tempRow

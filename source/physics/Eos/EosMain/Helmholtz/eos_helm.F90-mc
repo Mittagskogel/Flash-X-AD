@@ -38,7 +38,10 @@
 #define DEBUG_EOS
 #endif
 
-subroutine @M eos_helm_name
+subroutine @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
+                             dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
+                             deaRow, dezRow, & !Calhoun
+                             pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
 
   use eos_helmData, ONLY: eos_f, eos_ft, eos_ftt, eos_fd, eos_fdd, eos_fdt, &
        eos_fddt, eos_fdtt, eos_fddtt, &
@@ -53,11 +56,6 @@ subroutine @M eos_helm_name
   use Driver_interface, ONLY : Driver_abort
   use Logfile_interface, ONLY : Logfile_stampMessage
   use Timers_interface, ONLY: Timers_start, Timers_stop
-  use eos_helmData, ONLY: tempRow , denRow, abarRow, zbarRow, &
-       ptotRow, etotRow, stotRow, &
-       dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
-       deaRow, dezRow, & !Calhoun
-       pelRow, neRow, etaRow, detatRow, gamcRow, cvRow, cpRow
   !! physical constants to high precision
   use eos_helmConstData, ONLY: kerg, kergavo, asoli3, avo, avoInv, sioncon, pi
   use Eos_data, ONLY : eos_meshMe
@@ -71,6 +69,12 @@ subroutine @M eos_helm_name
 #include "Eos_helm.h"
 
 !! Arguments
+
+  real, intent(IN) :: tempRow, denRow, abarRow, zbarRow
+  real, intent(IN OUT) :: ptotRow, gamcRow, etotRow, stotRow, &
+                          dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
+                          deaRow, dezRow, & !Calhoun
+                          pelRow, neRow, etaRow, detatRow, cvRow, cpRow
 
   character*90 ::  internalFile
   integer      ::  i,j
@@ -231,9 +235,9 @@ subroutine @M eos_helm_name
   din = ye*den
   
   !!  hash locate this temperature and density
-  jat = int((log10(btemp) - eos_tlo)*eos_tstpi) + 1
+  jat = int((log10(btemp) - eos_tLo)*eos_tstpi) + 1
   jat = max(1,min(jat,EOSJMAX-1))
-  iat = int((log10(din) - eos_dlo)*eos_dstpi) + 1
+  iat = int((log10(din) - eos_dLo)*eos_dstpi) + 1
   iat = max(1,min(iat,EOSIMAX-1))
   !     print *, 'jat = ',jat, ' iat= ', iat
   
