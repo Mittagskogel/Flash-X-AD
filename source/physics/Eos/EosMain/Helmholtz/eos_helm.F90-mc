@@ -54,8 +54,6 @@ subroutine @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow
        eos_coulombAbort
   use eos_helmData, ONLY: eos_temps,eos_rhos,eos_table,eos_baprox13
   use Driver_interface, ONLY : Driver_abort
-  use Logfile_interface, ONLY : Logfile_stampMessage
-  use Timers_interface, ONLY: Timers_start, Timers_stop
   !! physical constants to high precision
   use eos_helmConstData, ONLY: kerg, kergavo, asoli3, avo, avoInv, sioncon, pi
   use Eos_data, ONLY : eos_meshMe
@@ -156,8 +154,6 @@ subroutine @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow
 
   !!  normal execution starts here, start of pipeline loop, no input checking
 !!  biquintic hermite polynomial statement function
-!  call Timers_start("eos_helm")
-
 
 
   btemp  = tempRow
@@ -534,66 +530,21 @@ subroutine @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow
   
   ! assume that NaN always compares as false in an inequality
   if ( .not. (x6 > 0.e0) ) then
-     
-     call Logfile_stampMessage('[eos_helm] Negative total pressure.')
-     print *,'[eos_helm] Negative total pressure.'
-     ! print some info to help operator figure out what is wrong
-     ! this goes to stdout as well because DMT is unsure of the stampMessage infrastructure
-     write(internalFile,*)' values: dens,temp: ',den,btemp
-     call Logfile_stampMessage(internalFile)
-     print *, internalFile
-     write(internalFile,*)' values: abar,zbar: ',abar,zbar
-     call Logfile_stampMessage(internalFile)
-     print *, internalFile
-     write(internalFile,*)' coulomb coupling parameter Gamma: ',plasg
-     call Logfile_stampMessage(internalFile)
-     print *, internalFile
-     
      if ( .not. (abar > 0.e0) ) then
-        write(internalFile,*) '  However, abar is negative, abar=',abar
-        call Logfile_stampMessage(internalFile)
-        print *, internalFile
-        call Logfile_stampMessage('  It is possible that the mesh is of low quality.')
-        print *, '      It is possible that the mesh is of low quality.'
         ! always abort if abar is negative as that is physically invalid
         call Driver_abort('[eos_helm] ERROR: abar is negative.')
      endif
-     
+
      if ( s4 > 0.e0 ) then
-        write(internalFile,'(a,3es12.3)')  &
-             &           ' nonpositive P caused by coulomb correction: Pnocoul,Pwithcoul: ',s4,x6
-        call Logfile_stampMessage(internalFile)
-        print *, internalFile
-        
-        if ( eos_coulombMult > 0.e0 ) then
-           call Logfile_stampMessage(&
-                '  set runtime parameter eos_coulombMult to zero if plasma Coulomb corrections not important')
-           print *, '  set runtime parameter eos_coulombMult to zero if plasma Coulomb corrections not important'
-        end if
         if ( eos_coulombAbort) then
            call Driver_abort('[eos_helm] ERROR: coulomb correction causing negative total pressure.')
         else
-           call Logfile_stampMessage('Setting coulombMult to zero for this call, eos_coulombAbort=false.')
-           print *, '  Setting coulombMult to zero for this call, eos_coulombAbort=false'
+           ! Setting coulombMult to zero for this call, eos_coulombAbort=false
            local_coulombMult = 0.e0
         end if
      else
-        write(internalFile,'(1p,4(a,e12.5))') &
-             ' Prad  ',prad,   &
-             ' Pion ',pion,    &
-             ' Pele  ',pele,                  &
-             ' Pcoul ',pcoul*eos_coulombMult
-        call Logfile_stampMessage(internalFile)
-        print *, internalFile
-        write(internalFile,'(1p,2(a,e12.5))') &
-             ' Ptot   ',x6,                     &
-             ' df_d   ',df_d
-        call Logfile_stampMessage(internalFile)
-        print *, internalFile
-        
         call Driver_abort('[eos_helm] ERROR: negative total pressure.')
      end if
-     
   end if
   
   pcoul    = pcoul * local_coulombMult
@@ -684,7 +635,6 @@ subroutine @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow
 
   !!  end of vectorization loop
 
-!   call Timers_stop("eos_helm")
 
   contains
 
