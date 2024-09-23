@@ -1,8 +1,8 @@
    include "mpif.h"
    integer, parameter :: FLASH_DOUBLE = MPI_DOUBLE_PRECISION
    integer, parameter :: FLASH_2DOUBLE = MPI_2DOUBLE_PRECISION
-   integer, parameter :: FLASH_REAL = MPI_DOUBLE_PRECISION
-   integer, parameter :: FLASH_2REAL = MPI_2DOUBLE_PRECISION
+   integer, parameter :: FLASH_REAL = MPI_REAL
+   integer, parameter :: FLASH_2REAL = MPI_2REAL
    integer, parameter :: FLASH_INTEGER = MPI_INTEGER
    integer, parameter :: FLASH_LOGICAL = MPI_LOGICAL
    integer, parameter :: FLASH_SUM = MPI_SUM
