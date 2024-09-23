@@ -80,4 +80,5 @@ module Eos_data
   @M eos_DIR_declare_data([eos_singleSpeciesA, eos_singleSpeciesZ])
   @M eos_DIR_declare_data([eos_meshMe, eos_type, eos_mapLookup])
   @M eos_DIR_declare_data([eos_eintSwitch, eos_tol, eos_smallt, eos_largeT, eos_smallRho])
+  @M eos_DIR_declare_data([eos_doYe])
 end module Eos_data
