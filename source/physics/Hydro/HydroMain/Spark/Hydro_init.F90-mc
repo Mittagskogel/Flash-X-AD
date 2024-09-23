@@ -239,6 +239,8 @@ subroutine Hydro_init()
   call Grid_getDomainBoundBox(domainbb)
   hy_globalLBnd=domainbb(LOW,:)
 
+  hy_tiny = 1.e-32
+
   @M hy_DIR_TARGET_update_to([hy_cvisc, hy_limRad, hy_tiny, hy_gravConst, hy_4piGinv, hy_bref])
   @M hy_DIR_TARGET_update_to([hy_smalldens, hy_smallE, hy_smallpres, hy_smallX, hy_smallu])
   @M hy_DIR_TARGET_update_to([hy_fluxCorrect, hy_fluxCorrectPerLevel, hy_fluxCorVars, hy_geometry])
