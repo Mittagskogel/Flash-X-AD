@@ -53,7 +53,10 @@ zr_boundary_type = "outflow"
 
 #	Simulation time, I/O  parameters
 
-cfl		= 0.6
+cfl		= 0.8
+# Cfl may need to be lowered to 0.6 or so for some Hydro
+# implementations, including Spark.
+
 basenm          = "sedov_"
 restart         = .false.
 
