@@ -30,6 +30,9 @@
 #include "constants.h"
 #include "Eos.h"
 #include "Eos_helm.h"
+#ifdef FLASH_MULTISPECIES
+#include "Multispecies.h"
+#endif
 
 subroutine eos_helmSpeciesInit()
 
@@ -38,6 +41,7 @@ subroutine eos_helmSpeciesInit()
   use eos_helmData 
   use Driver_interface, ONLY : Driver_abort
   use RuntimeParameters_interface, ONLY : RuntimeParameters_get
+  use Multispecies_interface, ONLY : Multispecies_getProperty
 
 #include "Flashx_mpi_implicitNone.fh"
 
@@ -172,6 +176,13 @@ subroutine eos_helmSpeciesInit()
      eos_rhos(i,eos_ddSqrInv) = 1.0e0/eos_rhos(i,eos_ddSqr)
   enddo
   eos_type=EOS_HLM
+
+#ifdef FLASH_MULTISPECIES
+  do i = 1, NSPECIES
+     call MultiSpecies_getProperty(SPECIES_BEGIN + (i-1), A, eos_msA(i))
+     call MultiSpecies_getProperty(SPECIES_BEGIN + (i-1), Z, eos_msZ(i))
+  end do
+#endif
 
   return
 end subroutine eos_helmSpeciesInit

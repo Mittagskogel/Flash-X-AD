@@ -66,7 +66,8 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
   use Logfile_interface, ONLY:  Logfile_stampMessage
 
   use eos_helmData, ONLY: eos_tol, eos_maxNewton,&
-       eos_forceConstantInput, eos_useMultiSpecies
+       eos_forceConstantInput, eos_useMultiSpecies, &
+       eos_msA, eos_msZ
   use Eos_data, ONLY : eos_smallt, eos_meshMe, eos_singleSpeciesA, eos_singleSpeciesZ,eos_doYe
   !$ use omp_lib
   implicit none
@@ -121,10 +122,12 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
   else
 #ifdef FLASH_MULTISPECIES
      !Calculate the inverse in a way that allows for zero mass fractions
-     call Multispecies_getSumInv(A, abarInv,massFrac(1:NSPECIES))
+     ! call Multispecies_getSumInv(A, abarInv,massFrac(1:NSPECIES))
+     abarInv = SUM(massFrac/eos_msA)
      abarRow = 1.e0 / abarInv
-     
-     call Multispecies_getSumFrac(Z, zbarFrac, massFrac(1:NSPECIES))
+
+     ! call Multispecies_getSumFrac(Z, zbarFrac, massFrac(1:NSPECIES))
+     zbarFrac = SUM(massFrac*eos_msZ/eos_msA)
      zbarRow = abarRow * zbarFrac
 #else
      ! No multispecies defined, use default values (same as Gamma formulation)
