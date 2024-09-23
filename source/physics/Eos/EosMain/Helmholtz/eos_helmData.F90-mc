@@ -76,7 +76,7 @@ module eos_helmData
   integer, parameter :: eos_dpdfdd=22,eos_dpdftt=23,eos_efdd=24,eos_eftt=25,&
              eos_xfdd=26,eos_xftt=27
 
-  logical, save :: eos_baprox13 = .false. 
+  logical, save :: eos_baprox13
 
   real, save :: eos_msA(NSPECIES), eos_msZ(NSPECIES)
 

@@ -132,6 +132,8 @@ subroutine eos_helmSpeciesInit()
   istat = EOSIMAX*EOSJMAX*EOST
   call MPI_BCAST(eos_table,      istat, FLASH_REAL, MASTER_PE, MPI_COMM_WORLD, ierr)
 
+  eos_baprox13 = .false.
+
   eos_tlo   = 3.0e0
   eos_thi   = 13.0e0
   tstp      = (eos_thi - eos_tlo)/float(EOSJMAX-1)
@@ -173,7 +175,7 @@ subroutine eos_helmSpeciesInit()
 
   @M eos_helm_DIR_update_to([eos_tol, eos_maxNewton, eos_coulombMult, eos_coulombAbort])
   @M eos_helm_DIR_update_to([eos_useMultiSpecies, eos_forceConstantInput])
-  @M eos_helm_DIR_update_to([eos_tlo, eos_thi, eos_tstpi, eos_dlo, eos_dhi, eos_dstpi])
+  @M eos_helm_DIR_update_to([eos_baprox13, eos_tlo, eos_thi, eos_tstpi, eos_dlo, eos_dhi, eos_dstpi])
   @M eos_helm_DIR_update_to([eos_table, eos_temps, eos_rhos, eos_type])
   @M eos_helm_DIR_update_to([eos_msA, eos_msZ])
 
