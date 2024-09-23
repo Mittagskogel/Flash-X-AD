@@ -21,6 +21,8 @@
 !!  file was not found, it is created by this routine for subsequent use.
 !!
 
+!!NOVARIANTS
+
 #ifdef DEBUG_ALL
 #define DEBUG_EOS
 #endif
@@ -36,9 +38,8 @@
 
 subroutine eos_helmSpeciesInit()
 
-  use Eos_data, ONLY : eos_type, eos_meshMe, &
-       eos_eintSwitch, eos_smallt
-  use eos_helmData 
+  use Eos_data, ONLY : eos_type, eos_meshMe
+  use eos_helmData
   use Driver_interface, ONLY : Driver_abort
   use RuntimeParameters_interface, ONLY : RuntimeParameters_get
   use Multispecies_interface, ONLY : Multispecies_getProperty
@@ -57,27 +58,12 @@ subroutine eos_helmSpeciesInit()
 
 
   !get the runtime parameters
-
-  call RuntimeParameters_get('smallt', eos_smallt)
   call RuntimeParameters_get('eos_tolerance', eos_tol)
   call RuntimeParameters_get('eos_maxNewton', eos_maxNewton)
   call RuntimeParameters_get('eos_coulombMult', eos_coulombMult)
   call RuntimeParameters_get('eos_useMultiSpecies',eos_useMultiSpecies)
   call RuntimeParameters_get("eos_forceConstantInput",eos_forceConstantInput)
-
-#ifdef DEBUG_EOS
-  print *, 'in eos_helmSpeciesInit'
-#endif
   call RuntimeParameters_get('eos_coulombAbort', eos_coulombAbort)
-#ifdef DEBUG_EOS
-  print *, 'done with RuntimeParameters_get (eos_coulombAbort)'
-#endif
-
-#ifndef EINT_VAR
-  if (eos_eintSwitch > 0.0) then
-     call Driver_abort("[Eos_init] eintSwitch is nonzero, but EINT_VAR not defined!")
-  end if
-#endif
 
   if (eos_meshMe==MASTER_PE) then
      open(unit=unitEos,file='helm_table.bdat',status='old',iostat=istat)
@@ -183,6 +169,13 @@ subroutine eos_helmSpeciesInit()
      call MultiSpecies_getProperty(SPECIES_BEGIN + (i-1), Z, eos_msZ(i))
   end do
 #endif
+
+
+  @M eos_helm_DIR_update_to([eos_tol, eos_maxNewton, eos_coulombMult, eos_coulombAbort])
+  @M eos_helm_DIR_update_to([eos_useMultiSpecies, eos_forceConstantInput])
+  @M eos_helm_DIR_update_to([eos_tlo, eos_thi, eos_tstpi, eos_dlo, eos_dhi, eos_dstpi])
+  @M eos_helm_DIR_update_to([eos_table, eos_temps, eos_rhos, eos_type])
+  @M eos_helm_DIR_update_to([eos_msA, eos_msZ])
 
   return
 end subroutine eos_helmSpeciesInit

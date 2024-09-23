@@ -17,6 +17,8 @@
 !! @brief  General parameters (non-array) for EOS Helmholtz
 !!
 
+!!NOVARIANTS
+
 module eos_helmData
 
   implicit none
@@ -77,6 +79,26 @@ module eos_helmData
   logical, save :: eos_baprox13 = .false. 
 
   real, save :: eos_msA(NSPECIES), eos_msZ(NSPECIES)
+
+
+  @M eos_helm_DIR_declare_data([eos_tol, eos_maxNewton, eos_coulombMult, eos_coulombAbort])
+  @M eos_helm_DIR_declare_data([eos_useMultiSpecies, eos_forceConstantInput])
+  @M eos_helm_DIR_declare_data([eos_tlo, eos_thi, eos_tstpi, eos_dlo, eos_dhi, eos_dstpi])
+  @M eos_helm_DIR_declare_data([eos_table, eos_temps, eos_rhos, eos_type])
+
+  @M eos_helm_DIR_declare_data([eos_t, eos_dt, eos_dtSqr, eos_dtInv, eos_dtSqrInv])
+  @M eos_helm_DIR_declare_data([eos_d, eos_dd, eos_ddSqr, eos_ddInv, eos_ddSqrInv])
+
+  @M eos_helm_DIR_declare_data([eos_f, eos_fd, eos_ft, eos_fdd])
+  @M eos_helm_DIR_declare_data([eos_ftt, eos_fdt, eos_fddt, eos_fdtt, eos_fddtt])
+  @M eos_helm_DIR_declare_data([eos_dpdf, eos_dpdfd, eos_dpdft, eos_dpdfdt])
+  @M eos_helm_DIR_declare_data([eos_ef, eos_efd, eos_eft, eos_efdt])
+  @M eos_helm_DIR_declare_data([eos_xf, eos_xfd, eos_xft, eos_xfdt])
+  @M eos_helm_DIR_declare_data([eos_dpdfdd, eos_dpdftt, eos_efdd, eos_eftt, eos_xfdd, eos_xftt])
+
+  @M eos_helm_DIR_declare_data([eos_baprox13])
+
+  @M eos_helm_DIR_declare_data([eos_msA, eos_msZ])
 
 
 end module eos_helmData
