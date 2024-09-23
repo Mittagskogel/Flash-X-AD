@@ -60,3 +60,5 @@ PARAMETER usePseudo1d     BOOLEAN FALSE
 
 PARAMETER noiseAmplitude  REAL    1.0e-2
 PARAMETER noiseDistance   REAL    5.0
+
+DATAFILES cg-tpl.Burn.F90
