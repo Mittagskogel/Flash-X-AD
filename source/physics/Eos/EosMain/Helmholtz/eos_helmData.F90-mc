@@ -84,7 +84,7 @@ module eos_helmData
   @M eos_helm_DIR_declare_data([eos_tol, eos_maxNewton, eos_coulombMult, eos_coulombAbort])
   @M eos_helm_DIR_declare_data([eos_useMultiSpecies, eos_forceConstantInput])
   @M eos_helm_DIR_declare_data([eos_tlo, eos_thi, eos_tstpi, eos_dlo, eos_dhi, eos_dstpi])
-  @M eos_helm_DIR_declare_data([eos_table, eos_temps, eos_rhos, eos_type])
+  @M eos_helm_DIR_declare_data([eos_table, eos_temps, eos_rhos])
 
   @M eos_helm_DIR_declare_data([eos_t, eos_dt, eos_dtSqr, eos_dtInv, eos_dtSqrInv])
   @M eos_helm_DIR_declare_data([eos_d, eos_dd, eos_ddSqr, eos_ddInv, eos_ddSqrInv])

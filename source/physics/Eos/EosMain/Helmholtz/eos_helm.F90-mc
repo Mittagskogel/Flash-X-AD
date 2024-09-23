@@ -53,10 +53,11 @@ subroutine @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow
        eos_xf, eos_xft, eos_xfd, eos_xfdt, &
        eos_coulombAbort
   use eos_helmData, ONLY: eos_temps,eos_rhos,eos_table,eos_baprox13
-  use Driver_interface, ONLY : Driver_abort
+  use Driver_interface, ONLY : @M eos_helm_driver_abort_name
   !! physical constants to high precision
   use eos_helmConstData, ONLY: kerg, kergavo, asoli3, avo, avoInv, sioncon, pi
-  use Eos_data, ONLY : eos_meshMe
+
+  @M eos_helm_DIR_routine( )
 
   implicit none
 
@@ -517,7 +518,7 @@ subroutine @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow
      !! Equations for decoulda and decouldz can be added here....
      
      if (eos_baprox13) then
-        call Driver_abort('[eos_helm] TRAGEDY decoulda and decouldz not defined!')
+        call @M eos_helm_driver_abort_name ('[eos_helm] TRAGEDY decoulda and decouldz not defined!')
      end if
      
      s3       = -kavoy*plasg_inv*(1.5e0*c2*x5 - a2*(b2 - 1.0e0)*y3)
@@ -532,18 +533,18 @@ subroutine @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow
   if ( .not. (x6 > 0.e0) ) then
      if ( .not. (abar > 0.e0) ) then
         ! always abort if abar is negative as that is physically invalid
-        call Driver_abort('[eos_helm] ERROR: abar is negative.')
+        call @M eos_helm_driver_abort_name ('[eos_helm] ERROR: abar is negative.')
      endif
 
      if ( s4 > 0.e0 ) then
         if ( eos_coulombAbort) then
-           call Driver_abort('[eos_helm] ERROR: coulomb correction causing negative total pressure.')
+           call @M eos_helm_driver_abort_name ('[eos_helm] ERROR: coulomb correction causing negative total pressure.')
         else
            ! Setting coulombMult to zero for this call, eos_coulombAbort=false
            local_coulombMult = 0.e0
         end if
      else
-        call Driver_abort('[eos_helm] ERROR: negative total pressure.')
+        call @M eos_helm_driver_abort_name ('[eos_helm] ERROR: negative total pressure.')
      end if
   end if
   

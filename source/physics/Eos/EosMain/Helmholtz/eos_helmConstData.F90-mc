@@ -24,6 +24,8 @@
 !!    Equation of State Based on Table Interpolation of the Helmholtz Free Energy"
 !!
 
+!!NOVARIANTS
+
 
 Module eos_helmConstData
 
@@ -74,5 +76,10 @@ Module eos_helmConstData
        kergavo = kerg * avo, &
        asoli3  = asol/3.0e0, &
        sioncon = (2.0e0 * pi * amu * kerg)/(h*h)
+
+  @M eos_helm_DIR_declare_data([pi, a2rad, rad2a, g, h, hbar, e, avo, c, kerg, kev, amu, mn])
+  @M eos_helm_DIR_declare_data([mp, me, rbohr, fine, hion, ev2erg, ssol, asol, weinlam, weinfre, rhonuc])
+  @M eos_helm_DIR_declare_data([msol, rsol, lsol, mearth, rearth, ly, pc, au, secyer])
+  @M eos_helm_DIR_declare_data([avoinv, kergavo, asoli3, sioncon])
 
 end Module eos_helmConstData

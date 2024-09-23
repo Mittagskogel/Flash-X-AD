@@ -60,16 +60,18 @@
 
 subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
 
-  use Driver_interface, ONLY : Driver_abort
-  use Multispecies_interface, ONLY : Multispecies_getSumInv, &
-       Multispecies_getSumFrac
-  use Logfile_interface, ONLY:  Logfile_stampMessage
+  use Driver_interface, ONLY : @M eos_helm_driver_abort_name
 
   use eos_helmData, ONLY: eos_tol, eos_maxNewton,&
        eos_forceConstantInput, eos_useMultiSpecies, &
        eos_msA, eos_msZ
   use Eos_data, ONLY : eos_smallt, eos_meshMe, eos_singleSpeciesA, eos_singleSpeciesZ,eos_doYe
-  !$ use omp_lib
+
+  @M eos_helm_DIR_routine( )
+
+  @M eos_helm_DIR_routine_none(Driver_abort_GPU)
+  @M eos_helm_DIR_routine_none(eos_helm_GPU)
+
   implicit none
 
   !     Arguments
@@ -103,7 +105,7 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
 
   if(eos_useMultiSpecies) then 
      if(.not.present(massFrac)) then
-        call Driver_abort("[Eos] Helmholtz with species needs mass fractions")
+        call @M eos_helm_driver_abort_name ("[Eos] Helmholtz with species needs mass fractions")
      end if
   end if
 
@@ -258,7 +260,7 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
      print *, ' ewant= ', ewantRow
      
         
-     call Driver_abort('[Eos] Error: too many iterations in Helmholtz Eos')
+     call @M eos_helm_driver_abort_name ('[Eos] Error: too many iterations in Helmholtz Eos')
      
      
      ! Land here if the Newton iteration converged
@@ -380,7 +382,7 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
      print *, ' pres = ', ptotRow
      print *, ' pwant= ', pwantRow
      
-     call Driver_abort('[Eos] Error: too many Newton-Raphson iterations in Eos')
+     call @M eos_helm_driver_abort_name ('[Eos] Error: too many Newton-Raphson iterations in Eos')
      
      
      ! Land here if the Newton iteration converged
@@ -415,7 +417,7 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
      
   else if (mode .NE. MODE_EOS_NOP) then
      if (eos_meshMe .EQ. MASTER_PE) print*, '[Eos] Error: unknown input mode', mode
-     call Driver_abort('[Eos] Error: unknown input mode in subroutine Eos')
+     call @M eos_helm_driver_abort_name ('[Eos] Error: unknown input mode in subroutine Eos')
   end if
      
   ! Get the optional values
