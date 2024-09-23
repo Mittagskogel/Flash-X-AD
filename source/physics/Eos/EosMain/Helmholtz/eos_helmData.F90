@@ -76,7 +76,7 @@ module eos_helmData
 
   logical, save :: eos_baprox13 = .false. 
 
-  real :: eos_msA(NSPECIES), eos_msZ(NSPECIES)
+  real, save :: eos_msA(NSPECIES), eos_msZ(NSPECIES)
 
 
 end module eos_helmData
