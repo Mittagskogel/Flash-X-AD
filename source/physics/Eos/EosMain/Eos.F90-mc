@@ -27,7 +27,7 @@
 #include "Simulation.h"
 
 
-subroutine @M Eos_name @M pb mode, @M eos_args, massFrac, derivs @M pe
+subroutine @M Eos_name (mode, @M eos_args, massFrac, derivs)
 
 !==============================================================================
   use Driver_interface, ONLY : Driver_abort

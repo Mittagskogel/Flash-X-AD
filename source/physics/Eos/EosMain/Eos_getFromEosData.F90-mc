@@ -32,7 +32,7 @@
 !!REORDER(4): solnData
 
 
-subroutine @M Eos_getFromEosData_name @M pb vecB, vecE, eosData,range, lo, solnData @M pe
+subroutine @M Eos_getFromEosData_name (vecB, vecE, eosData,range, lo, solnData)
 
   use Eos_data, ONLY: eos_mapLookup
   use Driver_interface, ONLY : @M eos_driver_abort_name
