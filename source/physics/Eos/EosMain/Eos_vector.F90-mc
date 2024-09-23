@@ -43,8 +43,8 @@ subroutine @M Eos_vector_name @M pb mode, vecLen, eosData, massFrac1, derivs @M 
   implicit none
   integer, INTENT(in) :: mode, vecLen
   real, dimension(vecLen,EOS_VARS) :: eosData 
-  real, optional, INTENT(out),target,dimension(1:vecLen,EOS_VARS+1:EOS_NUM) :: derivs
   real, optional, INTENT(in),target, dimension(NSPECIES,vecLen)    :: massFrac1
+  real, optional, INTENT(out), dimension(1:vecLen,EOS_VARS+1:EOS_NUM) :: derivs
 
   real, dimension(NSPECIES) :: massFrac
   integer :: i
@@ -68,8 +68,8 @@ subroutine @M Eos_vector_name @M pb mode, vecLen, eosData, massFrac1, derivs @M 
      do i = 1,vecLen
         massFrac(1:NSPECIES) = massFrac1(1:NSPECIES,i)
         @M eos_unpack(eosData,i)
-        @M eos_idealGamma_massFrac_derivs
-        @M eos_helmSpecies_massFrac_derivs
+        @M eos_idealGamma_point_massFrac_derivs(i)
+        @M eos_helmSpecies_point_massFrac_derivs(i)
         @M eos_pack(eosData,i)
      end do
   else if (pMassFrac) then
@@ -87,8 +87,8 @@ subroutine @M Eos_vector_name @M pb mode, vecLen, eosData, massFrac1, derivs @M 
      @M eos_DIR_private([pres, temp, dens, gamc, eint, entr, abar, zbar, ye, ekin])
      do i = 1,vecLen
         @M eos_unpack(eosData,i)
-        @M eos_idealGamma_derivs
-        @M eos_helmSpecies_derivs
+        @M eos_idealGamma_point_derivs(i)
+        @M eos_helmSpecies_point_derivs(i)
         @M eos_pack(eosData,i)
      end do
   else
