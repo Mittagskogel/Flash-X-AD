@@ -96,7 +96,7 @@ subroutine Burn (  dt  )
   logical :: okBurnTemp, okBurnDens, okBurnShock, okBurnNickel
 
   real, allocatable, dimension(:) :: xCoord, yCoord, zCoord
-  integer, dimension(1:MDIM) :: lo,hi,loHalo,hiHalo
+  integer, dimension(1:MDIM) :: lo,hi,loGC,hiGC
 
   integer, parameter :: shock_mode = 1
   real, parameter :: shock_thresh = 0.33
@@ -108,7 +108,7 @@ subroutine Burn (  dt  )
 #endif
 
   real, pointer, dimension(:,:,:,:) :: solnData
-
+  integer, dimension(LOW:HIGH,MDIM) :: blkLimits
   type(Grid_iterator_t)  :: itor
   type(Grid_tile_t) :: tileDesc
 
@@ -143,29 +143,29 @@ subroutine Burn (  dt  )
      ! get dimensions/limits and coordinates
      lo(1:MDIM) = tileDesc%limits(LOW,1:MDIM)
      hi(1:MDIM) = tileDesc%limits(HIGH,1:MDIM)
-     loHalo(1:MDIM) = tileDesc%grownLimits(LOW,1:MDIM)
-     hiHalo(1:MDIM) = tileDesc%grownLimits(HIGH,1:MDIM)
+     loGC(1:MDIM) = tileDesc%grownLimits(LOW,1:MDIM)
+     hiGC(1:MDIM) = tileDesc%grownLimits(HIGH,1:MDIM)
 
 
      ! allocate space for dimensions
-     allocate(xCoord(loHalo(IAXIS):hiHalo(IAXIS)))
-     allocate(yCoord(loHalo(JAXIS):hiHalo(JAXIS)))
-     allocate(zCoord(loHalo(KAXIS):hiHalo(KAXIS)))
+     allocate(xCoord(loGC(IAXIS):hiGC(IAXIS)))
+     allocate(yCoord(loGC(JAXIS):hiGC(JAXIS)))
+     allocate(zCoord(loGC(KAXIS):hiGC(KAXIS)))
 
-     allocate(shock(loHalo(IAXIS):hiHalo(IAXIS),&
-                    loHalo(JAXIS):hiHalo(JAXIS),&
-                    loHalo(KAXIS):hiHalo(KAXIS)))
+     allocate(shock(loGC(IAXIS):hiGC(IAXIS),&
+                    loGC(JAXIS):hiGC(JAXIS),&
+                    loGC(KAXIS):hiGC(KAXIS)))
 
-     call Grid_getCellCoords(IAXIS,CENTER,tileDesc%level,loHalo,hiHalo,xCoord)
-     call Grid_getCellCoords(JAXIS,CENTER,tileDesc%level,loHalo,hiHalo,yCoord)
-     call Grid_getCellCoords(KAXIS,CENTER,tileDesc%level,loHalo,hiHalo,zCoord)
+     call Grid_getCellCoords(IAXIS,CENTER,tileDesc%level,loGC,hiGC,xCoord)
+     call Grid_getCellCoords(JAXIS,CENTER,tileDesc%level,loGC,hiGC,yCoord)
+     call Grid_getCellCoords(KAXIS,CENTER,tileDesc%level,loGC,hiGC,zCoord)
 
      ! Get a pointer to solution data
      call tileDesc%getDataPtr(solnData, CENTER)
 
      ! Shock detector
      if (.NOT. bn_useShockBurn) then
-        call Hydro_shockStrength(solnData, shock, lo,hi, loHalo, hiHalo, &
+        call Hydro_shockStrength(solnData, shock, lo,hi, loGC, hiGC, &
              xCoord,yCoord,zCoord,shock_thresh,shock_mode)
      else
         shock(:,:,:) = 0.0
@@ -222,27 +222,15 @@ subroutine Burn (  dt  )
                          solnData(VELY_VAR,i,j,k)**2 +  &
                          solnData(VELZ_VAR,i,j,k)**2)
                     solnData(ENUC_VAR,i,j,k) = sdot
-
-!!$                    ! internal energy, add on nuclear rate*timestep
-!!$                    enuc = dt*solnData(ENUC_VAR,i,j,k)
-!!$                    ei = solnData(ENER_VAR,i,j,k) + enuc - solnData(EKIN_VAR,i,j,k)
-!!$
-!!$#ifdef EINT_VAR
-!!$                    solnData(EINT_VAR,i,j,k) = ei
-!!$#endif
-!!$                    solnData(ENER_VAR,i,j,k) = ei + solnData(EKIN_VAR,i,j,k)
-!!$#ifdef EELE_VAR
-!!$                    solnData(EELE_VAR,i,j,k) = solnData(EELE_VAR,i,j,k) + dt*sdot
-!!$#endif
-                    
-
                  endif
               endif
 
            end do
         end do
      end do
-     call Burn_update(solnData,lo, hi, loHalo, hiHalo, dt)
+     blkLimits(LOW,:)=lo
+     blkLimits(HIGH,:) = hi
+     call Burn_update(solnData, loGC, blkLimits, dt)
      !!$omp end parallel do
 
      ! we've altered the EI, let's equilabrate

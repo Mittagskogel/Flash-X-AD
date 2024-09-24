@@ -38,13 +38,14 @@
 #include "constants.h"
 #include "Eos.h"
 
-subroutine Burn_update (Uin, lo, hi, loGC, hiGC, dt)
+subroutine Burn_update (Uin loGC,blkLimits, dt)
 
   implicit none
 
 
   !args
-  integer, dimension(MDIM),intent(in) :: lo, hi, loGC, hiGC
+  integer, dimension(MDIM),intent(in) ::  loGC
+  integer, dimension(LOW:HIGH,MDIM) :: blkLimits
   real, intent(in) :: dt
   real,dimension(1:,loGC(IAXIS):, loGC(JAXIS):, loGC(KAXIS):),intent(inout) :: Uin
 

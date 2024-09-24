@@ -61,13 +61,14 @@
 #include "constants.h"
 #include "Eos.h"
 
-subroutine Burn_update (Uin, lo, hi, loGC, hiGC, dt)
+subroutine Burn_update (Uin, loGC, blkLimits, dt)
 
   implicit none
 
 
   !args
-  integer, dimension(MDIM),intent(in) :: lo, hi, loGC, hiGC
+  integer, dimension(MDIM),intent(in) ::  loGC
+  integer, dimension(LOW:HIGH,MDIM) :: blkLimits
   real, intent(in) :: dt
   real,dimension(1:,loGC(IAXIS):, loGC(JAXIS):, loGC(KAXIS):),intent(inout) :: Uin
 
@@ -82,9 +83,9 @@ subroutine Burn_update (Uin, lo, hi, loGC, hiGC, dt)
 !!$omp default(shared) &
 !!$omp private(i,j,k,sdot,xIn,xOut,ei,ek,enuc)
   
-  do k = lo(KAXIS), hi(KAXIS)
-     do j = lo(JAXIS), hi(JAXIS)
-        do i = lo(IAXIS), hi(IAXIS)
+  do k = blkLimits(LOW,KAXIS), blkLimits(HIGH,KAXIS)
+     do j = blkLimits(LOW,JAXIS), blkLimits(HIGH,JAXIS)
+        do i = blkLimits(LOW,IAXIS), blkLimits(HIGH,IAXIS)
            
            ek = Uin(EKIN_VAR,i,j,k)
            enuc = dt*Uin(ENUC_VAR,i,j,k)
