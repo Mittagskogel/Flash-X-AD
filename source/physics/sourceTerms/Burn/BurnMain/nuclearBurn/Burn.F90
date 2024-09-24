@@ -222,18 +222,18 @@ subroutine Burn (  dt  )
            end do
         end do
      end do
-     blkLimits(LOW,:)=lo
-     blkLimits(HIGH,:) = hi
-     call Burn_update(solnData, loGC, blkLimits, dt)
+!!$     blkLimits(LOW,:)=lo
+!!$     blkLimits(HIGH,:) = hi
+!!$     call Burn_update(solnData, loGC, blkLimits, dt)
      !!$omp end parallel do
 
-     ! we've altered the EI, let's equilabrate
-     if (burnedZone) then
-        lo(:) = tileDesc%blkLimitsGC(LOW,:)
-        call Eos_multiDim(MODE_DENS_EI,tileDesc%limits,lo,solnData)
-
-
-     end if
+!!$     ! we've altered the EI, let's equilabrate
+!!$     if (burnedZone) then
+!!$        lo(:) = tileDesc%blkLimitsGC(LOW,:)
+!!$        call Eos_multiDim(MODE_DENS_EI,tileDesc%limits,lo,solnData)
+!!$
+!!$
+!!$     end if
 
      call tileDesc%releaseDataPtr(solnData, CENTER)
      nullify(solnData)

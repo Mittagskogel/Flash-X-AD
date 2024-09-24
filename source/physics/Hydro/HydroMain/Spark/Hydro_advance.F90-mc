@@ -46,6 +46,7 @@ subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
                               hy_rk_saveFluxBuf, &
                               hy_rk_renormAbundance
    use Eos_interface, ONLY : @M hy_eos_multidim_name
+   use Burn_interface, ONLY : Burn_update
 
 
    @M hy_DIR_TARGET_routine(vector)
@@ -119,6 +120,14 @@ subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
                              hy_flx, hy_fly, hy_flz, &
                              hy_fareaX, hy_fareaY, hy_fareaZ, &
                              blkLimits, lo, loGC)
+
+      if(stage==last_stage) then
+         call Burn_update(hy_starState, loGC, blkLimits, dt)
+#if NSPECIES>0
+         hy_starState(SPECIES_BEGIN:SPECIES_END, @M bounds_3d(blkLimits)) = &
+              Uin(SPECIES_BEGIN:SPECIES_END, @M bounds_3d(blkLimits))
+#endif
+      end if
 #if NSPECIES>0
       !Properly normalize species after the update
       call hy_rk_renormAbundance(blkLimitsGC, hy_starState, loGC)
