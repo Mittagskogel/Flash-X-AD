@@ -100,7 +100,6 @@ subroutine Burn (  dt  )
 
   integer, parameter :: shock_mode = 1
   real, parameter :: shock_thresh = 0.33
-  real, allocatable, dimension(:,:,:) :: shock
 #ifdef DEBUG_GRID_GCMASK
   logical,save :: gcMaskLogged =.FALSE.
 #else
@@ -152,10 +151,6 @@ subroutine Burn (  dt  )
      allocate(yCoord(loGC(JAXIS):hiGC(JAXIS)))
      allocate(zCoord(loGC(KAXIS):hiGC(KAXIS)))
 
-     allocate(shock(loGC(IAXIS):hiGC(IAXIS),&
-                    loGC(JAXIS):hiGC(JAXIS),&
-                    loGC(KAXIS):hiGC(KAXIS)))
-
      call Grid_getCellCoords(IAXIS,CENTER,tileDesc%level,loGC,hiGC,xCoord)
      call Grid_getCellCoords(JAXIS,CENTER,tileDesc%level,loGC,hiGC,yCoord)
      call Grid_getCellCoords(KAXIS,CENTER,tileDesc%level,loGC,hiGC,zCoord)
@@ -164,11 +159,10 @@ subroutine Burn (  dt  )
      call tileDesc%getDataPtr(solnData, CENTER)
 
      ! Shock detector
+     solnData(SHOK_VAR,:,:,:)=0.0
      if (.NOT. bn_useShockBurn) then
-        call Hydro_shockStrength(solnData, shock, lo,hi, loGC, hiGC, &
+        call Hydro_shockStrength(solnData, lo,hi, loGC, hiGC, &
              xCoord,yCoord,zCoord,shock_thresh,shock_mode)
-     else
-        shock(:,:,:) = 0.0
      endif
 
      ! AH: Aprox13 and Aprox19 are not currently thread-safe
@@ -187,7 +181,7 @@ subroutine Burn (  dt  )
 
               okBurnTemp = (tmp >= bn_nuclearTempMin .AND. tmp <= bn_nuclearTempMax)
               okBurnDens = (rho >= bn_nuclearDensMin .AND. rho <= bn_nuclearDensMax)
-              okBurnShock = (shock(i,j,k) <= 0.0 .OR. (shock(i,j,k) > 0.0 .AND. bn_useShockBurn))
+              okBurnShock = (solnData(SHOK_VAR,i,j,k) <= 0.0 .OR. (solnData(SHOK_VAR,i,j,k) > 0.0 .AND. bn_useShockBurn))
 
               if (okBurnTemp .AND. okBurnDens .AND. okBurnShock) then
 
@@ -247,7 +241,6 @@ subroutine Burn (  dt  )
      deallocate(xCoord)
      deallocate(yCoord)
      deallocate(zCoord)
-     deallocate(shock)
 
      call itor%next()
 

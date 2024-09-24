@@ -33,7 +33,7 @@
 
 !#define DEBUG_HYDRO_GUARDCELLS
 
-subroutine Hydro_shockStrength(solnData, shock, lo,hi,loHalo,hiHalo,&
+subroutine Hydro_shockStrength(solnData, lo,hi,loHalo,hiHalo,&
                              primaryCoord,secondCoord,thirdCoord, &
                              threshold, mode)
 
@@ -44,9 +44,6 @@ subroutine Hydro_shockStrength(solnData, shock, lo,hi,loHalo,hiHalo,&
 
   integer, intent(IN), dimension(1:MDIM) :: lo,hi,loHalo,hiHalo
   real, pointer :: solnData(:,:,:,:) 
-  real,intent(inout),dimension(loHalo(IAXIS):hiHalo(IAXIS),&
-       loHalo(JAXIS):hiHalo(JAXIS),&
-       loHalo(KAXIS):hiHalo(KAXIS)) :: shock
   real,intent(IN),dimension(loHalo(IAXIS):hiHalo(IAXIS)) :: primaryCoord
   real,intent(IN),dimension(loHalo(JAXIS):hiHalo(JAXIS)) :: secondCoord
   real,intent(IN),dimension(loHalo(KAXIS):hiHalo(KAXIS)) :: thirdCoord
@@ -445,18 +442,18 @@ subroutine Hydro_shockStrength(solnData, shock, lo,hi,loHalo,hiHalo,&
           case(1)
              ! nothing
           case(2)
-             shockd = shock(i,j,k) + shockd
+             shockd = solnData(SHOK_VAR,i,j,k) + shockd
           case(3)
-             shockd = max(shock(i,j,k),shockd)
+             shockd = max(solnData(SHOK_VAR,i,j,k),shockd)
           end select
           
-          shock(i,j,k) = shockd
+          solnData(SHOK_VAR,i,j,k) = shockd
 #ifdef DEBUG_HYDRO_GUARDCELLS
           im = i; jm = j; km = k
           im = min(max(i,blkLimits(LOW,IAXIS)),blkLimits(HIGH,IAXIS))
           jm = min(max(j,blkLimits(LOW,JAXIS)),blkLimits(HIGH,JAXIS))
           km = min(max(k,blkLimits(LOW,KAXIS)),blkLimits(HIGH,KAXIS))
-          shock(im,jm,km) = max(shock(im,jm,km),shockd)
+          solnData(SHOK_VAR,im,jm,km) = max(solnData(SHOK_VAR,im,jm,km),shockd)
 #endif
 
        enddo
