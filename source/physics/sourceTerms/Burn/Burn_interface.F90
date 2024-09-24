@@ -35,6 +35,15 @@ Module Burn_interface
      subroutine Burn(dt)
        real,intent(IN) :: dt
      end subroutine Burn
+  end interface Burn
+
+  interface
+     subroutine Burn_update (Uin, lo, hi, loGC, hiGC, dt)
+       !args
+       integer, dimension(MDIM),intent(in) :: lo, hi, loGC, hiGC
+       real, intent(in) :: dt
+       real,dimension(1:,loGC(IAXIS):, loGC(JAXIS):, loGC(KAXIS):),intent(inout) :: Uin
+     end subroutine Burn_update
   end interface
 
   interface Burn_finalize

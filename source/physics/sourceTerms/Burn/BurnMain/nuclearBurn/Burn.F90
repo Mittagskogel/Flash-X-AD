@@ -74,6 +74,7 @@ subroutine Burn (  dt  )
 
   use Grid_iterator, ONLY : Grid_iterator_t
   use Grid_tile, ONLY : Grid_tile_t
+  use Burn_interface, ONLY : Burn_update
 
   implicit none
 
@@ -217,22 +218,23 @@ subroutine Burn (  dt  )
                        solnData(speciesMap,i,j,k) = xOut(n)
                     end do
 
-                    ek = 0.5e0*(solnData(VELX_VAR,i,j,k)**2 +  &
+                    solnData(EKIN_VAR,i,j,k) = 0.5e0*(solnData(VELX_VAR,i,j,k)**2 +  &
                          solnData(VELY_VAR,i,j,k)**2 +  &
                          solnData(VELZ_VAR,i,j,k)**2)
-
-                    ! internal energy, add on nuclear rate*timestep
-                    enuc = dt*sdot
-                    ei = solnData(ENER_VAR,i,j,k) + enuc - ek
-
-#ifdef EINT_VAR
-                    solnData(EINT_VAR,i,j,k) = ei
-#endif
-                    solnData(ENER_VAR,i,j,k) = ei + ek
-#ifdef EELE_VAR
-                    solnData(EELE_VAR,i,j,k) = solnData(EELE_VAR,i,j,k) + dt*sdot
-#endif
                     solnData(ENUC_VAR,i,j,k) = sdot
+
+!!$                    ! internal energy, add on nuclear rate*timestep
+!!$                    enuc = dt*solnData(ENUC_VAR,i,j,k)
+!!$                    ei = solnData(ENER_VAR,i,j,k) + enuc - solnData(EKIN_VAR,i,j,k)
+!!$
+!!$#ifdef EINT_VAR
+!!$                    solnData(EINT_VAR,i,j,k) = ei
+!!$#endif
+!!$                    solnData(ENER_VAR,i,j,k) = ei + solnData(EKIN_VAR,i,j,k)
+!!$#ifdef EELE_VAR
+!!$                    solnData(EELE_VAR,i,j,k) = solnData(EELE_VAR,i,j,k) + dt*sdot
+!!$#endif
+                    
 
                  endif
               endif
@@ -240,6 +242,7 @@ subroutine Burn (  dt  )
            end do
         end do
      end do
+     call Burn_update(solnData,lo, hi, loHalo, hiHalo, dt)
      !!$omp end parallel do
 
      ! we've altered the EI, let's equilabrate

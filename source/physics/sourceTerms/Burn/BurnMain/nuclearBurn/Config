@@ -44,4 +44,4 @@ D nuclearNI56Max        Max Ni56 mass frac. for burning
 PARAMETER nuclearNI56Max       REAL    1.0    [0 to ]
 
 VARIABLE enuc                # nuclear energy generation rate
-
+VARIABLE ekin                # kinetic energy
