@@ -56,8 +56,11 @@ Module bn_interface
   !! NOTE from this point down, LBR had to guess the intent
   !! These routines reside in nuclearBurn and are generic for all alpha-chain networks
   interface
-     subroutine bn_azbar()
+     subroutine bn_azbar(xmass, ymass, abar, zbar, z2bar, ytot1, bye)
        implicit none
+       real, intent(IN) :: xmass(NSPECIES)
+       real, intent(OUT) :: ymass(NSPECIES)
+       real, intent(OUT) :: abar, zbar, z2bar, ytot1, bye
      end subroutine bn_azbar
   end interface
 
@@ -96,13 +99,18 @@ Module bn_interface
   end interface
 
   interface
-     subroutine bn_screen4(zbarr,abarr,z2barr,z1,a1,z2,a2, & 
-          &                   jscreen,init,scorr,scorrdt)
+     subroutine bn_screen4(zbarr, abarr, z2barr, z1, a1, z2, a2, &
+                           jscreen, init, &
+                           btemp, bden, zs13, zs13inv, zhat, zhat2, lzav, aznut, &
+                           btemp_old, den_old, zbarr_old, abarr_old, &
+                           scorr)
        implicit none
-       integer, intent(IN)   :: jscreen, init
-       real, intent(IN)      :: abarr, zbarr, z2barr, z1, a1, z2, a2
-       real, intent(OUT)     :: scorr
-       real, intent(OUT), optional     :: scorrdt
+       integer, intent(IN) :: jscreen, init
+       real, intent(IN) :: abarr, zbarr, z2barr, z1, a1, z2, a2
+       real, intent(IN) :: btemp, bden
+       real, intent(OUT) :: scorr
+       real, intent(INOUT) :: zs13(:), zs13inv(:), zhat(:), zhat2(:), lzav(:), aznut(:)   ! size of nrat
+       real, intent(INOUT) :: btemp_old, den_old, zbarr_old, abarr_old
      end subroutine bn_screen4
   end interface
 

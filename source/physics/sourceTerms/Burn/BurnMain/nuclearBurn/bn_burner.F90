@@ -92,16 +92,22 @@
 
 subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
 
-  use Burn_dataEOS, ONLY:  btemp, bden
+  ! use Burn_dataEOS, ONLY:  btemp, bden
   use Burn_data, ONLY: bn_algebra, bn_odeStepper, bn_useBurnTable, &
-       & xmass, ymass, xoktot, xbadtot, bion, sneut, aion
+       xmass, ymass, xoktot, xbadtot, bion, sneut, aion, nrat, nrattab, &
+       ratraw, ratdum
 
   use bnIntegrate_interface, ONLY: bn_netIntegrate
   !  This are routine names to be passed as arguments.  Cannot be included
   !   in an EXTERNAL statement if you're going to use an interface
   use bnIntegrate_interface, ONLY: bn_baderMa28, bn_baderGift, &
        bn_rosenMa28, bn_rosenGift
-  use bnNetwork_interface, ONLY: bn_network, bn_networkSparsePointers
+  use bnNetwork_interface, ONLY: bn_network, &
+                                 bn_networkSparsePointers, &
+                                 bn_networkRates, &
+                                 bn_networkTable, &
+                                 bn_networkScreen
+
   use bn_interface, ONLY: bn_azbar, bn_sneutx
 
   implicit none
@@ -131,6 +137,13 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
        &                  conv = ev2erg*1.0e6*avo, tol    = 1.0e-5,          &
        &                  beg = 0.0e0,             odescal = 1.0e-6
 
+
+  ! real :: ratraw(nrat), ratdum(nrat)   !! TODO:
+  real :: scfac(nrat), rattab(nrat,nrattab), ttab(nrattab), dtab(nrat)
+
+  real :: btemp, bden
+  real :: abar, zbar, z2bar, ytot1, bye
+
   !..set the the material and network variables
   btemp = temp
   bden  = density
@@ -139,7 +152,7 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
      xmass(i) = xIn(i)
   enddo
 
-  call bn_azbar()  !! generates ymass
+  call bn_azbar(xmass, ymass, abar, zbar, z2bar, ytot1, bye)
 
   do i=1,NSPECIES
      ys2(i) = ymass(i)
@@ -149,14 +162,16 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
   !..get the reaction rates from a table or formula
 
   if (bn_useBurnTable) then
-     call bn_networkTable
+     call bn_networkTable(btemp, bden, abar, zbar, z2bar, ytot1, bye, &
+                          nrat, nrattab, &
+                          rattab, ttab, dtab, ratraw)
   else
-     call bn_networkRates
+     call bn_networkRates(btemp, bden, abar, zbar, z2bar, ytot1, bye, nrat, ratraw)
   endif
   !! in most netoworks, the weak subroutine does not exist.
   !! so it is now called from Aprox19's bn_networkScreen
 !!  call bn_networkWeak(ymass)
-  call bn_networkScreen(ymass)
+  call bn_networkScreen(btemp, bden, ratraw, ymass, scfac, ratdum)
 
 
   !..set the time step variables for a single point burn

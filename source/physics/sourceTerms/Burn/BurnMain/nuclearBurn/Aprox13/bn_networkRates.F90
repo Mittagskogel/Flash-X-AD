@@ -67,16 +67,19 @@
 
 
 
-subroutine bn_networkRates
+subroutine bn_networkRates(btemp, bden, abar, zbar, z2bar, ytot1, bye, nrat, ratraw)
 
-  use Burn_data, ONLY: nrat, ratraw
-  use Burn_dataEOS, ONLY:  btemp,bden,abar,zbar,z2bar,ytot1,bye
   use bn_dataAprox13
 
   implicit none
 
 #include "constants.h"
 #include "Simulation.h"
+
+  integer, intent(IN) :: nrat
+  real, intent(IN) :: btemp, bden
+  real, intent(IN) :: abar, zbar, z2bar, ytot1, bye
+  real, dimension(nrat), intent(OUT) :: ratraw
 
   !!    include 'eos_common.fh'   !! now Burn_dataEOS
   !!    include 'network_common.fh'

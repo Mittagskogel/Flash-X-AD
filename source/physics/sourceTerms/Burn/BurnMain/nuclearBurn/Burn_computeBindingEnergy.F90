@@ -25,7 +25,6 @@
 !! from MSU's PHY 981/2/3
 subroutine Burn_computeBindingEnergy(ebin, massFrac)
    use Burn_data, only: xmass, ymass, bion, zion, aion
-   use Burn_dataEOS, only: bye, abar, ytot1
    use bn_interface, only: bn_azbar
 
 #include "Simulation.h"
@@ -50,13 +49,14 @@ subroutine Burn_computeBindingEnergy(ebin, massFrac)
 
    real, parameter :: conv = MeV2erg*N_A ! erg / mol
 
+   real :: abar, zbar, z2bar, ytot1, bye
    integer :: s
 
    do s = 1, NSPECIES
       xmass(s) = massFrac(s)
    end do ! s
 
-   call bn_azbar()
+   call bn_azbar(xmass, ymass, abar, zbar, z2bar, ytot1, bye)
 
    ebin = 0.0
 

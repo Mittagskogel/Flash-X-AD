@@ -27,6 +27,7 @@
 !!
 !!***
 
+#include "Simulation.h"
 
 Module bnNetwork_interface
 
@@ -42,15 +43,27 @@ Module bnNetwork_interface
      end subroutine bn_finalizeNetwork
   end interface
 
-  interface 
-     subroutine bn_networkRates
-       implicit none
+  interface
+     subroutine bn_networkRates(btemp, bden, abar, zbar, z2bar, ytot1, bye, nrat, ratraw)
+        implicit none
+        integer, intent(IN) :: nrat
+        real, intent(IN) :: btemp, bden
+        real, intent(IN) :: abar, zbar, z2bar, ytot1, bye
+        real, dimension(nrat), intent(OUT) :: ratraw
      end subroutine bn_networkRates
   end interface
 
-  interface 
-     subroutine bn_networkTable
-       implicit none
+  interface
+     subroutine bn_networkTable(btemp, bden, abar, zbar, z2bar, ytot1, bye, &
+                                nrat, nrattab, &
+                                rattab, ttab, dtab, ratraw)
+        implicit none
+        integer, intent(IN) :: nrat, nrattab
+        real, intent(IN) :: btemp, bden, abar, zbar, z2bar, ytot1, bye
+        real, intent(OUT), dimension(nrattab) :: ttab
+        real, intent(OUT), dimension(nrat, nrattab) :: rattab
+        real, intent(OUT), dimension(nrat) :: dtab
+        real, intent(OUT), dimension(nrat) :: ratraw
      end subroutine bn_networkTable
   end interface
 
@@ -62,17 +75,16 @@ Module bnNetwork_interface
      end subroutine bn_gift
   end interface
 
-  interface 
-     subroutine bn_networkScreen(y)
-#include "Simulation.h"
-       implicit none
-       real, intent(IN) ::  y(NSPECIES)
+  interface
+     subroutine bn_networkScreen(btemp, bden, ratraw, ymass, scfac, ratdum)
+        implicit none
+        real, intent(IN) :: btemp, bden, ymass(NSPECIES), ratraw(nrat)
+        real, intent(IN OUT) :: scfac(nrat), ratdum(nrat)
      end subroutine bn_networkScreen
   end interface
 
   interface
      subroutine bn_networkWeak(y)
-#include "Simulation.h"
        implicit none
        real, intent(IN) :: y(NSPECIES)
      end subroutine bn_networkWeak
