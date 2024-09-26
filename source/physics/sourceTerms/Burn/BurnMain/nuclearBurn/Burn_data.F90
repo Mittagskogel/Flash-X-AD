@@ -122,16 +122,16 @@ Module Burn_data
   character(len=4), save ::    ionam(NSPECIES)
   
 ! were in common block /netc4/
-  real,save,dimension(NSPECIES) :: xmass,ymass   !! TODO: delete this
+  ! real,save,dimension(NSPECIES) :: xmass,ymass   ! hypothetically localized
   real,save,dimension(NSPECIES) :: aion,zion,bion,aioninv,zionsq    ! used to have aionin too
-  real,save        ::  rz1(nrat+1),ra1(nrat+1), &    ! TODO: not used anywhere
-                       rz2(nrat+1),ra2(nrat+1), &    ! TODO: not used anywhere
+  ! real,save        ::  rz1(nrat+1),ra1(nrat+1), &    ! TODO: not used anywhere
+  !                      rz2(nrat+1),ra2(nrat+1), &    ! TODO: not used anywhere
                        ! zs13(nrat),zhat(nrat),zhat2(nrat), &   ! hypothetically localized
                        ! lzav(nrat),aznut(nrat),scfac(nrat), &  ! hypothetically localized
                        ! zs13inv(nrat), &  ! hypothetically localized
                        ! ratraw(nrat), &
-                       ratdum(nrat), &   !! TODO: delete this
-                       xoktot,xbadtot,xkbrn           !! TODO: delete this
+                       ! ratdum(nrat), &   ! hypothetically localized
+  real, save :: xoktot,xbadtot,xkbrn           !! TODO: delete this
   integer,save      ::  isflag(nrat+1)   ! TODO: not used anywhere
 
 ! were in common block /netc5/

@@ -59,7 +59,7 @@
 subroutine bn_burner(tstep, temp, density, xIn, xOut, sdotRate, burnedZone, zone, kstep)
 
    use Burn_dataEOS, ONLY: btemp, bden, bye
-   use Burn_data, ONLY: xmass, bion, sneut, aion, aioninv, bn_nuclearDensMax
+   use Burn_data, ONLY: bion, sneut, aion, aioninv, bn_nuclearDensMax
 
    use bn_interface, ONLY: bn_azbar, bn_sneutx
 
@@ -97,6 +97,7 @@ subroutine bn_burner(tstep, temp, density, xIn, xOut, sdotRate, burnedZone, zone
    integer, intent(out)                                  :: kstep
 
    !..local varaibles
+   real, dimension(NSPECIES) :: xmass
    real, parameter ::  conv = avn*epmev
    integer :: i, numzones
 

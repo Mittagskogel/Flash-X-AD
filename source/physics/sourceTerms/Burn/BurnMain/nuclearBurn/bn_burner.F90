@@ -94,8 +94,8 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
 
   ! use Burn_dataEOS, ONLY:  btemp, bden
   use Burn_data, ONLY: bn_algebra, bn_odeStepper, bn_useBurnTable, &
-       xmass, ymass, xoktot, xbadtot, bion, sneut, aion, nrat, nrattab, &
-      ratdum
+                       xoktot, xbadtot, &
+                       bion, sneut, aion, nrat, nrattab
 
   use bnIntegrate_interface, ONLY: bn_netIntegrate
   !  This are routine names to be passed as arguments.  Cannot be included
@@ -138,10 +138,10 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
   real, parameter ::  avo  = 6.0221367e23,     ev2erg = 1.602e-12,           &
        &                  conv = ev2erg*1.0e6*avo, tol    = 1.0e-5,          &
        &                  beg = 0.0e0,             odescal = 1.0e-6
-
-
-  real :: ratraw(nrat)
-  ! real :: ratdum(nrat)   !! TODO:
+  ! ratdum  = the raw reaction rates (unscreened) as an array
+  ! ratdum  = the screened reaction rates as an array
+  real :: ratraw(nrat), ratdum(nrat)
+  real :: xmass(NSPECIES), ymass(NSPECIES)
   real :: scfac(nrat), rattab(nrat,nrattab), ttab(nrattab), dtab(nrat)
 
   real :: btemp, bden

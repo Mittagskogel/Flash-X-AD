@@ -65,7 +65,7 @@ subroutine Burn (  dt  )
   use bn_xnetData, ONLY : xnet_myid, xnet_nzbatchmx, xnet_inuc2unk
   use Burn_data, ONLY : bn_nuclearTempMin, bn_nuclearTempMax, bn_nuclearDensMin, &
        &   bn_nuclearDensMax, bn_nuclearNI56Max, bn_useShockBurn, &
-       &   bn_useBurn, bn_gcMaskSD, xmass
+       &   bn_useBurn, bn_gcMaskSD
   use Burn_dataEOS, only: ytot1, bye
   use Driver_interface, ONLY : Driver_abort
   use Eos_interface, ONLY : Eos_multiDim
@@ -102,6 +102,8 @@ subroutine Burn (  dt  )
   integer,dimension(1:MDIM) :: lo, hi, loGC,hiGC, loHalo, hiHalo
   logical :: okBurnTemp, okBurnDens, okBurnShock, okBurnNickel
   logical, parameter :: getGuardCells = .true.
+
+  real, dimension(NSPECIES) :: xmass
 
   real,    allocatable :: shock(:,:,:)
   real,    allocatable, target :: xIn(:,:,:,:,:), xOut(:,:,:,:,:)
