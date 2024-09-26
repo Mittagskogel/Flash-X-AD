@@ -214,9 +214,7 @@ subroutine Burn (  dt  )
 
                  endif
               endif
-              solnData(EKIN_VAR,i,j,k) = 0.5e0*(solnData(VELX_VAR,i,j,k)**2 +  &
-                   solnData(VELY_VAR,i,j,k)**2 +  &
-                   solnData(VELZ_VAR,i,j,k)**2)
+
               solnData(ENUC_VAR,i,j,k) = sdot
 
            end do

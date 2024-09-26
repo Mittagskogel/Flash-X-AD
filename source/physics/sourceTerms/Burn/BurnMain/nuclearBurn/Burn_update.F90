@@ -86,8 +86,9 @@ subroutine Burn_update (Uin, loGC, blkLimits, dt)
   do k = blkLimits(LOW,KAXIS), blkLimits(HIGH,KAXIS)
      do j = blkLimits(LOW,JAXIS), blkLimits(HIGH,JAXIS)
         do i = blkLimits(LOW,IAXIS), blkLimits(HIGH,IAXIS)
-           
-           ek = Uin(EKIN_VAR,i,j,k)
+           ek = 0.5e0*(Uin(VELX_VAR,i,j,k)**2 +  &
+                       Uin(VELY_VAR,i,j,k)**2 +  &
+                       Uin(VELZ_VAR,i,j,k)**2)
            enuc = dt*Uin(ENUC_VAR,i,j,k)
            ei = Uin(ENER_VAR,i,j,k) + enuc - ek
            
