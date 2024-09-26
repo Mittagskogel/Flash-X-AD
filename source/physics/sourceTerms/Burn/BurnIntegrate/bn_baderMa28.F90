@@ -104,15 +104,15 @@ subroutine bn_baderMa28(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
   logical, save    :: reduct
   integer, parameter  ::    nmax = 30, kmaxx=7, imax=kmaxx+1   
   integer, parameter  ::    naij=300, n5 = 5*nmax, n8=8*nmax
-  integer, save :: iloc(naij),jloc(naij), & 
-       &                 ivect(naij),jvect(naij),ikeep(n5),iw(n8), & 
-       &                 flag,nzo,ifirst,ii, &
-       &            nDummy ! used to make number of arguments of jakob consistent
+  integer, save :: iloc(naij),jloc(naij), &
+                   ivect(naij),jvect(naij),ikeep(n5),iw(n8), &
+                   flag,nzo,ifirst,ii
+  integer, parameter :: nDummy = 1  ! used to make number of arguments of jakob consistent
   integer, save :: i,iq,k,kk,km,kmax,kopt,nvold,nseq(imax)
   real, save ::    eps1,epsold,errmax,fact,h,red,scale,xwork,wrkmin, & 
        &                 xest,xnew,a(imax),alf(kmaxx,kmaxx),err(kmaxx), & 
        &                 yerr(nmax),ysav(nmax),yseq(nmax),& 
-       &                 dfdy(naij),amat(naij),w(nmax),u
+       &                 dfdy(naij,nDummy),amat(naij),w(nmax),u
 
   real, parameter     ::   safe1 = 0.25e0, safe2 = 0.7e0, redmax=1.0e-5, & 
        &                  redmin = 0.7e0, tiny = 1.0e-30, scalmx = 0.1e0
@@ -229,7 +229,7 @@ subroutine bn_baderMa28(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
         call Driver_abort('ERROR in bn_baderMa28: stepsize too small')
      end if
 
-     call bn_baderStepMa28(btemp,ysav,dydx,dfdy,ratdum,nmax,nv,x,h,nseq(k),yseq, & 
+     call bn_baderStepMa28(btemp,ysav,dydx,dfdy(:,nDummy),ratdum,nmax,nv,x,h,nseq(k),yseq, & 
           &             nzo,amat,naij,ivect,jvect,jloc,ikeep,iw,w,flag, & 
           &             derivs) 
 

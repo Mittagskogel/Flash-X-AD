@@ -19,7 +19,7 @@
 !! 
 !!  call bn_networkSparseJakob(real, intent(IN)    :: tt,
 !!                             real, intent(IN)    :: y(:),
-!!                             real, intent(OUT)   :: dfdy(nphys,nphys),
+!!                             real, intent(OUT)   :: dfdy(:,:),
 !!                             integer, intent(IN) :: nzo,
 !!                             integer, intent(IN) :: nDummy)
 !!
@@ -61,8 +61,8 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
   ! nDummy brings number of variables up to be the same as bn_networkDenseJakob
   integer, intent(IN) :: nzo, nDummy  
   real, intent(IN)    :: tt
-  real, intent(INOUT) :: y(*)
-  real, intent(OUT)   :: dfdy(*)
+  real, intent(INOUT) :: y(:)
+  real, intent(OUT)   :: dfdy(:,:)
 
   integer          i,nt,iat
   real             r1,s1,t1,u1,v1,w1,x1,y1,a1
@@ -76,7 +76,7 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
   !!  initialize
   nt = 0
   do i=1,nzo
-     dfdy(i) = 0.0e0
+     dfdy(i,nDummy) = 0.0e0
   enddo
 
 
@@ -116,7 +116,7 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &    - y(ife52) * ratdum(irfeap) * (1.0e0-y1)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(he4)/d(c12)
   a1 =  2.0e0 * y(ic12) * ratdum(ir1212)                             &
@@ -125,7 +125,7 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &    - y(ihe4) * ratdum(ircag)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(he4)/d(o16)
   a1 =  0.5e0 * y(ic12) * ratdum(ir1216)                             &
@@ -135,14 +135,14 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &    - y(ihe4) * ratdum(iroag)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(he4)/d(ne20)
   a1  = ratdum(irnega)                                               &
        &   - y(ihe4) * ratdum(irneag)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(he4)/d(mg24)
   a1  =  ratdum(irmgga)                                              &
@@ -150,7 +150,7 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &     - y(ihe4) * ratdum(irmgap) * (1.0e0-r1)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(he4)/d(si28)
   a1  =  ratdum(irsiga)                                              &
@@ -159,7 +159,7 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &    + r1 * ratdum(irsigp)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(he4)/d(s32)
   a1  =  ratdum(irsga)                                               &
@@ -168,7 +168,7 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &    + s1 * ratdum(irsgp)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(he4)/d(ar36)
   a1  =  ratdum(irarga)                                              &
@@ -177,7 +177,7 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &    + t1 * ratdum(irargp)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(he4)/d(ca40)
   a1  =  ratdum(ircaga)                                              &
@@ -186,7 +186,7 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &    + u1 * ratdum(ircagp)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(he4)/d(ti44)
   a1  =  ratdum(irtiga)                                              &
@@ -195,7 +195,7 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &    + v1 * ratdum(irtigp)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(he4)/d(cr48)
   a1  =  ratdum(ircrga)                                              &
@@ -204,7 +204,7 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &    + w1 * ratdum(ircrgp)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(he4)/d(fe52)
   a1  = ratdum(irfega)                                               &
@@ -213,14 +213,14 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &    + x1 * ratdum(irfegp)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(he4)/d(ni56)
   a1  =  ratdum(irniga)                                              &
        &     + y1 * ratdum(irnigp)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
 
 
@@ -230,7 +230,7 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &     - y(ic12) * ratdum(ircag)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(c12)/d(c12)
   a1  = -4.0e0 * y(ic12) * ratdum(ir1212)                            &
@@ -239,14 +239,14 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &     - y(ihe4) * ratdum(ircag) 
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(c12)/d(o16)
   a1  = -y(ic12) * ratdum(ir1216)                                    &
        &     + ratdum(iroga)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
 
 
@@ -256,14 +256,14 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &    - y(io16)*ratdum(iroag)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(o16)/d(c12)
   a1  = -y(io16)*ratdum(ir1216)                                      &
        &    + y(ihe4)*ratdum(ircag)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(o16)/d(o16)
   a1  = - y(ic12) * ratdum(ir1216)                                   &
@@ -272,13 +272,13 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &      - ratdum(iroga)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(o16)/d(n20)
   a1  = ratdum(irnega) 
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
 
 
@@ -288,32 +288,32 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &    - y(ine20) * ratdum(irneag)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(ne20)/d(c12)
   a1  = 2.0e0 * y(ic12) * ratdum(ir1212)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(ne20)/d(o16)
   a1  = y(ihe4) * ratdum(iroag)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(ne20)/d(ne20)
   a1  = -y(ihe4) * ratdum(irneag)                                    &
        &     - ratdum(irnega)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(ne20)/d(mg24)
   a1  = ratdum(irmgga)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
 
 
@@ -324,25 +324,25 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &      -y(img24) * ratdum(irmgap) * (1.0e0-r1) 
   nt   = nt + 1
   iat  = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(mg24)/d(c12)
   a1  = 0.5e0 * y(io16) * ratdum(ir1216) 
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(mg24)/d(o16)
   a1  = 0.5e0 * y(ic12) * ratdum(ir1216) 
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(mg24)/d(ne20)
   a1  = y(ihe4) * ratdum(irneag) 
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(mg24)/d(mg24)
   a1  = -y(ihe4) * ratdum(irmgag)                                    &
@@ -350,14 +350,14 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &     - y(ihe4) * ratdum(irmgap) * (1.0e0-r1)  
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(mg24)/d(si28)
   a1  = ratdum(irsiga)                                               &
        &    + r1 * ratdum(irsigp)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
 
 
@@ -369,13 +369,13 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &      - y(isi28) * ratdum(irsiap) * (1.0e0-s1)
   nt   = nt + 1
   iat  = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(si28)/d(c12)
   a1  =  0.5e0 * y(io16) * ratdum(ir1216)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(si28)/d(o16)
   a1  =  0.5e0 * y(ic12) * ratdum(ir1216)                            &
@@ -383,14 +383,14 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &     + 0.68e0 * y(io16) * s1 * ratdum(ir1616)     
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(si28)/d(mg24)
   a1  =  y(ihe4) * ratdum(irmgag)                                    &
        &      + y(ihe4) * ratdum(irmgap) * (1.0e0-r1)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(si28)/d(si28)
   a1  = -y(ihe4) * ratdum(irsiag)                                    &
@@ -399,14 +399,14 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &     - y(ihe4) * ratdum(irsiap) * (1.0e0-s1)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(si28)/d(s32)
   a1  = ratdum(irsga)                                                &
        &    + s1 * ratdum(irsgp)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
 
 
@@ -418,21 +418,21 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &     - y(is32) * ratdum(irsap) * (1.0e0-t1)
   nt   = nt + 1
   iat  = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(s32)/d(o16)
   a1  =  0.68e0 * y(io16) * ratdum(ir1616) * (1.0e0-s1)              &
        &      + 0.2e0 * y(io16) * ratdum(ir1616) 
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(s32)/d(si28)
   a1  =  y(ihe4) * ratdum(irsiag)                                    &
        &     + y(ihe4) * ratdum(irsiap) * (1.0e0-s1)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(s32)/d(s32)
   a1  = -y(ihe4) * ratdum(irsag)                                     &
@@ -441,14 +441,14 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &     - y(ihe4) * ratdum(irsap) * (1.0e0-t1)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(s32)/d(ar36)
   a1  =  ratdum(irarga)                                              &
        &     + t1 * ratdum(irargp)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
 
 
@@ -460,14 +460,14 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &      - y(iar36) * ratdum(irarap) * (1.0e0-u1)
   nt   = nt + 1
   iat  = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(ar36)/d(s32)
   a1  = y(ihe4) * ratdum(irsag) &
        &    + y(ihe4) * ratdum(irsap) * (1.0e0-t1)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(ar36)/d(ar36)
   a1  = -y(ihe4) * ratdum(irarag) &
@@ -476,14 +476,14 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &     - y(ihe4) * ratdum(irarap) * (1.0e0-u1)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(ar36)/d(ca40)
   a1  = ratdum(ircaga) &
        &    + ratdum(ircagp) * u1
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
 
 
@@ -495,7 +495,7 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &     - y(ica40) * ratdum(ircaap)*(1.0e0-v1) 
   nt   = nt + 1
   iat  = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(ca40)/d(ar36)
   a1  =  y(ihe4) * ratdum(irarag)&
@@ -503,7 +503,7 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
 
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(ca40)/d(ca40)
   a1  = -y(ihe4) * ratdum(ircaag)&
@@ -512,14 +512,14 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &     - y(ihe4) * ratdum(ircaap)*(1.0e0-v1)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(ca40)/d(ti44)
   a1  = ratdum(irtiga) &
        &    + ratdum(irtigp) * v1
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
 
 
@@ -531,7 +531,7 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &      - y(iti44) * ratdum(irtiap)*(1.0e0-w1)
   nt   = nt + 1
   iat  = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(ti44)/d(ca40)
   a1  =  y(ihe4) * ratdum(ircaag)&
@@ -539,7 +539,7 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
 
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(ti44)/d(ti44)
   a1  = -y(ihe4) * ratdum(irtiag)&
@@ -548,14 +548,14 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &     - y(ihe4) * ratdum(irtiap)*(1.0e0-w1)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(ti44)/d(cr48)
   a1  = ratdum(ircrga) &
        &    + w1 * ratdum(ircrgp)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
 
 
@@ -567,14 +567,14 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &      - y(icr48) * ratdum(ircrap)*(1.0e0-x1)
   nt   = nt + 1
   iat  = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(cr48)/d(ti44)
   a1  =  y(ihe4) * ratdum(irtiag)                                    &
        &      + y(ihe4) * ratdum(irtiap)*(1.0e0-w1)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(cr48)/d(cr48)
   a1  = -y(ihe4) * ratdum(ircrag)                                    &
@@ -583,14 +583,14 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &     - y(ihe4) * ratdum(ircrap)*(1.0e0-x1)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(cr48)/d(fe52)
   a1  = ratdum(irfega)                                               &
        &    + x1 * ratdum(irfegp)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
 
 
@@ -602,14 +602,14 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &      - y(ife52) * ratdum(irfeap) * (1.0e0-y1)
   nt   = nt + 1
   iat  = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(fe52)/d(cr48)
   a1  =  y(ihe4) * ratdum(ircrag) &
        &     + y(ihe4) * ratdum(ircrap) * (1.0e0-x1)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(fe52)/d(fe52)
   a1  = -y(ihe4) * ratdum(irfeag)                                    &
@@ -618,14 +618,14 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &     - y(ihe4) * ratdum(irfeap) * (1.0e0-y1)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(fe52)/d(ni56)
   a1  = ratdum(irniga)                                               &
        &    + y1 * ratdum(irnigp)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
 
 
@@ -635,21 +635,21 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        &      + y(ife52) * ratdum(irfeap) * (1.0e0-y1)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(ni56)/d(fe52)
   a1  = y(ihe4) * ratdum(irfeag)                                     &
        &    + y(ihe4) * ratdum(irfeap) * (1.0e0-y1)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
   !!  d(ni56)/d(ni56)
   a1  = -ratdum(irniga)                                              &
        &     - y1 * ratdum(irnigp)
   nt  = nt + 1
   iat = eloc(nt)
-  dfdy(iat) = dfdy(iat) + a1
+  dfdy(iat,nDummy) = dfdy(iat,nDummy) + a1
 
 
 

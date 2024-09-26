@@ -103,8 +103,8 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
   use bnIntegrate_interface, ONLY: bn_baderMa28, bn_baderGift, &
                                    bn_rosenMa28, bn_rosenGift
   use bnNetwork_interface, ONLY: bn_network, &
-                                 ! bn_networkSparseJakob, &
-                                 ! bn_networkDenseJakob, &
+                                 bn_networkSparseJakob, &
+                                 bn_networkDenseJakob, &
                                  bn_networkSparsePointers, &
                                  bn_networkRates, &
                                  bn_networkTable, &
@@ -119,8 +119,8 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
 
   ! See notes in bnNetwork_interface on why you can't use the interface for
   !  SparseJakob/DenseJakob
-  external bn_networkSparseJakob, bn_networkDenseJakob
-!  external bn_baderMa28, bn_baderGift, bn_rosenMa28, bn_rosenGift
+  ! external bn_networkSparseJakob, bn_networkDenseJakob
+  ! external bn_baderMa28, bn_baderGift, bn_rosenMa28, bn_rosenGift
 
   ! arguments
   real, intent(IN)                       :: tstep,temp,density

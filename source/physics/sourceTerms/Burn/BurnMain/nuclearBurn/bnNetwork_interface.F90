@@ -110,7 +110,7 @@ Module bnNetwork_interface
        integer, intent(IN) :: nzo, nDummy
        real, intent(IN)    :: tt
        real, intent(INOUT) :: y(:)
-       real, intent(OUT)   :: dfdy(nzo,nDummy)
+       real, intent(OUT)   :: dfdy(:,:)
      end subroutine jakob_t
    end interface
 
@@ -155,22 +155,19 @@ Module bnNetwork_interface
 
 !-----------------------
 !  These two routines are supposed to have the same interface.  Sadly, they
-!     do not -- notice how dfdy is dimensioned.  bn_networkSparseJakob got 
-!     a fake dummy argument at the end to even them out
-!  No matter what I do, I can't trick a good compiler (Lahey) into thinking
-!     that the two have the same interface.  Lahey figures out that dfdy
-!     is one-dimensional in the case of SparseJakob and two-dimensional in the
-!     case of DenseJakob.  So I give up and just hope that the twit who
-!     designed these routines did his job right and it doesn't matter.
-!  Back to use "external bn_networkSparseJakob, bn_networkDenseJakob, derivs"
+!     do not -- dfdy has different ranks.  bn_networkSparseJakob takes
+!     the last argument as a fixed index for the second rank of dfdy
+!     to treat dfdy as the same rank of bn_networkDenseJakob.
+!  Normally, the actual argument for the nDummy in the bn_networkSparseJakob
+!     should be an integer parameter with value of one.
 !  NOTE: below two subroutines' procedures are provided as jakob_t
   interface
      subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        implicit none
-       integer, intent(IN) :: nzo, nDummy ! added to have equal numbers of arguments
+       integer, intent(IN) :: nzo, nDummy ! dummy index for dealing with dfdy
        real, intent(IN)    :: tt
        real, intent(INOUT) :: y(:)
-       real, intent(OUT)   :: dfdy(:)
+       real, intent(OUT)   :: dfdy(:,:)   ! NOTE: it only updates dfdy(:,nDummy)
      end subroutine bn_networkSparseJakob
   end interface
 
@@ -180,7 +177,7 @@ Module bnNetwork_interface
        integer, intent(IN) :: nlog, nphys
        real, intent(IN)    :: tt
        real, intent(INOUT) ::  y(:)
-       real, intent(OUT)   ::  dfdy(nphys,nphys)
+       real, intent(OUT)   ::  dfdy(:,:)
      end subroutine bn_networkDenseJakob
   end interface
 

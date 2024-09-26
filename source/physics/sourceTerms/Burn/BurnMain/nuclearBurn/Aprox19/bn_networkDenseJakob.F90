@@ -19,7 +19,7 @@
 !! 
 !!  call bn_networkDenseJakob (real, intent(IN) :: tt,
 !!                            real, intent(OUT) :: y(:),
-!!                            real, intent(OUT) :: dfdy(nphys,nphys),
+!!                            real, intent(OUT) :: dfdy(:,:),
 !!                          integer, intent(IN) :: nlog,
 !!                          integer, intent(IN) :: nphys)
 !!
@@ -55,7 +55,7 @@ subroutine bn_networkDenseJakob(tt,y,dfdy,nlog,nphys)
   ! arguments declaration
   integer, intent(IN) :: nlog, nphys
   real, intent(IN)    :: tt
-  real, intent(OUT)   :: y(*), dfdy(nphys,nphys)
+  real, intent(OUT)   :: y(:), dfdy(:,:)
 
   ! Local variables
   integer          i,j

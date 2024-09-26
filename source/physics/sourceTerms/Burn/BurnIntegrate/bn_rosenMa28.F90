@@ -124,7 +124,7 @@ subroutine bn_rosenMa28(y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  &
   logical, save       :: firstCall = .false.
   integer, save       :: iloc(naij),jloc(naij), flag, nzo,  &
        &                 ivect(naij),jvect(naij),ikeep(n5),iw(n8)
-  real, save          :: dfdy(naij),amat(naij),w(nmax),u
+  real, save          :: dfdy(naij,nDummy),amat(naij),w(nmax),u
 
 !!----------------------------------------------------------------------
 
@@ -185,7 +185,7 @@ subroutine bn_rosenMa28(y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  &
    !!   form the a matrix and decompose it 
      xx = 1.0e0/(gam*h)
      do i=1,nzo 
-        amat(i) = -dfdy(i) 
+        amat(i) = -dfdy(i,nDummy) 
         if (ivect(i) .eq. jvect(i)) amat(i) = xx + amat(i) 
      enddo
 
