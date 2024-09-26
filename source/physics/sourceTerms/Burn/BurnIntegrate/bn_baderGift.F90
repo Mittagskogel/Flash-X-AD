@@ -17,8 +17,10 @@
 !! SYNOPSIS
 !!  subroutine bn_baderMa28(real(IN)       ::y(:),
 !!                          real(IN)       ::dydx(:),
+!!                          real(IN)       ::ratdum(:),
 !!                          integer(IN)    ::n,
 !!                          real(IN)       ::x,
+!!                          real(IN)       ::btemp,
 !!                          real(IN)       ::htry,
 !!                          real(IN)       ::eps,
 !!                          real(IN)       ::yscal(:),
@@ -35,8 +37,10 @@
 !!
 !!   y       - dependent variable, array of size y(1:n)
 !!   dydx    - derivative of dependent variable, array of size dydx(1:n)
+!!   ratdum  - reaction rate
 !!   n       - number of dependent variables
 !!   x       - independent variable
+!!   btemp   - temperature
 !!   htry    - attempted stepsize
 !!   eps     - desired fractional accuracy
 !!   yscal   - vector of size yscal(1:n) for scaling error
@@ -57,7 +61,7 @@
 !!***
 !!---------------------------------------------------------------------------------
 
-subroutine bn_baderGift(y,dydx,nv,x,htry,eps,yscal,hdid,hnext, &
+subroutine bn_baderGift(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
      &                       derivs,jakob,bjakob)
 
   use Burn_data, ONLY: aion
@@ -85,7 +89,7 @@ subroutine bn_baderGift(y,dydx,nv,x,htry,eps,yscal,hdid,hnext, &
 
 !!  declare arguments
   integer, intent(IN) :: nv
-  real, intent(IN)    :: dydx(nv), yscal(nv), htry, eps
+  real, intent(IN)    :: dydx(nv), yscal(nv), ratdum(:), htry, eps, btemp
   real, intent(INOUT) :: x, y(nv)
   real, intent(OUT)   :: hdid, hnext
   procedure(derivs_t) :: derivs
@@ -184,7 +188,7 @@ subroutine bn_baderGift(y,dydx,nv,x,htry,eps,yscal,hdid,hnext, &
      end if
 
    !!  the semi implicit midpoint rules for this sequence
-     call bn_baderStepGift(ysav,dydx,dfdy,nmax,nv,x,h,nseq(k),yseq,derivs)
+     call bn_baderStepGift(btemp,ysav,dydx,dfdy,ratdum,nmax,nv,x,h,nseq(k),yseq,derivs)
 
    !!  extrapolate the error to zero
      xest = (h/nseq(k))**2
@@ -269,7 +273,7 @@ end subroutine bn_baderGift
 !!---------------------------------------------------------------------------------
 
 
-subroutine bn_baderStepGift(y,dydx,dfdy,nmax,n,xs,htot,nnstep,yout,  &
+subroutine bn_baderStepGift(btemp,y,dydx,dfdy,ratdum,nmax,n,xs,htot,nnstep,yout,  &
      &                      derivs)
 
   use bn_interface, ONLY: bn_gift
@@ -283,7 +287,7 @@ subroutine bn_baderStepGift(y,dydx,dfdy,nmax,n,xs,htot,nnstep,yout,  &
 !!  declare arguments
   integer, intent(IN) :: n, nmax
   integer, intent(IN) :: nnstep
-  real, intent(IN)    :: xs, htot, y(n), dydx(n), dfdy(nmax,nmax)
+  real, intent(IN)    :: btemp, xs, htot, y(n), dydx(n), dfdy(nmax,nmax), ratdum(:)
   real, intent(INOUT) :: yout(n)
   procedure(derivs_t) :: derivs
 
@@ -344,7 +348,7 @@ subroutine bn_baderStepGift(y,dydx,dfdy,nmax,n,xs,htot,nnstep,yout,  &
 
   !      call Timers_start ("derivs (burn)")
 
-  call derivs(x,ytemp,yout)
+  call derivs(x,ytemp,btemp,ratdum,yout)
 
   !      call Timers_stop ("derivs (burn)")
 
@@ -382,7 +386,7 @@ subroutine bn_baderStepGift(y,dydx,dfdy,nmax,n,xs,htot,nnstep,yout,  &
 
      !       call Timers_start ("derivs (burn)")
 
-     call derivs(x,ytemp,yout)
+     call derivs(x,ytemp,btemp,ratdum,yout)
 
      !       call Timers_stop ("derivs (burn)")
 

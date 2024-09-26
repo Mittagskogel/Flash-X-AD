@@ -95,9 +95,10 @@ Module bnNetwork_interface
 
 ! abstract interfaces for bn_netIntegrate
   abstract interface
-     subroutine derivs_t(tt,y,dydt)
+     subroutine derivs_t(tt,y,btemp,ratdum,dydt)
        implicit none
-       real, intent(IN) :: tt
+       real, intent(IN) :: tt, btemp
+       real, intent(IN), dimension(:) :: ratdum
        real, intent(INOUT), dimension(:)  :: y
        real, intent(OUT), dimension(:) :: dydt
      end subroutine derivs_t
@@ -122,13 +123,13 @@ Module bnNetwork_interface
    end interface
 
    abstract interface
-     subroutine steper_t(y,dydx,nv,x,htry,eps,yscal,hdid,hnext, &
+     subroutine steper_t(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
                          derivs,jakob,bjakob)
        import :: derivs_t, jakob_t, bjakob_t
        implicit none
        integer, intent(IN) :: nv
        real, intent(INOUT) :: y(nv)
-       real, intent(IN)    :: dydx(nv), yscal(nv), htry, eps
+       real, intent(IN)    :: dydx(nv), yscal(nv), ratdum(:), htry, eps, btemp
        real, intent(OUT)   :: hdid, hnext
        real, intent(INOUT) :: x
        procedure(derivs_t) :: derivs
@@ -142,9 +143,10 @@ Module bnNetwork_interface
 !----------------------------------------------------
   ! NOTE: should have the same signature as derivs_t
   interface
-     subroutine bn_network(tt,y,dydt)
+     subroutine bn_network(tt,y,btemp,ratdum,dydt)
        implicit none
-       real, intent(IN) :: tt
+       real, intent(IN) :: tt, btemp
+       real, intent(IN), dimension(:) :: ratdum
        real, intent(INOUT), dimension(:)  :: y
        real, intent(OUT), dimension(:) :: dydt
      end subroutine bn_network

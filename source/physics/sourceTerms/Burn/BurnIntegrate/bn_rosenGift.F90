@@ -16,9 +16,11 @@
 !!
 !! SYNOPSIS
 !!  subroutine bn_rosenGift(real(INOUT)    ::y(:),
-!!                          real(INOUT)    ::dydx(:),
+!!                          real(IN)       ::dydx(:),
+!!                          real(IN)       ::ratdum(:),
 !!                          integer(IN)    ::n,
 !!                          real(INOUT)    ::x,
+!!                          real(IN)       ::btemp,
 !!                          real(IN)       ::htry,
 !!                          real(IN)       ::eps,
 !!                          real(IN)       ::yscal(:),
@@ -52,8 +54,10 @@
 !!
 !!   y       - dependent variable, array of size y(1:n)
 !!   dydx    - derivative of dependent variable, array of size dydx(1:n)
+!!   ratdum  - reaction rate
 !!   n       - number of dependent variables
 !!   x       - independent variable
+!!   btemp   - temperature
 !!   htry    - attempted stepsize
 !!   eps     - desired fractional accuracy
 !!   yscal   - vector of size yscal(1:n) for scaling error
@@ -66,7 +70,7 @@
 !!
 !!***
 
-subroutine bn_rosenGift(y,dydx,n,x,htry,eps,yscal,hdid,hnext,  &
+subroutine bn_rosenGift(y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  &
      &                      derivs,jakob,bjakob)
 
   use Driver_interface, ONLY : Driver_abort
@@ -83,7 +87,7 @@ subroutine bn_rosenGift(y,dydx,n,x,htry,eps,yscal,hdid,hnext,  &
   ! Note that bjakob is not used in this routine, and jakob explanation found in
   ! bnNetwork_interface
   integer, intent(IN) :: n
-  real, intent(IN)    :: yscal(n), dydx(n), htry, eps
+  real, intent(IN)    :: dydx(n), yscal(n), ratdum(:), htry, eps, btemp
   real, intent(INOUT) :: x, y(n)
   real, intent(OUT)   :: hdid, hnext
   procedure(derivs_t) :: derivs
@@ -99,6 +103,7 @@ subroutine bn_rosenGift(y,dydx,n,x,htry,eps,yscal,hdid,hnext,  &
        &           shrnk=0.5e0,  pshrnk=-1.0e0/3.0e0, errcon=0.1296e0
 
   integer, save       :: i,j,jtry
+  real :: dydx_out(n)
 
 !!  shampine parameter set
   real, parameter     ::  gam =  1.0e0/2.0e0,    a21 =  2.0e0,  &
@@ -177,12 +182,12 @@ subroutine bn_rosenGift(y,dydx,n,x,htry,eps,yscal,hdid,hnext,  &
         y(i) = ysav(i) + a21 * g1(i)
      enddo
      x = xsav + a2x * h
-     call derivs(x,y,dydx)
+     call derivs(x,y,btemp,ratdum,dydx_out)
 
 
    !!  set up and solve the right hand side for g2
      do i=1,n
-        g2(i) = dydx(i) + c21*g1(i)/h
+        g2(i) = dydx_out(i) + c21*g1(i)/h
      enddo
 
 
@@ -201,17 +206,17 @@ subroutine bn_rosenGift(y,dydx,n,x,htry,eps,yscal,hdid,hnext,  &
 
 
 
-   !!  compute intermediate values of y,x and dydx
+   !!  compute intermediate values of y,x and dydx_out
      do i=1,n
         y(i) = ysav(i) + a31*g1(i) + a32*g2(i)
      enddo
      x = xsav + a3x*h
-     call derivs(x,y,dydx)
+     call derivs(x,y,btemp,ratdum,dydx_out)
 
 
    !!  set up and solve the right hand side for g3
      do i=1,n
-        g3(i)  = dydx(i) + (c31*g1(i) + c32*g2(i))/h
+        g3(i)  = dydx_out(i) + (c31*g1(i) + c32*g2(i))/h
      enddo
 
 
@@ -232,7 +237,7 @@ subroutine bn_rosenGift(y,dydx,n,x,htry,eps,yscal,hdid,hnext,  &
 
    !!  set up and solve the right hand side for g4
      do i=1,n
-        g4(i)  = dydx(i) + (c41*g1(i) + c42*g2(i) + c43*g3(i))/h
+        g4(i)  = dydx_out(i) + (c41*g1(i) + c42*g2(i) + c43*g3(i))/h
      end do
 
 

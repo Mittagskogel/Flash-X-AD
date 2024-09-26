@@ -17,8 +17,10 @@
 !! SYNOPSIS
 !!  subroutine bn_baderMa28(real(IN)       ::y(:),
 !!                          real(IN)       ::dydx(:),
+!!                          real(IN)       ::ratdum(:),
 !!                          integer(IN)    ::n,
 !!                          real(IN)       ::x,
+!!                          real(IN)       ::btemp,
 !!                          real(IN)       ::htry,
 !!                          real(IN)       ::eps,
 !!                          real(IN)       ::yscal(:),
@@ -48,8 +50,10 @@
 !!
 !!   y       - dependent variable, array of size y(1:n)
 !!   dydx    - derivative of dependent variable, array of size dydx(1:n)
+!!   ratdum  - reaction rate
 !!   n       - number of dependent variables
 !!   x       - independent variable
+!!   btemp   - temperature
 !!   htry    - attempted stepsize 
 !!   eps     - desired fractional accuracy
 !!   yscal   - vector of size yscal(1:n) for scaling error
@@ -71,7 +75,7 @@
 
 
 
-subroutine bn_baderMa28(y,dydx,nv,x,htry,eps,yscal,hdid,hnext, & 
+subroutine bn_baderMa28(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, & 
      &                   derivs,jakob,bjakob)
 
 
@@ -86,7 +90,7 @@ subroutine bn_baderMa28(y,dydx,nv,x,htry,eps,yscal,hdid,hnext, &
 
   !!  argument declarations
   integer, intent(IN) :: nv
-  real, intent(IN)    :: dydx(nv), yscal(nv), htry, eps
+  real, intent(IN)    :: dydx(nv), yscal(nv), ratdum(:), htry, eps, btemp
   real, intent(INOUT) :: x, y(nv)
   real, intent(OUT)   :: hdid, hnext
   procedure(derivs_t) :: derivs
@@ -225,7 +229,7 @@ subroutine bn_baderMa28(y,dydx,nv,x,htry,eps,yscal,hdid,hnext, &
         call Driver_abort('ERROR in bn_baderMa28: stepsize too small')
      end if
 
-     call bn_baderStepMa28(ysav,dydx,dfdy,nmax,nv,x,h,nseq(k),yseq, & 
+     call bn_baderStepMa28(btemp,ysav,dydx,dfdy,ratdum,nmax,nv,x,h,nseq(k),yseq, & 
           &             nzo,amat,naij,ivect,jvect,jloc,ikeep,iw,w,flag, & 
           &             derivs) 
 
@@ -311,7 +315,7 @@ end subroutine bn_baderMa28
 
 !!---------------------------------------------------------------------------------
 
-subroutine bn_baderStepMa28(y,dydx,dfdy,nmax,n,xs,htot,nnstep,yout,  & 
+subroutine bn_baderStepMa28(btemp,y,dydx,dfdy,ratdum,nmax,n,xs,htot,nnstep,yout,  & 
      &                  nzo,a,naij,ivect,jvect,jloc,ikeep,iw,w,flag,  & 
      &                  derivs) 
 
@@ -331,7 +335,7 @@ subroutine bn_baderStepMa28(y,dydx,dfdy,nmax,n,xs,htot,nnstep,yout,  &
   integer, intent(IN) :: nnstep, nzo, ivect(naij), jvect(naij)
   integer, intent(INOUT) :: ikeep(1), jloc(naij)  ! because LBR can't figure out what it does
   integer, intent(INOUT) :: iw(1), flag !used by ma28 LU decomposition
-  real, intent(IN)    :: y(n), dydx(n), dfdy(naij), xs, htot
+  real, intent(IN)    :: y(n), dydx(n), dfdy(naij), ratdum(:), xs, htot, btemp
   real, intent(INOUT) :: yout(n), w(1)
   real, intent(OUT)   :: a(naij)
   procedure(derivs_t) :: derivs
@@ -380,7 +384,7 @@ subroutine bn_baderStepMa28(y,dydx,dfdy,nmax,n,xs,htot,nnstep,yout,  &
 
   !      call Timers_start ("derivs (burn)")
 
-  call derivs(x,ytemp,yout) 
+  call derivs(x,ytemp,btemp,ratdum,yout) 
 
   !      call Timers_stop ("derivs (burn)")
 
@@ -405,7 +409,7 @@ subroutine bn_baderStepMa28(y,dydx,dfdy,nmax,n,xs,htot,nnstep,yout,  &
 
      !       call Timers_start ("derivs (burn)")
 
-     call derivs(x,ytemp,yout) 
+     call derivs(x,ytemp,btemp,ratdum,yout) 
 
      !       call Timers_stop ("derivs (burn)")
   enddo

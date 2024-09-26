@@ -98,11 +98,11 @@
 
 !!---------------------------------------------------------------------------------
 
-subroutine bn_netIntegrate(start,stptry,stpmin,stopp,bc,    &
-                           eps,dxsav,kmax,                  &
-                           xrk,yrk,xphys,yphys,xlogi,ylogi, &
-                           nok,nbad,kount,odescal,iprint,   &
-                           nrat, ratdum,                    &
+subroutine bn_netIntegrate(btemp,start,stptry,stpmin,stopp,bc, &
+                           eps,dxsav,kmax,                     &
+                           xrk,yrk,xphys,yphys,xlogi,ylogi,    &
+                           nok,nbad,kount,odescal,iprint,      &
+                           nrat, ratdum,                       &
                            derivs,jakob,bjakob,steper)
 
   use Driver_interface, ONLY : Driver_abort
@@ -114,7 +114,7 @@ subroutine bn_netIntegrate(start,stptry,stpmin,stopp,bc,    &
   integer, intent(IN)  :: xphys,yphys,xlogi,ylogi,nrat
   integer, intent(IN)  :: kmax, iprint
   real, intent(IN)     :: odescal, dxsav, eps
-  real, intent(IN)     :: start, stptry, stpmin, stopp
+  real, intent(IN)     :: btemp, start, stptry, stpmin, stopp
   real, intent(IN), dimension(nrat)     :: ratdum
   real, intent(INOUT), dimension(yphys) :: bc
 
@@ -178,7 +178,7 @@ subroutine bn_netIntegrate(start,stptry,stpmin,stopp,bc,    &
         y(i) = max(y(i),1.0e-30) 
      enddo
      !! dummy procedure name, expands to bn_network
-     call derivs(x,y,dydx) 
+     call derivs(x,y,btemp,ratdum,dydx)
 
 
      !!   scaling vector used to monitor accuracy 
@@ -217,7 +217,7 @@ subroutine bn_netIntegrate(start,stptry,stpmin,stopp,bc,    &
      !! jakob  = bn_saprox13 (for sparse ma28 solver) or bn_daprox13 (for dense gift solver)
      !! bjakob = bn_baprox13 (really used only for ma28 solver)
      !!   
-     call steper(y,dydx,ylogi,x,h,eps,yscal,hdid,hnext, & 
+     call steper(y,dydx,ratdum,ylogi,x,btemp,h,eps,yscal,hdid,hnext, & 
           &             derivs,jakob,bjakob)    
      if (hdid.eq.h) then 
         nok = nok+1    

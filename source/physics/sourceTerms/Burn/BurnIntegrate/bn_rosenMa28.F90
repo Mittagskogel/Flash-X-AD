@@ -17,8 +17,10 @@
 !! SYNOPSIS
 !!  subroutine bn_rosenMa28(real(IN)       ::y(:),
 !!                          real(IN)       ::dydx(:),
+!!                          real(IN)       ::ratdum(:),
 !!                          integer(IN)    ::n,
 !!                          real(IN)       ::x,
+!!                          real(IN)       ::btemp,
 !!                          real(IN)       ::htry,
 !!                          real(IN)       ::eps,
 !!                          real(IN)       ::yscal(:),
@@ -52,8 +54,10 @@
 !!
 !!   y       - dependent variable, array of size y(1:n)
 !!   dydx    - derivative of dependent variable, array of size dydx(1:n)
+!!   ratdum  - reaction rate
 !!   n       - number of dependent variables
 !!   x       - independent variable
+!!   btemp   - temperature
 !!   htry    - attempted stepsize 
 !!   eps     - desired fractional accuracy
 !!   yscal   - vector of size yscal(1:n) for scaling error
@@ -67,7 +71,7 @@
 !!***
 !!---------------------------------------------------------------------------------
 
-subroutine bn_rosenMa28(y,dydx,n,x,htry,eps,yscal,hdid,hnext,  & 
+subroutine bn_rosenMa28(y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  & 
      &                      derivs,jakob,bjakob) 
 
   use Driver_interface, ONLY : Driver_abort
@@ -80,7 +84,7 @@ subroutine bn_rosenMa28(y,dydx,n,x,htry,eps,yscal,hdid,hnext,  &
 
 !! argument declarations
   integer, intent(IN) :: n
-  real, intent(IN)    :: yscal(n), dydx(n), htry, eps
+  real, intent(IN)    :: dydx(n), yscal(n), ratdum(:), htry, eps, btemp
   real, intent(INOUT) :: x, y(n)
   real, intent(OUT)   :: hdid, hnext
   procedure(derivs_t) :: derivs
@@ -91,12 +95,13 @@ subroutine bn_rosenMa28(y,dydx,n,x,htry,eps,yscal,hdid,hnext,  &
 !! local variables-----------------------------------------------
   integer, save       :: i,jtry
   integer, parameter  :: nmax=30, maxtry=400
-  integer, save       :: nDummy ! to make the arguments consistent of jakob
   real, save          :: errmax,h,xsav,dysav(nmax),err(nmax),g1(nmax),  & 
        &                 g2(nmax),g3(nmax),g4(nmax),ysav(nmax),xx 
 
   real, parameter     ::  safety=0.9e0, grow=1.5e0, pgrow=-0.25e0,  & 
        &                  shrnk=0.5e0,  pshrnk=-1.0e0/3.0e0,errcon=0.1296e0
+
+  real :: dydx_out(n)
 
 !!  shampine parameter set 
   real, parameter     ::  gam =  1.0e0/2.0e0,    a21 =  2.0e0,  & 
@@ -115,6 +120,7 @@ subroutine bn_rosenMa28(y,dydx,n,x,htry,eps,yscal,hdid,hnext,  &
 
 !!  for the ma28 package
   integer, parameter  :: naij=200, n5 = 5*nmax, n8=8*nmax
+  integer, parameter  :: nDummy = 1
   logical, save       :: firstCall = .false.
   integer, save       :: iloc(naij),jloc(naij), flag, nzo,  &
        &                 ivect(naij),jvect(naij),ikeep(n5),iw(n8)
@@ -205,33 +211,33 @@ subroutine bn_rosenMa28(y,dydx,n,x,htry,eps,yscal,hdid,hnext,  &
         y(i) = ysav(i) + a21 * g1(i) 
      enddo
      x = xsav + a2x * h 
-     call derivs(x,y,dydx) 
+     call derivs(x,y,btemp,ratdum,dydx_out) 
 
 
    !!  set up and solve the right hand side for g2 
      do i=1,n 
-        g2(i) = dydx(i) + c21*g1(i)/h 
+        g2(i) = dydx_out(i) + c21*g1(i)/h 
      enddo
      call ma28cd(n,amat,naij,jloc,ikeep,g2,w,1) 
 
 
-   !!  compute intermediate values of y,x and dydx 
+   !!  compute intermediate values of y,x and dydx_out 
      do i=1,n 
         y(i) = ysav(i) + a31*g1(i) + a32*g2(i) 
      enddo
      x = xsav + a3x*h 
-     call derivs(x,y,dydx) 
+     call derivs(x,y,btemp,ratdum,dydx_out) 
 
    !!  set up and solve the right hand side for g3 
      do i=1,n 
-        g3(i)  = dydx(i) + (c31*g1(i) + c32*g2(i))/h 
+        g3(i)  = dydx_out(i) + (c31*g1(i) + c32*g2(i))/h 
      enddo
      call ma28cd(n,amat,naij,jloc,ikeep,g3,w,1) 
 
 
    !!  set up and solve the right hand side for g4 
      do i=1,n 
-        g4(i)  = dydx(i) + (c41*g1(i) + c42*g2(i) + c43*g3(i))/h 
+        g4(i)  = dydx_out(i) + (c41*g1(i) + c42*g2(i) + c43*g3(i))/h 
      end do
      call ma28cd(n,amat,naij,jloc,ikeep,g4,w,1) 
 

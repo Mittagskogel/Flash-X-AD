@@ -103,6 +103,8 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
   use bnIntegrate_interface, ONLY: bn_baderMa28, bn_baderGift, &
                                    bn_rosenMa28, bn_rosenGift
   use bnNetwork_interface, ONLY: bn_network, &
+                                 ! bn_networkSparseJakob, &
+                                 ! bn_networkDenseJakob, &
                                  bn_networkSparsePointers, &
                                  bn_networkRates, &
                                  bn_networkTable, &
@@ -184,7 +186,7 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
 
      !..with ma28 bn_algebra
      if (bn_algebra .eq. 1) then
-        call bn_netIntegrate(beg,stptry,stpmin,tstep,ys2,            &
+        call bn_netIntegrate(btemp,beg,stptry,stpmin,tstep,ys2,      &
                              tol,beg,nostore,                        &
                              ttime,elem,tdim,NSPECIES,tdim,NSPECIES, &
                              nok,nbad,kount,odescal,iprint,          &
@@ -194,7 +196,7 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
 
         !..with gift bn_algebra
      else if (bn_algebra .eq. 2) then
-        call bn_netIntegrate(beg,stptry,stpmin,tstep,ys2,            &
+        call bn_netIntegrate(btemp, beg,stptry,stpmin,tstep,ys2,     &
                              tol,beg,nostore,                        &
                              ttime,elem,tdim,NSPECIES,tdim,NSPECIES, &
                              nok,nbad,kount,odescal,iprint,          &
@@ -209,7 +211,7 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
 
      !..with ma28 bn_algebra
      if (bn_algebra .eq. 1) then
-        call bn_netIntegrate(beg,stptry,stpmin,tstep,ys2,            &
+        call bn_netIntegrate(btemp,beg,stptry,stpmin,tstep,ys2,      &
                              tol,beg,nostore,                        &
                              ttime,elem,tdim,NSPECIES,tdim,NSPECIES, &
                              nok,nbad,kount,odescal,iprint,          &
@@ -218,7 +220,7 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
 
         !..with gift bn_algebra
      else if (bn_algebra .eq. 2) then
-        call bn_netIntegrate(beg,stptry,stpmin,tstep,ys2,            &
+        call bn_netIntegrate(btemp,beg,stptry,stpmin,tstep,ys2,      &
                              tol,beg,nostore,                        &
                              ttime,elem,tdim,NSPECIES,tdim,NSPECIES, &
                              nok,nbad,kount,odescal,iprint,          &

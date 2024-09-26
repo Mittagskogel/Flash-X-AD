@@ -28,18 +28,18 @@ Module bnIntegrate_interface
   !! They are all used for integrating the ODE of nuclear burning
 
   interface
-     subroutine bn_netIntegrate(start,stptry,stpmin,stopp,bc,    &
-                                eps,dxsav,kmax,                  &
-                                xrk,yrk,xphys,yphys,xlogi,ylogi, &
-                                nok,nbad,kount,odescal,iprint,   &
-                                nrat, ratdum,                    &
+     subroutine bn_netIntegrate(btemp,start,stptry,stpmin,stopp,bc, &
+                                eps,dxsav,kmax,                     &
+                                xrk,yrk,xphys,yphys,xlogi,ylogi,    &
+                                nok,nbad,kount,odescal,iprint,      &
+                                nrat, ratdum,                       &
                                 derivs,jakob,bjakob,steper)
        import :: derivs_t, jakob_t, bjakob_t, steper_t
        implicit none
        integer, intent(IN)  :: xphys,yphys,xlogi,ylogi,nrat
        integer, intent(IN)  :: kmax, iprint
        real, intent(IN)     :: odescal, dxsav, eps
-       real, intent(IN)     :: start, stptry, stpmin, stopp
+       real, intent(IN)     :: btemp, start, stptry, stpmin, stopp
        real, intent(IN), dimension(nrat)     :: ratdum
        real, intent(INOUT), dimension(yphys) :: bc
        integer, intent(OUT) :: nok, nbad, kount
@@ -62,7 +62,7 @@ Module bnIntegrate_interface
   end interface
 
   interface
-     subroutine bn_baderStepMa28(y,dydx,dfdy,nmax,n,xs,htot,nnstep,yout,  & 
+     subroutine bn_baderStepMa28(btemp,y,dydx,dfdy,ratdum,nmax,n,xs,htot,nnstep,yout,  & 
           &                  nzo,a,naij,ivect,jvect,jloc,ikeep,iw,w,flag,  & 
           &                  derivs) 
        import :: derivs_t
@@ -71,7 +71,7 @@ Module bnIntegrate_interface
        integer, intent(INOUT) :: ikeep(1), jloc(naij)  ! because LBR can't figure out what it does
        integer, intent(INOUT) :: iw(1), flag !used by ma28 LU decomposition
        real, intent(OUT)   :: a(naij)
-       real, intent(IN)    :: y(n), dydx(n), dfdy(naij), xs, htot
+       real, intent(IN)    :: y(n), dydx(n), dfdy(naij), ratdum(:), xs, htot, btemp
        integer, intent(IN) :: nnstep, nzo, ivect(naij), jvect(naij)
        real, intent(INOUT) :: yout(n), w(1)
        procedure(derivs_t) :: derivs
@@ -79,14 +79,14 @@ Module bnIntegrate_interface
   end interface
 
   interface
-     subroutine bn_baderStepGift(y,dydx,dfdy,nmax,n,xs,htot,nnstep,yout,  & 
-          &                      derivs) 
+     subroutine bn_baderStepGift(btemp,y,dydx,dfdy,ratdum,nmax,n,xs,htot,nnstep,yout,  & 
+          &                      derivs)
        import :: derivs_t
        implicit none
        integer, intent(IN) :: n, nmax
        integer, intent(IN) :: nnstep
        real, intent(INOUT) :: yout(n)
-       real, intent(IN)    :: xs, htot, y(n), dydx(n), dfdy(nmax,nmax)
+       real, intent(IN)    :: btemp, xs, htot, y(n), dydx(n), dfdy(nmax,nmax), ratdum(:)
        procedure(derivs_t) :: derivs
      end subroutine bn_baderStepGift
   end interface
@@ -103,12 +103,12 @@ Module bnIntegrate_interface
 
 !-------------------------------------------------------------------------
   interface
-     subroutine bn_baderMa28(y,dydx,nv,x,htry,eps,yscal,hdid,hnext, & 
+     subroutine bn_baderMa28(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, & 
           &                   derivs,jakob,bjakob)
        import :: derivs_t, jakob_t, bjakob_t
        implicit none
        integer, intent(IN) :: nv
-       real, intent(IN)    :: dydx(nv), yscal(nv), htry, eps
+       real, intent(IN)    :: dydx(nv), yscal(nv), ratdum(:), htry, eps, btemp
        real, intent(INOUT) :: x, y(nv)
        real, intent(OUT)   :: hdid, hnext
        procedure(derivs_t) :: derivs
@@ -118,12 +118,12 @@ Module bnIntegrate_interface
   end interface
 
   interface
-     subroutine bn_baderGift(y,dydx,nv,x,htry,eps,yscal,hdid,hnext, & 
+     subroutine bn_baderGift(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, & 
           &                       derivs,jakob,bjakob)
        import :: derivs_t, jakob_t, bjakob_t
        implicit none
        integer, intent(IN) :: nv
-       real, intent(IN)    :: dydx(nv), yscal(nv), htry, eps
+       real, intent(IN)    :: dydx(nv), yscal(nv), ratdum(:), htry, eps, btemp
        real, intent(INOUT) :: x, y(nv)
        real, intent(OUT)   :: hdid, hnext
        procedure(derivs_t) :: derivs
@@ -134,12 +134,12 @@ Module bnIntegrate_interface
 
 
   interface
-     subroutine bn_rosenMa28(y,dydx,n,x,htry,eps,yscal,hdid,hnext,  & 
+     subroutine bn_rosenMa28(y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  & 
           &                      derivs,jakob,bjakob) 
        import :: derivs_t, jakob_t, bjakob_t
        implicit none
        integer, intent(IN) :: n
-       real, intent(IN)    :: yscal(n), dydx(n), htry, eps
+       real, intent(IN)    :: dydx(n), yscal(n), ratdum(:), htry, eps, btemp
        real, intent(INOUT) :: x, y(n)
        real, intent(OUT)   :: hdid, hnext
        procedure(derivs_t) :: derivs
@@ -149,12 +149,12 @@ Module bnIntegrate_interface
   end interface
 
   interface
-     subroutine bn_rosenGift(y,dydx,n,x,htry,eps,yscal,hdid,hnext,  & 
+     subroutine bn_rosenGift(y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  & 
           &                      derivs,jakob,bjakob) 
        import :: derivs_t, jakob_t, bjakob_t
        implicit none
        integer, intent(IN) :: n
-       real, intent(IN)    :: yscal(n), dydx(n), htry, eps
+       real, intent(IN)    :: dydx(n), yscal(n), ratdum(:), htry, eps, btemp
        real, intent(INOUT) :: x, y(n)
        real, intent(OUT)   :: hdid, hnext
        procedure(derivs_t) :: derivs
