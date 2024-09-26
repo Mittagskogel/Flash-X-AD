@@ -37,10 +37,11 @@
 !!
 !!***
 
-subroutine bn_network(tt,y,dydt)   
+subroutine bn_network(tt,y,dydt)
 
-!! Sorry, there are just toooo freakin many of them to include by name
-  use Burn_data  
+  use Burn_data, ONLY: ihe4, ic12, io16, ine20, img24, isi28, is32, &
+                       iar36, ica40, iti44, icr48, ife52, ini56, &
+                       ratdum
   use bn_dataAprox13
 
   implicit none

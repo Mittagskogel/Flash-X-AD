@@ -41,10 +41,13 @@
 !!
 !!***
 
-subroutine bn_network(tt,y,dydt)   
+subroutine bn_network(tt,y,dydt)
 
   use Burn_dataEOS, ONLY:  btemp
-  use Burn_data
+  use Burn_data, ONLY: ineut, iprot, ih1, ihe3, ihe4, ic12, in14, &
+                       io16, ine20, img24, isi28, is32, iar36, ica40, &
+                       iti44, icr48, ife52, ife54, ini56, &
+                       ratdum
   use bn_dataAprox19
  
   implicit none
