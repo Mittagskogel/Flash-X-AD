@@ -101,7 +101,7 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
   !  This are routine names to be passed as arguments.  Cannot be included
   !   in an EXTERNAL statement if you're going to use an interface
   use bnIntegrate_interface, ONLY: bn_baderMa28, bn_baderGift, &
-       bn_rosenMa28, bn_rosenGift
+                                   bn_rosenMa28, bn_rosenGift
   use bnNetwork_interface, ONLY: bn_network, &
                                  bn_networkSparsePointers, &
                                  bn_networkRates, &
