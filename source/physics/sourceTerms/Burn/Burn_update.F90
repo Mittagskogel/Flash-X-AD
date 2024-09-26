@@ -38,7 +38,7 @@
 #include "constants.h"
 #include "Eos.h"
 
-subroutine Burn_update (Uin loGC,blkLimits, dt)
+subroutine Burn_update (Uin, loGC, blkLimits, dt)
 
   implicit none
 
