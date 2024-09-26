@@ -101,55 +101,11 @@ subroutine bn_netIntegrate(start,stptry,stpmin,stopp,bc,  &
      &                  derivs,jakob,bjakob,steper)
    
   use Driver_interface, ONLY : Driver_abort
+  use bnNetwork_interface, ONLY: derivs_t, jakob_t, bjakob_t, steper_t
 
   implicit none
 
-
-  ! For some mysterious reason, can't use the following line
-  ! use bnNetwork_interface, ONLY: derivs, jakob, bjakob
-  ! use bnIntegrate_interface, ONLY: steper.
-  ! But you CAN directly put the interfaces into the file.  Go figure.
-  ! Also note that the "use" lines have to be ABOVE implicit none, but
-  !  the direct interfaces have to be BELOW it.
-  interface   ! = bn_network
-     subroutine derivs(tt,y,dydt)   !! == bn_network
-       implicit none
-       real, intent(IN) :: tt
-       real, intent(INOUT), dimension(*)  :: y
-       real, intent(OUT), dimension(*) :: dydt
-     end subroutine derivs
-
-     subroutine jakob(tt,y,dfdy,nzo,nDummy) ! = bn_networkSparseJakob or bn_networkDenseJakob
-       implicit none                        ! See notes in bnNetwork_interface about this...
-       integer, intent(IN) :: nzo, nDummy
-       real, intent(IN)    :: tt
-       real, intent(INOUT) :: y(*)
-       real, intent(OUT)   :: dfdy(nzo,nDummy)
-     end subroutine jakob
-
-     subroutine bjakob(iloc,jloc,nzo,np)
-       implicit none
-       integer, intent(IN)  ::   iloc(*),jloc(*),np
-       integer, intent(OUT) ::   nzo
-     end subroutine bjakob
-
-     subroutine steper(y,dydx,nv,x,htry,eps,yscal,hdid,hnext, & 
-          &                       derivs,jakob,bjakob)
-       implicit none
-       external               derivs,jakob,bjakob
-       integer, intent(IN) :: nv
-       real, intent(INOUT) :: y(nv)
-       real, intent(IN)    :: dydx(nv), yscal(nv), htry, eps
-       real, intent(OUT)   :: hdid, hnext
-       real, intent(INOUT) :: x
-     end subroutine steper
-  end interface
-
   !! arguments
-  !! Note, can't give an INTENT statement with external functions
-  !!  And if you don't use the interface above, you need the following line
-  !  external                    derivs,jakob,bjakob, steper 
-
   integer, intent(IN)  :: xphys,yphys,xlogi,ylogi
   integer, intent(IN)  :: kmax, iprint
   real, intent(IN)     :: odescal, dxsav, eps
@@ -159,6 +115,11 @@ subroutine bn_netIntegrate(start,stptry,stpmin,stopp,bc,  &
   integer, intent(OUT) :: nok, nbad, kount
   real, intent(OUT), dimension(xphys)       :: xrk
   real, intent(OUT), dimension(yphys,xphys) :: yrk
+
+  procedure(derivs_t) :: derivs
+  procedure(jakob_t) :: jakob
+  procedure(bjakob_t) :: bjakob
+  procedure(steper_t) :: steper
 
   !! local declarations
 

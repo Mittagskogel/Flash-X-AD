@@ -82,31 +82,19 @@ subroutine bn_baderMa28(y,dydx,nv,x,htry,eps,yscal,hdid,hnext, &
   use Driver_interface, ONLY : Driver_abort
   ! can't use jakob interface; see notes in bnNetwork_interface for the mystery.
   use bnIntegrate_interface, ONLY: bn_baderStepMa28, bn_pzExtr
+  use bnNetwork_interface, ONLY: derivs_t, jakob_t, bjakob_t
 
   implicit none
 
-  interface   ! = bn_network
-     subroutine derivs(tt,y,dydt)   !! == bn_network
-       implicit none
-       real, intent(IN) :: tt
-       real, intent(INOUT), dimension(*)  :: y
-       real, intent(OUT), dimension(*) :: dydt
-     end subroutine derivs
-
-     subroutine bjakob(iloc,jloc,nzo,np)
-       implicit none
-       integer, intent(IN)  ::   iloc(*),jloc(*),np
-       integer, intent(OUT) ::   nzo
-     end subroutine bjakob
-  end interface
-
 
   !!  argument declarations
-  external               jakob
   integer, intent(IN) :: nv
   real, intent(IN)    :: dydx(nv), yscal(nv), htry, eps
   real, intent(INOUT) :: x, y(nv)
   real, intent(OUT)   :: hdid, hnext
+  procedure(derivs_t) :: derivs
+  procedure(jakob_t) :: jakob
+  procedure(bjakob_t) :: bjakob
 
 
 
@@ -331,7 +319,7 @@ subroutine bn_baderStepMa28(y,dydx,dfdy,nmax,n,xs,htot,nnstep,yout,  &
      &                  derivs) 
 
   use Driver_interface, ONLY : Driver_abort
-!  use bnIntegrate_interface, ONLY: derivs
+  use bnNetwork_interface, ONLY: derivs_t
 
   implicit none
 
@@ -342,7 +330,6 @@ subroutine bn_baderStepMa28(y,dydx,dfdy,nmax,n,xs,htot,nnstep,yout,  &
 !!  declare arguments
 !!  NOTE jloc and ikeep are not used anywhere.....
 
-  external               derivs 
   integer, intent(IN) :: n, naij, nmax
   integer, intent(IN) :: nnstep, nzo, ivect(naij), jvect(naij)
   integer, intent(INOUT) :: ikeep(1), jloc(naij)  ! because LBR can't figure out what it does
@@ -350,6 +337,7 @@ subroutine bn_baderStepMa28(y,dydx,dfdy,nmax,n,xs,htot,nnstep,yout,  &
   real, intent(IN)    :: y(n), dydx(n), dfdy(naij), xs, htot
   real, intent(INOUT) :: yout(n), w(1)
   real, intent(OUT)   :: a(naij)
+  procedure(derivs_t) :: derivs
 
 !!  declare local variables
   integer, parameter ::     nmaxx=30 
@@ -453,6 +441,7 @@ subroutine bn_baderGift(y,dydx,nv,x,htry,eps,yscal,hdid,hnext, &
   use Driver_interface, ONLY : Driver_abort
   !  Ummm.... bit of a mystery why I can use the interfaces in bn_netIntRosen but not here.
   use bnIntegrate_interface, ONLY: bn_baderStepGift, bn_pzExtr
+  use bnNetwork_interface, ONLY: derivs_t, jakob_t, bjakob_t
 
   implicit none
 
@@ -470,27 +459,15 @@ subroutine bn_baderGift(y,dydx,nv,x,htry,eps,yscal,hdid,hnext, &
 !!  
 !!  1/scalmx is the maximum increase in the step size allowed
 
-  interface   ! = bn_network
-     subroutine derivs(tt,y,dydt)   !! == bn_network
-       implicit none
-       real, intent(IN) :: tt
-       real, intent(INOUT), dimension(*)  :: y
-       real, intent(OUT), dimension(*) :: dydt
-     end subroutine derivs
-
-     subroutine bjakob(iloc,jloc,nzo,np)
-       implicit none
-       integer, intent(IN)  ::   iloc(*),jloc(*),np
-       integer, intent(OUT) ::   nzo
-     end subroutine bjakob
-  end interface
 
 !!  declare arguments
-  external               jakob
   integer, intent(IN) :: nv
   real, intent(IN)    :: dydx(nv), yscal(nv), htry, eps
   real, intent(INOUT) :: x, y(nv)
   real, intent(OUT)   :: hdid, hnext
+  procedure(derivs_t) :: derivs
+  procedure(jakob_t) :: jakob
+  procedure(bjakob_t) :: bjakob
 
 
 !!  declare local variables; you  need to save all of them or all hell breaks loose.
@@ -673,6 +650,7 @@ subroutine bn_baderStepGift(y,dydx,dfdy,nmax,n,xs,htot,nnstep,yout,  &
      &                      derivs) 
 
   use bn_interface, ONLY: bn_gift
+  use bnNetwork_interface, ONLY: derivs_t
 
   implicit none
   
@@ -680,11 +658,11 @@ subroutine bn_baderStepGift(y,dydx,dfdy,nmax,n,xs,htot,nnstep,yout,  &
 !!  an implicit midpoint stepper, for ma28 sparse linear algebra. 
 !!   
 !!  declare arguments
-  external               derivs 
   integer, intent(IN) :: n, nmax
   integer, intent(IN) :: nnstep
   real, intent(IN)    :: xs, htot, y(n), dydx(n), dfdy(nmax,nmax)
   real, intent(INOUT) :: yout(n)
+  procedure(derivs_t) :: derivs
 
 !!  declare local variables
   integer, parameter  :: nmaxx=30 

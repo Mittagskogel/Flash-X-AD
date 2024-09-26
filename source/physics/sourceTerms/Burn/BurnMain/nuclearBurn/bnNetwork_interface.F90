@@ -90,6 +90,54 @@ Module bnNetwork_interface
      end subroutine bn_networkWeak
   end interface
 
+
+
+! abstract interfaces for bn_netIntegrate
+  abstract interface
+     subroutine derivs_t(tt,y,dydt)
+       implicit none
+       real, intent(IN) :: tt
+       real, intent(INOUT), dimension(:)  :: y
+       real, intent(OUT), dimension(:) :: dydt
+     end subroutine derivs_t
+   end interface
+
+   abstract interface
+     subroutine jakob_t(tt,y,dfdy,nzo,nDummy) ! = bn_networkSparseJakob or bn_networkDenseJakob
+       implicit none                        ! See notes in bnNetwork_interface about this...
+       integer, intent(IN) :: nzo, nDummy
+       real, intent(IN)    :: tt
+       real, intent(INOUT) :: y(:)
+       real, intent(OUT)   :: dfdy(nzo,nDummy)
+     end subroutine jakob_t
+   end interface
+
+   abstract interface
+     subroutine bjakob_t(iloc,jloc,nzo,np)
+       implicit none
+       integer, intent(IN)  ::   iloc(:),jloc(:),np
+       integer, intent(OUT) ::   nzo
+     end subroutine bjakob_t
+   end interface
+
+   abstract interface
+     subroutine steper_t(y,dydx,nv,x,htry,eps,yscal,hdid,hnext, &
+                         derivs,jakob,bjakob)
+       import :: derivs_t, jakob_t, bjakob_t
+       implicit none
+       integer, intent(IN) :: nv
+       real, intent(INOUT) :: y(nv)
+       real, intent(IN)    :: dydx(nv), yscal(nv), htry, eps
+       real, intent(OUT)   :: hdid, hnext
+       real, intent(INOUT) :: x
+       procedure(derivs_t) :: derivs
+       procedure(jakob_t) :: jakob
+       procedure(bjakob_t) :: bjakob
+     end subroutine steper_t
+  end interface
+!---------------------------------------------------
+
+
 !----------------------------------------------------
   interface 
      subroutine bn_network(tt,y,dydt)   
@@ -98,19 +146,6 @@ Module bnNetwork_interface
        real, intent(INOUT), dimension(*)  :: y
        real, intent(OUT), dimension(*) :: dydt
      end subroutine bn_network
-  end interface
-
-
-! This module is the dummy argument passes. 
-!  It was necessary in flash two because every network
-!  called a different name e.g. aprox13.F90, aprox19.F90
-  interface derivs  ! = bn_network
-     subroutine derivs(tt,y,dydt)   !! == bn_network
-       implicit none
-       real, intent(IN) :: tt
-       real, intent(INOUT), dimension(*)  :: y
-       real, intent(OUT), dimension(*) :: dydt
-     end subroutine derivs
   end interface
 
 
@@ -129,8 +164,8 @@ Module bnNetwork_interface
        implicit none
        integer, intent(IN) :: nzo, nDummy ! added to have equal numbers of arguments
        real, intent(IN)    :: tt
-       real, intent(INOUT) :: y(*)
-       real, intent(OUT)   :: dfdy(*)
+       real, intent(INOUT) :: y(:)
+       real, intent(OUT)   :: dfdy(:)
      end subroutine bn_networkSparseJakob
   end interface
 
@@ -139,21 +174,11 @@ Module bnNetwork_interface
        implicit none
        integer, intent(IN) :: nlog, nphys
        real, intent(IN)    :: tt
-       real, intent(INOUT) ::  y(*)
+       real, intent(INOUT) ::  y(:)
        real, intent(OUT)   ::  dfdy(nphys,nphys)
      end subroutine bn_networkDenseJakob
   end interface
 
-!! Dummy version
-  interface 
-     subroutine jakob(tt,y,dfdy,nzo,nDummy) ! = bn_networkSparseJakob or bn_networkDenseJakob
-       implicit none
-       integer, intent(IN) :: nzo, nDummy
-       real, intent(IN)    :: tt
-       real, intent(INOUT) :: y(*)
-       real, intent(OUT)   :: dfdy(nzo,nDummy)
-     end subroutine jakob
-  end interface
 
 !----------------------------------------------
 ! This is the routine passed as bjakob. Bizarrely enough, there is no
@@ -166,14 +191,6 @@ Module bnNetwork_interface
      end subroutine bn_networkSparsePointers
   end interface
 
-! Dummy version
-  interface
-     subroutine bjakob(iloc,jloc,nzo,np)
-       implicit none
-       integer, intent(IN)  ::   iloc(*),jloc(*),np
-       integer, intent(OUT) ::   nzo
-     end subroutine bjakob
-  end interface
 
 end Module bnNetwork_interface
 

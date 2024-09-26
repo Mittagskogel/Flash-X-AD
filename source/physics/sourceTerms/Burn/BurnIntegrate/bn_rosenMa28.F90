@@ -78,34 +78,20 @@ subroutine bn_rosenMa28(y,dydx,n,x,htry,eps,yscal,hdid,hnext,  &
 
   use Driver_interface, ONLY : Driver_abort
   use Logfile_interface, ONLY: Logfile_stampMessage
-  ! can't use jakob interface; see notes in bnNetwork_interface for the mystery.
-!!  use bnIntegrate_interface, ONLY: derivs, bjakob
+  use bnIntegrate_interface, ONLY: derivs_t, jakob_t, bjakob_t
   use Burn_data, ONLY : bn_meshMe
 #include "constants.h"
 
   implicit none
 
-  interface   ! = bn_network
-!     subroutine derivs(tt,y,dydt)   !! == bn_network
-!       implicit none
-!       real, intent(IN) :: tt
-!       real, intent(INOUT), dimension(*)  :: y
-!       real, intent(OUT), dimension(*) :: dydt
-!     end subroutine derivs
-
-     subroutine bjakob(iloc,jloc,nzo,np)
-       implicit none
-       integer, intent(IN)  ::   iloc(*),jloc(*),np
-       integer, intent(OUT) ::   nzo
-     end subroutine bjakob
-  end interface
-
 !! argument declarations
-  external               jakob, derivs
   integer, intent(IN) :: n
   real, intent(IN)    :: yscal(n), dydx(n), htry, eps
   real, intent(INOUT) :: x, y(n)
   real, intent(OUT)   :: hdid, hnext
+  procedure(derivs_t) :: derivs
+  procedure(jakob_t) :: jakob
+  procedure(bjakob_t) :: bjakob
 
 
 !! local variables-----------------------------------------------
@@ -372,8 +358,7 @@ subroutine bn_rosenGift(y,dydx,n,x,htry,eps,yscal,hdid,hnext,  &
   use Logfile_interface, ONLY: Logfile_stampMessage
   use bn_interface, ONLY: bn_gift
   use Burn_data, ONLY : bn_meshMe
-
-!  use bnIntegrate_interface, ONLY: derivs
+  use bnIntegrate_interface, ONLY: derivs_t, jakob_t, bjakob_t
 
   implicit none
   
@@ -382,11 +367,13 @@ subroutine bn_rosenGift(y,dydx,n,x,htry,eps,yscal,hdid,hnext,  &
 !! argument declarations
   ! Note that bjakob is not used in this routine, and jakob explanation found in 
   ! bnNetwork_interface
-  external               derivs, jakob, bjakob
   integer, intent(IN) :: n
   real, intent(IN)    :: yscal(n), dydx(n), htry, eps
   real, intent(INOUT) :: x, y(n)
   real, intent(OUT)   :: hdid, hnext
+  procedure(derivs_t) :: derivs
+  procedure(jakob_t) :: jakob
+  procedure(bjakob_t) :: bjakob
 
 
 !! local variables
