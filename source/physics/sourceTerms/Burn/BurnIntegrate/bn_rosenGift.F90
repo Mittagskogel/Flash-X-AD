@@ -135,7 +135,7 @@ subroutine bn_rosenGift(y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  &
   enddo
 
 !!  get the dense jacobian in sparse_dfdy
-  call jakob(xsav,ysav,dfdy,n,nmax)
+  call jakob(xsav,ysav,btemp,ratdum,dfdy,n,nmax)
 
 
 !!  main loop

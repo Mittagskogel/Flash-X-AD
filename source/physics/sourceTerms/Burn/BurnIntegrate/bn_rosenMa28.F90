@@ -176,7 +176,7 @@ subroutine bn_rosenMa28(y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  &
   enddo
 
 !!  get the sparse jacobian in sparse_dfdy 
-  call jakob(xsav,ysav,dfdy,nzo,nDummy) 
+  call jakob(xsav,ysav,btemp,ratdum,dfdy,nzo,nDummy) 
 
 !!  main loop 
   h = htry 

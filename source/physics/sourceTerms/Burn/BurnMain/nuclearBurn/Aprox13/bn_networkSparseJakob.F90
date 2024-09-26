@@ -44,9 +44,10 @@
 !!***
 
 
-subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
+subroutine bn_networkSparseJakob(tt,y,btemp,ratdum,dfdy,nzo,nDummy)
 
-  use Burn_data
+  use Burn_data, ONLY: ihe4, ic12, io16, ine20, img24, isi28, is32, &
+                       iar36, ica40, iti44, icr48, ife52, ini56
   use Driver_interface, ONLY : Driver_abort
   ! for communication with networkSparsePointers
   use bn_dataNetworkSize, ONLY : neloc, eloc, nterms
@@ -60,7 +61,7 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
   !!  declare arguments and local variables
   ! nDummy brings number of variables up to be the same as bn_networkDenseJakob
   integer, intent(IN) :: nzo, nDummy  
-  real, intent(IN)    :: tt
+  real, intent(IN)    :: tt, btemp, ratdum(:)  ! NOTE: btemp is reserved for Aprox19
   real, intent(INOUT) :: y(:)
   real, intent(OUT)   :: dfdy(:,:)
 

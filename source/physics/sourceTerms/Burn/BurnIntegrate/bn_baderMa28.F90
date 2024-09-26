@@ -201,7 +201,7 @@ subroutine bn_baderMa28(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
   !!  get the sparse jacobian in dfdy
   !      call Timers_start ("jacobian (burn)")
 
-  call jakob(x,y,dfdy,nzo,nDummy)
+  call jakob(x,y,btemp,ratdum,dfdy,nzo,nDummy)
 
   !      call Timers_stop ("jacobian (burn)")
 

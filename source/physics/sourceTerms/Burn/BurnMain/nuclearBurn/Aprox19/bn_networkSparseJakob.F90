@@ -42,14 +42,15 @@
 !!   nDummy -- dummy argument to make argument lists consistent across networks.
 !!
 !!***
-subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
+subroutine bn_networkSparseJakob(tt,y,btemp,ratdum,dfdy,nzo,nDummy)
 
 #include "Simulation.h"
 
   use Driver_interface, ONLY : Driver_abort
 
-  use Burn_dataEOS, ONLY:  btemp
-  use Burn_data
+  use Burn_data, ONLY: ih1, ihe3, ihe4, ic12, in14, io16, ine20, &
+                       img24, isi28, is32, iar36, ica40, iti44, icr48, &
+                       ife52, ife54, ini56, ineut, iprot
   use bn_dataNetworkSize, ONLY:  neloc, nterms, eloc
   use bn_dataAprox19
 
@@ -63,15 +64,16 @@ subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
 
   !..declare
   integer, intent(IN) :: nzo, nDummy
-  real, intent(IN)    :: tt, y(:)
+  real, intent(IN)    :: tt, btemp, ratdum(:)
+  real, intent(IN OUT):: y(:)
   real, intent(OUT)   :: dfdy(:,:)
 
-  integer i,nt,iat
-  real    a1,yneut2,yprot2,xx,den1,den2,            &
-       &        r1,s1,t1,u1,v1,w1,x1,ralf1,ralf2,                         &
-       &        r1f54,r2f54,r3f54,r4f54,r5f54,r6f54,r7f54,r8f54,          &
-       &        yy,den1a,den2a,r1f54a,r2f54a,                             &
-       &        r3f54a,r4f54a,r5f54a,r6f54a,r7f54a,r8f54a,dum1,dum2
+  integer :: i,nt,iat
+  real :: a1,yneut2,yprot2,xx,den1,den2,                   &
+          r1,s1,t1,u1,v1,w1,x1,ralf1,ralf2,                &
+          r1f54,r2f54,r3f54,r4f54,r5f54,r6f54,r7f54,r8f54, &
+          yy,den1a,den2a,r1f54a,r2f54a,                    &
+          r3f54a,r4f54a,r5f54a,r6f54a,r7f54a,r8f54a,dum1,dum2
 
 
   !..zero the jacobian

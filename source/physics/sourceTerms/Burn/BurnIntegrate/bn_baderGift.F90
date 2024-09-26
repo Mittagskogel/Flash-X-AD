@@ -159,7 +159,7 @@ subroutine bn_baderGift(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
 !!  get the dense jacobian in dfdy
   !      call Timers_start ("jacobian (burn)")
 
-  call jakob(x,y,dfdy,nv,nmax)
+  call jakob(x,y,btemp,ratdum,dfdy,nv,nmax)
 
   !      call Timers_stop ("jacobian (burn)")
 

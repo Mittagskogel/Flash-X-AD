@@ -105,10 +105,10 @@ Module bnNetwork_interface
    end interface
 
    abstract interface
-     subroutine jakob_t(tt,y,dfdy,nzo,nDummy) ! = bn_networkSparseJakob or bn_networkDenseJakob
-       implicit none                        ! See notes in bnNetwork_interface about this...
+     subroutine jakob_t(tt,y,btemp,ratdum,dfdy,nzo,nDummy) ! = bn_networkSparseJakob or bn_networkDenseJakob
+       implicit none                                       ! See notes in bnNetwork_interface about this...
        integer, intent(IN) :: nzo, nDummy
-       real, intent(IN)    :: tt
+       real, intent(IN)    :: tt, btemp, ratdum(:)
        real, intent(INOUT) :: y(:)
        real, intent(OUT)   :: dfdy(:,:)
      end subroutine jakob_t
@@ -162,20 +162,20 @@ Module bnNetwork_interface
 !     should be an integer parameter with value of one.
 !  NOTE: below two subroutines' procedures are provided as jakob_t
   interface
-     subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
+     subroutine bn_networkSparseJakob(tt,y,btemp,ratdum,dfdy,nzo,nDummy)
        implicit none
        integer, intent(IN) :: nzo, nDummy ! dummy index for dealing with dfdy
-       real, intent(IN)    :: tt
+       real, intent(IN)    :: tt, btemp, ratdum(:)
        real, intent(INOUT) :: y(:)
        real, intent(OUT)   :: dfdy(:,:)   ! NOTE: it only updates dfdy(:,nDummy)
      end subroutine bn_networkSparseJakob
   end interface
 
   interface 
-     subroutine bn_networkDenseJakob(tt,y,dfdy,nlog,nphys)
+     subroutine bn_networkDenseJakob(tt,y,btemp,ratdum,dfdy,nlog,nphys)
        implicit none
        integer, intent(IN) :: nlog, nphys
-       real, intent(IN)    :: tt
+       real, intent(IN)    :: tt, btemp, ratdum(:)
        real, intent(INOUT) ::  y(:)
        real, intent(OUT)   ::  dfdy(:,:)
      end subroutine bn_networkDenseJakob
