@@ -35,6 +35,8 @@
 !!                         integer(OUT) :: kount,
 !!                         real(IN)     :: odescal,
 !!                         integer(IN)  :: iprint,
+!!                         integer(IN)  :: nrat,
+!!                         real(IN)     :: ratdum(:),
 !!                         procedure(IN):: derivs,
 !!                         procedure(IN):: jakob,
 !!                         procedure(IN):: bjakob,
@@ -70,6 +72,8 @@
 !!   kount   - integer(OUT) total number of steps stored in arrays xrk and yrk
 !!   odescal - real(IN)     error scaling factor 
 !!   iprint  - integer(IN)  determines if the solution is printed as it evolves
+!!   nrat    - integer(IN)  number of reaction rates
+!!   ratdum  - real(IN)     the screened reaction rates as an array
 !!   derivs  - procedure(IN) name of the routine that contains the odes
 !!   jakob   - procedure(IN) name of the routine that contains the jacobian of the odes
 !!   bjakob  - procedure(IN) name of the routine that sets the pointers of the sparse jacobian
@@ -94,22 +98,24 @@
 
 !!---------------------------------------------------------------------------------
 
-subroutine bn_netIntegrate(start,stptry,stpmin,stopp,bc,  & 
-     &                  eps,dxsav,kmax,   & 
-     &                  xrk,yrk,xphys,yphys,xlogi,ylogi,  & 
-     &                  nok,nbad,kount,odescal,iprint,  & 
-     &                  derivs,jakob,bjakob,steper)
-   
+subroutine bn_netIntegrate(start,stptry,stpmin,stopp,bc,    &
+                           eps,dxsav,kmax,                  &
+                           xrk,yrk,xphys,yphys,xlogi,ylogi, &
+                           nok,nbad,kount,odescal,iprint,   &
+                           nrat, ratdum,                    &
+                           derivs,jakob,bjakob,steper)
+
   use Driver_interface, ONLY : Driver_abort
   use bnNetwork_interface, ONLY: derivs_t, jakob_t, bjakob_t, steper_t
 
   implicit none
 
   !! arguments
-  integer, intent(IN)  :: xphys,yphys,xlogi,ylogi
+  integer, intent(IN)  :: xphys,yphys,xlogi,ylogi,nrat
   integer, intent(IN)  :: kmax, iprint
   real, intent(IN)     :: odescal, dxsav, eps
   real, intent(IN)     :: start, stptry, stpmin, stopp
+  real, intent(IN), dimension(nrat)     :: ratdum
   real, intent(INOUT), dimension(yphys) :: bc
 
   integer, intent(OUT) :: nok, nbad, kount

@@ -76,8 +76,9 @@ Module bnNetwork_interface
   end interface
 
   interface
-     subroutine bn_networkScreen(btemp, bden, ratraw, ymass, scfac, ratdum)
+     subroutine bn_networkScreen(btemp, bden, ratraw, ymass, scfac, nrat, ratdum)
         implicit none
+        integer, intent(IN) :: nrat
         real, intent(IN) :: btemp, bden, ymass(NSPECIES), ratraw(nrat)
         real, intent(IN OUT) :: scfac(nrat), ratdum(nrat)
      end subroutine bn_networkScreen

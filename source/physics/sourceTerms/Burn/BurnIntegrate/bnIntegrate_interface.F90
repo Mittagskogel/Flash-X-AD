@@ -28,17 +28,19 @@ Module bnIntegrate_interface
   !! They are all used for integrating the ODE of nuclear burning
 
   interface
-     subroutine bn_netIntegrate(start,stptry,stpmin,stopp,bc,  & 
-          &                  eps,dxsav,kmax,   & 
-          &                  xrk,yrk,xphys,yphys,xlogi,ylogi,  & 
-          &                  nok,nbad,kount,odescal,iprint,  & 
-          &                  derivs,jakob,bjakob,steper) 
+     subroutine bn_netIntegrate(start,stptry,stpmin,stopp,bc,    &
+                                eps,dxsav,kmax,                  &
+                                xrk,yrk,xphys,yphys,xlogi,ylogi, &
+                                nok,nbad,kount,odescal,iprint,   &
+                                nrat, ratdum,                    &
+                                derivs,jakob,bjakob,steper)
        import :: derivs_t, jakob_t, bjakob_t, steper_t
        implicit none
-       integer, intent(IN)  :: xphys,yphys,xlogi,ylogi
+       integer, intent(IN)  :: xphys,yphys,xlogi,ylogi,nrat
        integer, intent(IN)  :: kmax, iprint
        real, intent(IN)     :: odescal, dxsav, eps
        real, intent(IN)     :: start, stptry, stpmin, stopp
+       real, intent(IN), dimension(nrat)     :: ratdum
        real, intent(INOUT), dimension(yphys) :: bc
        integer, intent(OUT) :: nok, nbad, kount
        real, intent(OUT), dimension(xphys)       :: xrk

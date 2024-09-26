@@ -129,7 +129,8 @@ Module Burn_data
                        ! zs13(nrat),zhat(nrat),zhat2(nrat), &   ! hypothetically localized
                        ! lzav(nrat),aznut(nrat),scfac(nrat), &  ! hypothetically localized
                        ! zs13inv(nrat), &  ! hypothetically localized
-                       ratraw(nrat),ratdum(nrat), &   !! TODO: delete this
+                       ! ratraw(nrat), &
+                       ratdum(nrat), &   !! TODO: delete this
                        xoktot,xbadtot,xkbrn           !! TODO: delete this
   integer,save      ::  isflag(nrat+1)   ! TODO: not used anywhere
 

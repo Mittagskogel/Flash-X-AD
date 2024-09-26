@@ -95,7 +95,7 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
   ! use Burn_dataEOS, ONLY:  btemp, bden
   use Burn_data, ONLY: bn_algebra, bn_odeStepper, bn_useBurnTable, &
        xmass, ymass, xoktot, xbadtot, bion, sneut, aion, nrat, nrattab, &
-       ratraw, ratdum
+      ratdum
 
   use bnIntegrate_interface, ONLY: bn_netIntegrate
   !  This are routine names to be passed as arguments.  Cannot be included
@@ -138,7 +138,8 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
        &                  beg = 0.0e0,             odescal = 1.0e-6
 
 
-  ! real :: ratraw(nrat), ratdum(nrat)   !! TODO:
+  real :: ratraw(nrat)
+  ! real :: ratdum(nrat)   !! TODO:
   real :: scfac(nrat), rattab(nrat,nrattab), ttab(nrattab), dtab(nrat)
 
   real :: btemp, bden
@@ -171,7 +172,7 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
   !! in most netoworks, the weak subroutine does not exist.
   !! so it is now called from Aprox19's bn_networkScreen
 !!  call bn_networkWeak(ymass)
-  call bn_networkScreen(btemp, bden, ratraw, ymass, scfac, ratdum)
+  call bn_networkScreen(btemp, bden, ratraw, ymass, scfac, nrat, ratdum)
 
 
   !..set the time step variables for a single point burn
@@ -183,20 +184,22 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
 
      !..with ma28 bn_algebra
      if (bn_algebra .eq. 1) then
-        call bn_netIntegrate(beg,stptry,stpmin,tstep,ys2,                        &
-             &              tol,beg,nostore,                                    &
-             &              ttime,elem,tdim,NSPECIES,tdim,NSPECIES,                 &
-             &              nok,nbad,kount,odescal,iprint,                      &
-             &              bn_network,bn_networkSparseJakob,bn_networkSparsePointers,bn_baderMa28)
+        call bn_netIntegrate(beg,stptry,stpmin,tstep,ys2,            &
+                             tol,beg,nostore,                        &
+                             ttime,elem,tdim,NSPECIES,tdim,NSPECIES, &
+                             nok,nbad,kount,odescal,iprint,          &
+                             nrat, ratdum,                           &
+                             bn_network,bn_networkSparseJakob,bn_networkSparsePointers,bn_baderMa28)
         !!  last line is derivs,    jakob,   bjakob,  steper
 
         !..with gift bn_algebra
      else if (bn_algebra .eq. 2) then
-        call bn_netIntegrate(beg,stptry,stpmin,tstep,ys2,                        &
-             &              tol,beg,nostore,                                    &
-             &              ttime,elem,tdim,NSPECIES,tdim,NSPECIES,                 &
-             &              nok,nbad,kount,odescal,iprint,                      &
-             &              bn_network,bn_networkDenseJakob,bn_networkSparsePointers,bn_baderGift)
+        call bn_netIntegrate(beg,stptry,stpmin,tstep,ys2,            &
+                             tol,beg,nostore,                        &
+                             ttime,elem,tdim,NSPECIES,tdim,NSPECIES, &
+                             nok,nbad,kount,odescal,iprint,          &
+                             nrat, ratdum,                           &
+                             bn_network,bn_networkDenseJakob,bn_networkSparsePointers,bn_baderGift)
 
      end if
 
@@ -206,19 +209,21 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
 
      !..with ma28 bn_algebra
      if (bn_algebra .eq. 1) then
-        call bn_netIntegrate(beg,stptry,stpmin,tstep,ys2,                        &
-             &              tol,beg,nostore,                                    &
-             &              ttime,elem,tdim,NSPECIES,tdim,NSPECIES,                 &
-             &              nok,nbad,kount,odescal,iprint,                      &
-             &              bn_network,bn_networkSparseJakob,bn_networkSparsePointers,bn_rosenMa28)
+        call bn_netIntegrate(beg,stptry,stpmin,tstep,ys2,            &
+                             tol,beg,nostore,                        &
+                             ttime,elem,tdim,NSPECIES,tdim,NSPECIES, &
+                             nok,nbad,kount,odescal,iprint,          &
+                             nrat, ratdum,                           &
+                             bn_network,bn_networkSparseJakob,bn_networkSparsePointers,bn_rosenMa28)
 
         !..with gift bn_algebra
      else if (bn_algebra .eq. 2) then
-        call bn_netIntegrate(beg,stptry,stpmin,tstep,ys2,                        &
-             &              tol,beg,nostore,                                    &
-             &              ttime,elem,tdim,NSPECIES,tdim,NSPECIES,                 &
-             &              nok,nbad,kount,odescal,iprint,                      &
-             &              bn_network,bn_networkDenseJakob,bn_networkSparsePointers,bn_rosenGift)
+        call bn_netIntegrate(beg,stptry,stpmin,tstep,ys2,            &
+                             tol,beg,nostore,                        &
+                             ttime,elem,tdim,NSPECIES,tdim,NSPECIES, &
+                             nok,nbad,kount,odescal,iprint,          &
+                             nrat, ratdum,                           &
+                             bn_network,bn_networkDenseJakob,bn_networkSparsePointers,bn_rosenGift)
 
      end if
   end if
