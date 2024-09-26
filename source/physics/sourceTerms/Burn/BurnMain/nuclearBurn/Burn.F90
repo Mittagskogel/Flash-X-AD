@@ -159,8 +159,8 @@ subroutine Burn (  dt  )
      call tileDesc%getDataPtr(solnData, CENTER)
 
      ! Shock detector
-     solnData(SHOK_VAR,:,:,:)=0.0
      if (.NOT. bn_useShockBurn) then
+        solnData(SHOK_VAR,:,:,:)=0.0
         call Hydro_shockStrength(solnData, lo,hi, loGC, hiGC, &
              xCoord,yCoord,zCoord,shock_thresh,shock_mode)
      endif
