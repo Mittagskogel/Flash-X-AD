@@ -139,12 +139,13 @@ Module bnNetwork_interface
 
 
 !----------------------------------------------------
-  interface 
-     subroutine bn_network(tt,y,dydt)   
+  ! NOTE: should have the same signature as derivs_t
+  interface
+     subroutine bn_network(tt,y,dydt)
        implicit none
        real, intent(IN) :: tt
-       real, intent(INOUT), dimension(*)  :: y
-       real, intent(OUT), dimension(*) :: dydt
+       real, intent(INOUT), dimension(:)  :: y
+       real, intent(OUT), dimension(:) :: dydt
      end subroutine bn_network
   end interface
 
@@ -159,6 +160,7 @@ Module bnNetwork_interface
 !     case of DenseJakob.  So I give up and just hope that the twit who
 !     designed these routines did his job right and it doesn't matter.
 !  Back to use "external bn_networkSparseJakob, bn_networkDenseJakob, derivs"
+!  NOTE: below two subroutines' procedures are provided as jakob_t
   interface
      subroutine bn_networkSparseJakob(tt,y,dfdy,nzo,nDummy)
        implicit none
@@ -170,7 +172,7 @@ Module bnNetwork_interface
   end interface
 
   interface 
-     subroutine bn_networkDenseJakob(tt,y,dfdy,nlog,nphys)   
+     subroutine bn_networkDenseJakob(tt,y,dfdy,nlog,nphys)
        implicit none
        integer, intent(IN) :: nlog, nphys
        real, intent(IN)    :: tt
@@ -183,10 +185,11 @@ Module bnNetwork_interface
 !----------------------------------------------
 ! This is the routine passed as bjakob. Bizarrely enough, there is no
 !!  equivalent of bn_networkDensePointers
+  ! NOTE: should have the same signature as bjakob_t
   interface
      subroutine bn_networkSparsePointers(iloc,jloc,nzo,np)
        implicit none
-       integer, intent(IN)  ::   iloc(*),jloc(*),np
+       integer, intent(IN)  ::   iloc(:),jloc(:),np
        integer, intent(OUT) ::   nzo
      end subroutine bn_networkSparsePointers
   end interface
