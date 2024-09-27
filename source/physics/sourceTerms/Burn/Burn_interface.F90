@@ -39,9 +39,8 @@ Module Burn_interface
   end interface Burn
 
   interface
-      subroutine Burn_burner(burnedZone, Uin, loGC, blkLimits, dt)
+      subroutine Burn_burner(Uin, loGC, blkLimits, dt)
          implicit none
-         logical, intent(OUT) :: burnedZone
          integer, dimension(MDIM), intent(IN) ::  loGC
          real, dimension(1:, loGC(IAXIS):, loGC(JAXIS):, loGC(KAXIS):), intent(IN OUT) :: Uin
          integer, dimension(LOW:HIGH,MDIM), intent(IN) :: blkLimits

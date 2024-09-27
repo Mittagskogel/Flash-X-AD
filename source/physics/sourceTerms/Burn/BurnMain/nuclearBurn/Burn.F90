@@ -90,7 +90,6 @@ subroutine Burn (  dt  )
   real, dimension(NSPECIES) :: xIn, xOut
   real :: sdot, tmp, rho, ei, ek, enuc
 
-  logical :: burnedZone
   logical :: okBurnTemp, okBurnDens, okBurnShock, okBurnNickel
 
   real, allocatable, dimension(:) :: xCoord, yCoord, zCoord
@@ -162,15 +161,15 @@ subroutine Burn (  dt  )
              xCoord,yCoord,zCoord,shock_thresh,shock_mode)
      endif
 
-     call Burn_burner(burnedZone, solnData, loGC, blkLimits, dt)
+     call Burn_burner(solnData, loGC, blkLimits, dt)   ! NOTE: this may flag `burnedZone`
 
      call Burn_update(solnData, loGC, blkLimits, dt)
 
-     ! we've altered the EI, let's equilabrate
-     if (burnedZone) then
-        lo(:) = tileDesc%blkLimitsGC(LOW,:)
-        call Eos_multiDim(MODE_DENS_EI,tileDesc%limits,lo,solnData)
-     end if
+     ! ! we've altered the EI, let's equilabrate
+     ! if (burnedZone) then
+     !    lo(:) = tileDesc%blkLimitsGC(LOW,:)
+     !    call Eos_multiDim(MODE_DENS_EI,tileDesc%limits,lo,solnData)
+     ! end if
 
      call tileDesc%releaseDataPtr(solnData, CENTER)
      nullify(solnData)

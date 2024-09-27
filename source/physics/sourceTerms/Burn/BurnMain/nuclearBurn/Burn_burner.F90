@@ -39,7 +39,7 @@
 #include "constants.h"
 #include "Eos.h"
 
-subroutine Burn_burner(burnedZone, Uin, loGC, blkLimits, dt)
+subroutine Burn_burner(Uin, loGC, blkLimits, dt)
 
    use Burn_data, ONLY: bn_nuclearTempMin, &
                         bn_nuclearTempMax, &
@@ -52,7 +52,6 @@ subroutine Burn_burner(burnedZone, Uin, loGC, blkLimits, dt)
    implicit none
 
    ! input args
-   logical, intent(OUT) :: burnedZone
    integer, dimension(MDIM), intent(IN) ::  loGC
    real, dimension(1:, loGC(IAXIS):, loGC(JAXIS):, loGC(KAXIS):), intent(IN OUT) :: Uin
    integer, dimension(LOW:HIGH,MDIM), intent(IN) :: blkLimits
@@ -64,7 +63,6 @@ subroutine Burn_burner(burnedZone, Uin, loGC, blkLimits, dt)
    real, dimension(NSPECIES) :: xIn, xOut
    real :: tmp, rho, sdot
 
-   burnedZone = .FALSE.
 
    lo(1:MDIM) = blkLimits(LOW,1:MDIM)
    hi(1:MDIM) = blkLimits(HIGH,1:MDIM)
@@ -95,7 +93,7 @@ subroutine Burn_burner(burnedZone, Uin, loGC, blkLimits, dt)
 
                if (okBurnNickel) then
 
-                  burnedZone = .TRUE.
+                  ! burnedZone = .TRUE.
 
                   ! Map the solution data into the order required by bn_burner
                   do n = 1, NSPECIES

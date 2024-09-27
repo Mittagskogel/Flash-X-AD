@@ -51,8 +51,9 @@
 
 subroutine Burn_update (Uin, loGC, blkLimits, dt)
 
-  implicit none
+  use Eos_interface, ONLY: Eos_multiDim
 
+  implicit none
 
   !args
   integer, dimension(MDIM), intent(IN) ::  loGC
@@ -64,13 +65,6 @@ subroutine Burn_update (Uin, loGC, blkLimits, dt)
   integer :: i, j, k
   real :: ek, enuc, ei
 
- 
-  ! AH: Aprox13 and Aprox19 are not currently thread-safe
-!!$omp parallel do &
-!!$omp collapse(3) &
-!!$omp default(shared) &
-!!$omp private(i,j,k,sdot,xIn,xOut,ei,ek,enuc)
-  
   do k = blkLimits(LOW,KAXIS), blkLimits(HIGH,KAXIS)
      do j = blkLimits(LOW,JAXIS), blkLimits(HIGH,JAXIS)
         do i = blkLimits(LOW,IAXIS), blkLimits(HIGH,IAXIS)
@@ -79,7 +73,6 @@ subroutine Burn_update (Uin, loGC, blkLimits, dt)
                        Uin(VELZ_VAR,i,j,k)**2)
            enuc = dt*Uin(ENUC_VAR,i,j,k)
            ei = Uin(ENER_VAR,i,j,k) + enuc - ek
-           
 #ifdef EINT_VAR
            Uin(EINT_VAR,i,j,k) = ei
 #endif
@@ -90,5 +83,9 @@ subroutine Burn_update (Uin, loGC, blkLimits, dt)
         end do
      end do
   end do
+
+  call Eos_multidim(MODE_DENS_EI, blkLimits, loGC, Uin)
+
   return
 end subroutine Burn_Update
+
