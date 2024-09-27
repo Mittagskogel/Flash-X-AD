@@ -44,7 +44,7 @@
 !!
 !!***
 
-subroutine bn_sneutx(btemp,bden,abar,zbar,z2bar,ytot1,bye, &
+subroutine bn_sneutx(btemp,bden,abar,zbar, &
                      sneut)
 
   use bn_interface, ONLY: bn_ifermi12
@@ -52,11 +52,11 @@ subroutine bn_sneutx(btemp,bden,abar,zbar,z2bar,ytot1,bye, &
   implicit none
 
   ! Arguments
-  real, intent(IN) :: btemp,bden,abar,zbar,z2bar,ytot1,bye
+  real, intent(IN) :: btemp,bden,abar,zbar
   real, intent(OUT) :: sneut
 
   ! declare local variables
-  real :: sphot,spair,splas,sbrem,srecomb
+  real :: sphot,spair,splas,sbrem,srecomb,bye
   real :: xmue,t9,xl,xlp5,xl2,xl3,xl4,xl5,xl6,xl8,xl9, & 
        &                 xlm1,xlm2,xlm3,rm,xnum,xden,fpair,fphoto,gl, & 
        &                 zeta,zeta2,zeta3,qpair,gl2,gl12,gl32,gl72,gl6, & 

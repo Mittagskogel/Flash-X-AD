@@ -243,7 +243,7 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
   sdotRate = sdotRate * conv/tstep
 
   !..take into neutrino losses
-  call bn_sneutx(btemp, bden, abar, zbar, z2bar, ytot1, bye, &
+  call bn_sneutx(btemp, bden, abar, zbar, &
                  sneut)
   sdotRate = sdotRate - sneut
 
