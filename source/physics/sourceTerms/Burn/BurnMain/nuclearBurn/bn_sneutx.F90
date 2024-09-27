@@ -28,7 +28,6 @@
 !!    
 !!    input is the temperature temp, density bden, 
 !!    mean number of nucleons abar, and mean charge zbar.
-!!    the input comes from data structure Burn_dataEOS
 !!    
 !!    output into Burn_data is the 
 !!    pair neutrino contributions spair,

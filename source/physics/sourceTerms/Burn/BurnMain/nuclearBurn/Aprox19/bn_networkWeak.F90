@@ -59,14 +59,10 @@ subroutine bn_networkWeak(btemp, bden, bye, nrat, ratraw, ratdum, y)
   use Eos_interface, ONLY: Eos
   use bn_interface, ONLY: bn_ecapnuc, bn_mazurek
 
-  ! use Burn_dataEOS, ONLY: btemp, bden, bye
   use Burn_data, ONLY: aion, ini56
   use bn_dataAprox19
 
   implicit none
-
-  ! it appears that bden and btemp are passed in via eos_common.fh or Burn_dataEOS
-  ! we use the declarations of abar and zbar from there as well. 
 
   !..electron capture rates on nucleons for aprox19
   !..note they are composition dependent

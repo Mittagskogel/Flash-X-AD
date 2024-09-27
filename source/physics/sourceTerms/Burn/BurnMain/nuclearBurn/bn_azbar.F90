@@ -28,8 +28,6 @@
 !!  mean nucleon charge zbar, mean nucleon charge squared z2bar, and the
 !!  electron mole number bye.
 !!
-!! NOTES
-!!   the output variables are stored in data structure Burn_dataEOS
 !!  
 !!***
 

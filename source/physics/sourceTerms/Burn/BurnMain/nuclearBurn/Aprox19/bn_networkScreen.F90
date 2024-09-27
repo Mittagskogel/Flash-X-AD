@@ -45,8 +45,6 @@ subroutine bn_networkScreen(btemp, bden, bye, ratraw, y, scfac, nrat, ratdum)
 
   use bn_interface, ONLY:   bn_screen4
 
-  ! nothing seems to be passed with eos_common.fh
-  !      use Burn_dataEOS
   use Burn_data, ONLY: zion, aion, ih1, ihe3, ihe4, &
                        ic12, in14, io16, ine20, img24, &
                        isi28, is32, iar36, ica40, icr48, &

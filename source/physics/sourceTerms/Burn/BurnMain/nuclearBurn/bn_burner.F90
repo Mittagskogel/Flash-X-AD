@@ -77,8 +77,7 @@
 !!  routine bn_pzExtr does extrapolations for any of the Bader-Deuflhard bn_bader* routines
 !!
 !!  In this nuclearBurn directory, there are additional routines
-!!  routine bn_azbar computes composition variables from the mass fractions; they are
-!!              stored in Burn_dataEOS
+!!  routine bn_azbar computes composition variables from the mass fractions
 !!  routine bn_ecapnuc computes neutron and proton electron capture rates
 !!  routine bn_sneutx computes neutrino losses
 !!  routine bn_ifermi12 does an inverse fermi integral for bn_sneutx
