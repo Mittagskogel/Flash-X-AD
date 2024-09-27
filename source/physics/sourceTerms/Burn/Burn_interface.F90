@@ -33,12 +33,25 @@ Module Burn_interface
 
   interface Burn
      subroutine Burn(dt)
-       real,intent(IN) :: dt
+        implicit none
+        real,intent(IN) :: dt
      end subroutine Burn
   end interface Burn
 
   interface
+      subroutine Burn_burner(burnedZone, Uin, loGC, blkLimits, dt)
+         implicit none
+         logical, intent(OUT) :: burnedZone
+         integer, dimension(MDIM), intent(IN) ::  loGC
+         real, dimension(1:, loGC(IAXIS):, loGC(JAXIS):, loGC(KAXIS):), intent(IN OUT) :: Uin
+         integer, dimension(LOW:HIGH,MDIM), intent(IN) :: blkLimits
+         real, intent(IN) :: dt
+      end subroutine Burn_burner
+   end interface
+
+  interface
      subroutine Burn_update (Uin,  loGC, blkLimits, dt)
+       implicit none
        !args
        integer, dimension(MDIM),intent(in) :: loGC
        integer, dimension(LOW:HIGH,MDIM) :: blkLimits

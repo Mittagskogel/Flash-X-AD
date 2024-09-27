@@ -59,9 +59,7 @@
 
 subroutine Burn (  dt  )
 
-  use Burn_data, ONLY : bn_nuclearTempMin, bn_nuclearTempMax, bn_nuclearDensMin, &
-       &   bn_nuclearDensMax, bn_nuclearNI56Max, bn_useShockBurn, &
-       &   bn_useBurn, bn_gcMaskSD
+  use Burn_data, ONLY : bn_useBurn, bn_useShockBurn, bn_gcMaskSD
   use bn_interface, ONLY : bn_mapNetworkToSpecies, bn_burner
 
   use Timers_interface, ONLY : Timers_start, Timers_stop
@@ -74,7 +72,7 @@ subroutine Burn (  dt  )
 
   use Grid_iterator, ONLY : Grid_iterator_t
   use Grid_tile, ONLY : Grid_tile_t
-  use Burn_interface, ONLY : Burn_update
+  use Burn_interface, ONLY : Burn_burner, Burn_update
 
   implicit none
 
@@ -137,14 +135,13 @@ subroutine Burn (  dt  )
   do while(itor%isValid())
      call itor%currentTile(tileDesc)
 
-     burnedZone = .FALSE.
-
      ! get dimensions/limits and coordinates
      lo(1:MDIM) = tileDesc%limits(LOW,1:MDIM)
      hi(1:MDIM) = tileDesc%limits(HIGH,1:MDIM)
      loGC(1:MDIM) = tileDesc%grownLimits(LOW,1:MDIM)
      hiGC(1:MDIM) = tileDesc%grownLimits(HIGH,1:MDIM)
 
+     blkLimits = tileDesc%limits(:,:)
 
      ! allocate space for dimensions
      allocate(xCoord(loGC(IAXIS):hiGC(IAXIS)))
@@ -165,63 +162,8 @@ subroutine Burn (  dt  )
              xCoord,yCoord,zCoord,shock_thresh,shock_mode)
      endif
 
-     ! AH: Aprox13 and Aprox19 are not currently thread-safe
-     !!$omp parallel do &
-     !!$omp collapse(3) &
-     !!$omp default(shared) &
-     !!$omp private(i,j,k,n,speciesMap,tmp,rho,sdot,xIn,xOut,ei,ek,enuc, &
-     !!$omp         okBurnTemp,okBurnDens,okBurnShock,okBurnNickel)
-     do k = lo(KAXIS), hi(KAXIS)
-        do j = lo(JAXIS), hi(JAXIS)
-           do i = lo(IAXIS), hi(IAXIS)
+     call Burn_burner(burnedZone, solnData, loGC, blkLimits, dt)
 
-              tmp  = solnData(TEMP_VAR,i,j,k)
-              rho  = solnData(DENS_VAR,i,j,k)
-              sdot = 0.0e0
-
-              okBurnTemp = (tmp >= bn_nuclearTempMin .AND. tmp <= bn_nuclearTempMax)
-              okBurnDens = (rho >= bn_nuclearDensMin .AND. rho <= bn_nuclearDensMax)
-              okBurnShock = (solnData(SHOK_VAR,i,j,k) <= 0.0 .OR. (solnData(SHOK_VAR,i,j,k) > 0.0 .AND. bn_useShockBurn))
-
-              if (okBurnTemp .AND. okBurnDens .AND. okBurnShock) then
-
-                 if (NI56_SPEC /= NONEXISTENT) then
-                    okBurnNickel = (solnData(NI56_SPEC,i,j,k) <  bn_nuclearNI56Max)
-                 else    ! nickel is not even a species in this simulation, so we'll always burn
-                    okBurnNickel = .TRUE.
-                 endif
-
-                 if (okBurnNickel) then
-
-                    !$omp atomic write
-                    burnedZone = .TRUE.
-                    !$omp end atomic
-
-                    ! Map the solution data into the order required by bn_burner
-                    do n = 1, NSPECIES
-                       call bn_mapNetworkToSpecies(n,speciesMap)
-                       xIn(n) = solnData(speciesMap,i,j,k)
-                    end do
-
-                    ! Do the actual burn
-                    call bn_burner(dt, tmp, rho, xIn, xOut, sdot)
-
-                    !  Map it back NOTE someday make a nicer interface....
-                    do n = 1, NSPECIES
-                       call bn_mapNetworkToSpecies(n,speciesMap)
-                       solnData(speciesMap,i,j,k) = xOut(n)
-                    end do
-
-                 endif
-              endif
-
-              solnData(ENUC_VAR,i,j,k) = sdot
-
-           end do
-        end do
-     end do
-     blkLimits(LOW,:)=lo
-     blkLimits(HIGH,:) = hi
      call Burn_update(solnData, loGC, blkLimits, dt)
 
      ! we've altered the EI, let's equilabrate
