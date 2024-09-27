@@ -92,10 +92,9 @@
 
 subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
 
-  ! use Burn_dataEOS, ONLY:  btemp, bden
   use Burn_data, ONLY: bn_algebra, bn_odeStepper, bn_useBurnTable, &
                        xoktot, xbadtot, &
-                       bion, sneut, aion, nrat, nrattab
+                       bion, aion, nrat, nrattab
 
   use bnIntegrate_interface, ONLY: bn_netIntegrate
   !  This are routine names to be passed as arguments.  Cannot be included
@@ -146,6 +145,7 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
 
   real :: btemp, bden
   real :: abar, zbar, z2bar, ytot1, bye
+  real :: sneut
 
   !..set the the material and network variables
   btemp = temp
@@ -243,7 +243,8 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
   sdotRate = sdotRate * conv/tstep
 
   !..take into neutrino losses
-  call bn_sneutx()
+  call bn_sneutx(btemp, bden, abar, zbar, z2bar, ytot1, bye, &
+                 sneut)
   sdotRate = sdotRate - sneut
 
   !..update the composition 

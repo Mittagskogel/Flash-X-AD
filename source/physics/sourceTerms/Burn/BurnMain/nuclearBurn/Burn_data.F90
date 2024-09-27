@@ -135,7 +135,7 @@ Module Burn_data
   integer,save      ::  isflag(nrat+1)   ! TODO: not used anywhere
 
 ! were in common block /netc5/
-   real, save ::    sneut,sphot,spair,splas,sbrem,srecomb
+   ! real, save ::    sneut,sphot,spair,splas,sbrem,srecomb   ! hypothetically localized
 
 
 

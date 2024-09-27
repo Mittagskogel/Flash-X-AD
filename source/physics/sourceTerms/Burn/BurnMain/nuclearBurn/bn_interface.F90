@@ -115,8 +115,11 @@ Module bn_interface
   end interface
 
   interface
-     subroutine bn_sneutx()
+     subroutine bn_sneutx(btemp,bden,abar,zbar,z2bar,ytot1,bye, &
+                          sneut)
        implicit none
+       real, intent(IN) :: btemp,bden,abar,zbar,z2bar,ytot1,bye
+       real, intent(OUT) :: sneut
      end subroutine bn_sneutx
   end interface
 
