@@ -174,7 +174,7 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
   !! in most netoworks, the weak subroutine does not exist.
   !! so it is now called from Aprox19's bn_networkScreen
 !!  call bn_networkWeak(ymass)
-  call bn_networkScreen(btemp, bden, ratraw, ymass, scfac, nrat, ratdum)
+  call bn_networkScreen(btemp, bden, bye, ratraw, ymass, scfac, nrat, ratdum)
 
 
   !..set the time step variables for a single point burn

@@ -35,7 +35,7 @@
 !!  
 !!***
 
-subroutine bn_networkScreen(btemp, bden, ratraw, ymass, scfac, nrat, ratdum)
+subroutine bn_networkScreen(btemp, bden, bye, ratraw, ymass, scfac, nrat, ratdum)
 
    use Burn_data, ONLY: zion, aion, &
         ihe4, ic12, io16, ine20, img24, isi28, is32, iar36, ica40, iti44, icr48, ife52
@@ -49,8 +49,8 @@ subroutine bn_networkScreen(btemp, bden, ratraw, ymass, scfac, nrat, ratdum)
 
   !!  declare
   integer, intent(IN) :: nrat
-  real, intent(IN) :: btemp, bden, ymass(NSPECIES), ratraw(nrat)
-  real, intent(IN OUT) :: scfac(nrat), ratdum(nrat)
+  real, intent(IN) :: btemp, bden, bye, ymass(NSPECIES)   ! NOTE: bye is reserved for Aprox19
+  real, intent(IN OUT) :: scfac(nrat), ratraw(nrat), ratdum(nrat)
 
   !! local declarations
   integer             :: i, jscr, screen_init

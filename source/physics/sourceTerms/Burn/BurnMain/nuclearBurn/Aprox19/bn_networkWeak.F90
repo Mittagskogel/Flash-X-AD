@@ -49,7 +49,7 @@
 !! routine bn_networkScreen applies screening corrections to the raw rates
 !!***
 
-subroutine bn_networkWeak(y)
+subroutine bn_networkWeak(btemp, bden, bye, nrat, ratraw, ratdum, y)
 
 #include "constants.h"   
 #include "Simulation.h"
@@ -59,8 +59,8 @@ subroutine bn_networkWeak(y)
   use Eos_interface, ONLY: Eos
   use bn_interface, ONLY: bn_ecapnuc, bn_mazurek
 
-  use Burn_dataEOS, ONLY: btemp, bden, bye
-  use Burn_data
+  ! use Burn_dataEOS, ONLY: btemp, bden, bye
+  use Burn_data, ONLY: aion, ini56
   use bn_dataAprox19
 
   implicit none
@@ -72,7 +72,10 @@ subroutine bn_networkWeak(y)
   !..note they are composition dependent
 
   !..declare
-  real, intent(IN) :: y(NSPECIES)
+  integer, intent(IN) :: nrat
+  real, intent(IN) :: btemp, bden, bye
+  real, intent(IN) :: ratdum(nrat), y(NSPECIES)
+  real, intent(INOUT) :: ratraw(nrat)
 
   integer   i, specieMap
   real      xn(NSPECIES),                    &
@@ -80,10 +83,11 @@ subroutine bn_networkWeak(y)
        &          rpen,rnep,spen,snep, c_v, c_p
 
   !! Needed for Eos call
-  integer :: vecLen
-  logical, dimension(EOS_VARS+1:EOS_NUM) :: mask
+  integer, parameter :: vecLen = 1
+  ! logical, dimension(EOS_VARS+1:EOS_NUM) :: mask
   real, dimension(EOS_NUM) :: eosData
   real, dimension(NSPECIES) :: massFrac  ! in the order required by the rest of Flash!
+  real, dimension(vecLen, EOS_VARS+1:EOS_NUM) :: derivs
 
 
   !..generate the mass fractions from the passed composition
@@ -92,12 +96,11 @@ subroutine bn_networkWeak(y)
      xn(i) = y(i)*aion(i)
   enddo
 
-  !..get the degeneracy parameter eta
-  vecLen = 1
-  mask = .true.
-
-  mask(EOS_DEA) = .FALSE.
-  mask(EOS_DEZ) = .FALSE.
+  ! !..get the degeneracy parameter eta
+  ! mask = .true.
+  !
+  ! mask(EOS_DEA) = .FALSE.
+  ! mask(EOS_DEZ) = .FALSE.
   
   eosData(EOS_DENS) = bden
 #ifdef FLASH_UHD_3T
@@ -121,12 +124,12 @@ subroutine bn_networkWeak(y)
   end do
 
 #ifdef FLASH_UHD_3T
-        call Eos(MODE_DENS_TEMP_GATHER,vecLen,eosData,massFrac,mask)
+        call Eos_vector(MODE_DENS_TEMP_GATHER, vecLen, eosData, massFrac, derivs)
 #else
-        call Eos(MODE_DENS_TEMP,vecLen,eosData,massFrac,mask)
+        call Eos_vector(MODE_DENS_TEMP, vecLen, eosData, massFrac, derivs)
 #endif
 
-  eta = eosData(EOS_ETA)
+  eta = derivs(EOS_ETA)
 
 
   !..get the electron capture rates
