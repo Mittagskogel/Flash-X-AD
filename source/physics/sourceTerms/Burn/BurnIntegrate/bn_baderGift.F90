@@ -196,9 +196,6 @@ outer_loop: do
         write(*,110) xnew,x,k
 110     format(1x,2e11.3,i6)
 
-print *, "CHECK THIS:  ", "h = ", h, "htry = ", htry
-print *, "red = ", red
-
         do ii=1,nv
            write(*,111) y(ii),y(ii)*aion(ii),aion(ii),ii
 111        format(1x,3e11.3,i6)
