@@ -172,6 +172,7 @@ subroutine bn_netIntegrate(btemp,start,stptry,stpmin,stopp,bc, &
   xsav = x - 2.0e0 * dxsav 
 
   !! initialize steper state
+  state%ifirst = .true.
   state%first = .true.
   state%epsold = -1.0
   state%nvold = -1

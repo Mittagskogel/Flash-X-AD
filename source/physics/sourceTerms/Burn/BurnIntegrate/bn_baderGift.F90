@@ -67,7 +67,7 @@ subroutine bn_baderGift(state,y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext
   use Burn_data, ONLY: aion
   use Driver_interface, ONLY : Driver_abort
   !  Ummm.... bit of a mystery why I can use the interfaces in bn_netIntRosen but not here.
-  use bnIntegrate_interface, ONLY: bn_baderStepGift, bn_pzExtr
+  use bnIntegrate_interface, ONLY: bn_baderStepGift, bn_pzExtr, pzExtr_state_t
   use bnNetwork_interface, ONLY: derivs_t, jakob_t, bjakob_t, steper_state_t
 
   implicit none
@@ -107,6 +107,9 @@ subroutine bn_baderGift(state,y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext
   real, parameter :: safe1 = 0.25e0, safe2 = 0.7e0, redmax=1.0e-5, &
                      redmin = 0.7e0, tiny = 1.0e-30, scalmx = 0.1e0
 
+  type(pzExtr_state_t) :: pzExtr_state
+
+  logical :: converged
 
   associate(first => state%first, &
             reduct => state%reduct, &
@@ -149,9 +152,9 @@ subroutine bn_baderGift(state,y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext
 
    !!  determine optimal row number for convergence
      do kopt=2,kmaxx-1
-        if (a(kopt+1) .gt. a(kopt)*alf(kopt-1,kopt)) go to 01
+        if (a(kopt+1) .gt. a(kopt)*alf(kopt-1,kopt)) exit
      enddo
-01   kmax = kopt
+     kmax = kopt
   end if
 
 
@@ -175,14 +178,26 @@ subroutine bn_baderGift(state,y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext
   end if
   reduct = .false.
 
-!!  evaluate the sequence of semi implicit midpoint rules
-02 do k=1,kmax
+  converged = .false.
+
+outer_loop: do
+  do i=1,nv
+     y(i) = ysav(i)
+  enddo
+
+  ! Initialize red to avoid using uninitialized variable
+  red = 1.0
+
+  do k=1,kmax
      xnew = x + h
 
      if (xnew .eq. x) then
         write(*,*) 'stepsize too small in routine baderGift'
         write(*,110) xnew,x,k
 110     format(1x,2e11.3,i6)
+
+print *, "CHECK THIS:  ", "h = ", h, "htry = ", htry
+print *, "red = ", red
 
         do ii=1,nv
            write(*,111) y(ii),y(ii)*aion(ii),aion(ii),ii
@@ -197,7 +212,7 @@ subroutine bn_baderGift(state,y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext
 
    !!  extrapolate the error to zero
      xest = (h/nseq(k))**2
-     call bn_pzExtr(k,xest,yseq,y,yerr,nv)
+     call bn_pzExtr(pzExtr_state,k,xest,yseq,y,yerr,nv)
 
 
    !!  compute normalized error estimate
@@ -215,41 +230,63 @@ subroutine bn_baderGift(state,y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext
      if (k .ne. 1  .and. (k .ge. kopt-1  .or. first)) then
 
       !!   converged
-        if (errmax .lt. 1.0) go to 04
+        if (errmax .lt. 1.0) then
+           converged = .true.
+           exit  ! Exit the inner 'do k' loop
+        end if
 
 
       !!   possible step size reductions
         if (k .eq. kmax  .or.  k .eq. kopt + 1) then
            red = safe2/err(km)
-           go to 3
+           red    = min(red,redmin)
+           red    = max(red,redmax)
+           h      = h * red
+           reduct = .true.
+           cycle outer_loop
         else if (k .eq. kopt) then
            if (alf(kopt-1,kopt) .lt. err(km)) then
               red = 1.0e0/err(km)
-              go to 03
+              red    = min(red,redmin)
+              red    = max(red,redmax)
+              h      = h * red
+              reduct = .true.
+              cycle outer_loop
            end if
         else if (kopt .eq. kmax) then
            if (alf(km,kmax-1) .lt. err(km)) then
               red = alf(km,kmax-1) * safe2/err(km)
-              go to 03
+              red    = min(red,redmin)
+              red    = max(red,redmax)
+              h      = h * red
+              reduct = .true.
+              cycle outer_loop
            end if
         else if (alf(km,kopt) .lt. err(km)) then
            red = alf(km,kopt-1)/err(km)
-           go to 03
+           red    = min(red,redmin)
+           red    = max(red,redmax)
+           h      = h * red
+           reduct = .true.
+           cycle outer_loop
         end if
      end if
 
-  enddo
+  end do  ! End of 'do k=1,kmax' loop
 
+  if (.not. converged) then
+     red    = redmin
+     h      = h * red
+     reduct = .true.
+     cycle outer_loop
+  else
+     exit outer_loop
+  end if
 
-!!  reduce stepsize by atleast redmin and at mosr redmax
-03 red    = min(red,redmin)
-  red    = max(red,redmax)
-  h      = h * red
-  reduct = .true.
-  go to 2
+end do outer_loop
 
 !!  successful step; get optimal row for convergence and corresponding stepsize
-04 x = xnew
+  x = xnew
   hdid = h
   first = .false.
   wrkmin = 1.0e35

@@ -123,8 +123,9 @@ Module bnNetwork_interface
    end interface
 
    ! for steper_t, we need a state variable to "save" the state between steper calls.
+   ! NOTE: this will only work with *Gift steppers
    type steper_state_t
-      logical :: first, reduct
+      logical :: ifirst, first, reduct
       integer :: nvold
       real    :: eps1, epsold
       integer :: kmax, kopt

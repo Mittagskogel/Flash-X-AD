@@ -42,66 +42,69 @@
 !!  nv -   integer(IN)      number of functions to evaluate
 !!
 !!***
+subroutine bn_pzExtr(state, iest, xest, yest, yz, dy, nv)
 
-subroutine bn_pzExtr(iest,xest,yest,yz,dy,nv)
+  use Driver_interface, ONLY: Driver_abort
+  use bnIntegrate_interface, ONLY: pzExtr_state_t
 
   implicit none
 
-!!  declare arguments
+  !! Declare arguments
+  type(pzExtr_state_t), intent(INOUT) :: state
   integer, intent(IN)  :: nv, iest
   real, intent(IN)     :: xest
   real, intent(IN), dimension(nv) :: yest
   real, intent(OUT), dimension(nv) :: dy, yz
-!!  real, intent(INOUT), dimension(nv) :: yz
 
-!! local variables
-  integer,save       :: j,k1
-  integer, parameter :: nmax=50
-  integer, parameter :: imax=13
-  real, save         ::  delta,f1,f2,q
-  real, dimension(nmax), save     :: d
-  real, dimension(nmax,imax),save :: qcol
-  real, dimension(imax), save     :: x(imax)
+  !! Local variables
+  integer, parameter :: nmax=50, imax=13
+  integer :: j, k1
+  real :: delta, f1, f2, q
 
+  !! Check for array bounds
+  if (nv > nmax) then
+     call Driver_abort('ERROR in bn_pzExtr: nv exceeds nmax')
+  end if
+  if (iest > imax) then
+     call Driver_abort('ERROR in bn_pzExtr: iest exceeds imax')
+  end if
 
-!!  save current independent variables
-  x(iest) = xest
-  do j=1,nv
+  !! Save current independent variable
+  state%x(iest) = xest
+  do j = 1, nv
      dy(j) = yest(j)
      yz(j) = yest(j)
-  enddo
+  end do
 
-!!  store first estimate in first column
-  if (iest .eq. 1) then
-     do j=1,nv
-        qcol(j,1) = yest(j)
-     enddo
+  !! Store first estimate in the first column
+  if (iest == 1) then
+     do j = 1, nv
+        state%qcol(j,1) = yest(j)
+     end do
 
   else
-     do j=1,nv
-        d(j) = yest(j)
-     enddo
-     do k1=1,iest-1
-        delta = 1.0e0/(x(iest-k1) - xest)
+     do j = 1, nv
+        state%d(j) = yest(j)
+     end do
+     do k1 = 1, iest - 1
+        delta = 1.0e0 / (state%x(iest - k1) - xest)
         f1    = xest * delta
-        f2    = x(iest-k1) * delta
+        f2    = state%x(iest - k1) * delta
 
-      !!   propagate tableu 1 diagonal more
-        do j=1,nv
-           q          = qcol(j,k1)
-           qcol(j,k1) = dy(j)
-           delta      = d(j) - q
-           dy(j)      = f1*delta
-           d(j)       = f2*delta
-           yz(j)      = yz(j) + dy(j)
-        enddo
-     enddo
-     do j=1,nv
-        qcol(j,iest) = dy(j)
-     enddo
+        !! Propagate tableau one diagonal more
+        do j = 1, nv
+           q                 = state%qcol(j, k1)
+           state%qcol(j, k1) = dy(j)
+           delta             = state%d(j) - q
+           dy(j)             = f1 * delta
+           state%d(j)        = f2 * delta
+           yz(j)             = yz(j) + dy(j)
+        end do
+     end do
+     do j = 1, nv
+        state%qcol(j, iest) = dy(j)
+     end do
   end if
 
   return
-
 end subroutine bn_pzExtr
-

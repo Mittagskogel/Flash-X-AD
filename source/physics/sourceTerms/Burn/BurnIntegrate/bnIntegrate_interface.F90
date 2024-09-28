@@ -91,9 +91,18 @@ Module bnIntegrate_interface
      end subroutine bn_baderStepGift
   end interface
 
+  ! state for bn_pzExtr
+  type :: pzExtr_state_t
+    real :: x(13)
+    real :: qcol(50, 13)
+    real :: d(50)
+  end type pzextr_state_t
+
   interface
-     subroutine bn_pzExtr(iest,xest,yest,yz,dy,nv) 
+     subroutine bn_pzExtr(state,iest,xest,yest,yz,dy,nv) 
+       import :: pzExtr_state_t
        implicit none
+       type(pzExtr_state_t), intent(IN OUT) :: state
        integer, intent(IN)  :: nv, iest
        real, intent(IN)     :: xest
        real, intent(IN), dimension(nv) :: yest
