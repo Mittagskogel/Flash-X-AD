@@ -39,14 +39,13 @@
 #include "constants.h"
 #include "Eos.h"
 
-subroutine Burn_burner(burnedZone, Uin, loGC, blkLimits, dt)
+subroutine Burn_burner(Uin, loGC, blkLimits, dt)
 
    implicit none
 
    ! input args
-   logical, intent(OUT) :: burnedZone
-   real, dimension(1:, loGC(IAXIS):, loGC(JAXIS):, loGC(KAXIS):), intent(IN OUT) :: Uin
    integer, dimension(MDIM), intent(IN) ::  loGC
+   real, dimension(1:, loGC(IAXIS):, loGC(JAXIS):, loGC(KAXIS):), intent(IN OUT) :: Uin
    integer, dimension(LOW:HIGH,MDIM), intent(IN) :: blkLimits
    real, intent(IN) :: dt
 
