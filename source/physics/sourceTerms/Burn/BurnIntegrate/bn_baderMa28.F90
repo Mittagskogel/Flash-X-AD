@@ -82,7 +82,7 @@ subroutine bn_baderMa28(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
   use Burn_data, ONLY: aion
   use Driver_interface, ONLY : Driver_abort
   ! can't use jakob interface; see notes in bnNetwork_interface for the mystery.
-  use bnIntegrate_interface, ONLY: bn_baderStepMa28, bn_pzExtr
+  use bnIntegrate_interface, ONLY: bn_baderStepMa28, bn_pzExtr, pzExtr_state_t
   use bnNetwork_interface, ONLY: derivs_t, jakob_t, bjakob_t
 
   implicit none
@@ -120,6 +120,8 @@ subroutine bn_baderMa28(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
   data             epsold/-1.0e0/, nvold/-1/
   data             nseq /2, 6, 10, 14, 22, 34, 50, 70/
   data             ifirst/0/ 
+
+  type(pzExtr_state_t) :: pzExtr_state
 
   !!-----------------------------------------------------------------------------
   !!  get and copy the nonzero locations
@@ -234,7 +236,7 @@ subroutine bn_baderMa28(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
           &             derivs) 
 
      xest = (h/nseq(k))**2 
-     call bn_pzExtr(k,xest,yseq,y,yerr,nv) 
+     call bn_pzExtr(pzExtr_state,k,xest,yseq,y,yerr,nv) 
 
 
      !!   compute normalized error estimate
