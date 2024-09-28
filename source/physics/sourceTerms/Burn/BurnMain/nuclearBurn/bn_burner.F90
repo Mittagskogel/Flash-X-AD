@@ -92,7 +92,6 @@
 subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
 
   use Burn_data, ONLY: bn_algebra, bn_odeStepper, bn_useBurnTable, &
-                       xoktot, xbadtot, &
                        bion, aion, nrat, nrattab
 
   use bnIntegrate_interface, ONLY: bn_netIntegrate
@@ -230,8 +229,8 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
   end if
 
 
-  xoktot  = xoktot + real(nok)
-  xbadtot = xbadtot + real(nbad)
+  ! xoktot  = xoktot + real(nok)
+  ! xbadtot = xbadtot + real(nbad)
 
 
   !..the average energy generated over the time step

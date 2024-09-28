@@ -131,7 +131,7 @@ Module Burn_data
                        ! zs13inv(nrat), &  ! hypothetically localized
                        ! ratraw(nrat), &
                        ! ratdum(nrat), &   ! hypothetically localized
-  real, save :: xoktot,xbadtot,xkbrn           !! TODO: delete this
+  ! real, save :: xoktot,xbadtot,xkbrn           !! TODO: delete this
   integer,save      ::  isflag(nrat+1)   ! TODO: not used anywhere
 
 ! were in common block /netc5/
