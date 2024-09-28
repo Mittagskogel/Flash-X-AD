@@ -122,11 +122,23 @@ Module bnNetwork_interface
      end subroutine bjakob_t
    end interface
 
+   ! for steper_t, we need a state variable to "save" the state between steper calls.
+   type steper_state_t
+      logical :: first, reduct
+      integer :: nvold
+      real    :: eps1, epsold
+      integer :: kmax, kopt
+      integer :: nseq(8)
+      real    :: a(8)
+      real    :: alf(7, 7)
+   end type steper_state_t
+
    abstract interface
-     subroutine steper_t(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
+     subroutine steper_t(state,y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
                          derivs,jakob,bjakob)
-       import :: derivs_t, jakob_t, bjakob_t
+       import :: steper_state_t, derivs_t, jakob_t, bjakob_t
        implicit none
+       type(steper_state_t), intent(IN OUT) :: state
        integer, intent(IN) :: nv
        real, intent(INOUT) :: y(nv)
        real, intent(IN)    :: dydx(nv), yscal(nv), ratdum(:), htry, eps, btemp

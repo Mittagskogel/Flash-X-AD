@@ -106,7 +106,7 @@ subroutine bn_netIntegrate(btemp,start,stptry,stpmin,stopp,bc, &
                            derivs,jakob,bjakob,steper)
 
   use Driver_interface, ONLY : Driver_abort
-  use bnNetwork_interface, ONLY: derivs_t, jakob_t, bjakob_t, steper_t
+  use bnNetwork_interface, ONLY: derivs_t, jakob_t, bjakob_t, steper_t, steper_state_t
 
   implicit none
 
@@ -135,7 +135,9 @@ subroutine bn_netIntegrate(btemp,start,stptry,stpmin,stopp,bc, &
   real, parameter    :: zero=0.0e0
   real, parameter    :: one=1.0e0
   real, parameter    :: tiny=1.0e-15
-  real, save         :: yscal(nmax),y(nmax),dydx(nmax),x,xsav,h,hdid,hnext
+  real               :: yscal(nmax),y(nmax),dydx(nmax),x,xsav,h,hdid,hnext
+
+  type(steper_state_t) :: state
 
   !!   here are the format statements for printouts as we integrate 
 100 format(1x,i4,1pe10.2) 
@@ -168,6 +170,12 @@ subroutine bn_netIntegrate(btemp,start,stptry,stpmin,stopp,bc, &
      y(i) = bc(i)   
   enddo
   xsav = x - 2.0e0 * dxsav 
+
+  !! initialize steper state
+  state%first = .true.
+  state%epsold = -1.0
+  state%nvold = -1
+  state%nseq = [2, 6, 10, 14, 22, 34, 50, 70]
 
   !!   take at most stpmax steps 
   do nstp=1,stpmax 
@@ -217,7 +225,7 @@ subroutine bn_netIntegrate(btemp,start,stptry,stpmin,stopp,bc, &
      !! jakob  = bn_saprox13 (for sparse ma28 solver) or bn_daprox13 (for dense gift solver)
      !! bjakob = bn_baprox13 (really used only for ma28 solver)
      !!   
-     call steper(y,dydx,ratdum,ylogi,x,btemp,h,eps,yscal,hdid,hnext, & 
+     call steper(state,y,dydx,ratdum,ylogi,x,btemp,h,eps,yscal,hdid,hnext, & 
           &             derivs,jakob,bjakob)    
      if (hdid.eq.h) then 
         nok = nok+1    

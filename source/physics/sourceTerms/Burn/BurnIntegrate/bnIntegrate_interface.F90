@@ -23,7 +23,7 @@
 !!***
 Module bnIntegrate_interface 
 
-   use bnNetwork_interface, ONLY: derivs_t, jakob_t, bjakob_t, steper_t
+   use bnNetwork_interface, ONLY: derivs_t, jakob_t, bjakob_t, steper_t, steper_state_t
   !! These routines are found in the physics/sourceTerms/Burn/BurnIntegrate
   !! They are all used for integrating the ODE of nuclear burning
 
@@ -103,10 +103,11 @@ Module bnIntegrate_interface
 
 !-------------------------------------------------------------------------
   interface
-     subroutine bn_baderMa28(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, & 
+     subroutine bn_baderMa28(state,y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, & 
           &                   derivs,jakob,bjakob)
-       import :: derivs_t, jakob_t, bjakob_t
+       import :: derivs_t, jakob_t, bjakob_t, steper_state_t
        implicit none
+       type(steper_state_t), intent(IN OUT) :: state
        integer, intent(IN) :: nv
        real, intent(IN)    :: dydx(nv), yscal(nv), ratdum(:), htry, eps, btemp
        real, intent(INOUT) :: x, y(nv)
@@ -118,10 +119,11 @@ Module bnIntegrate_interface
   end interface
 
   interface
-     subroutine bn_baderGift(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, & 
+     subroutine bn_baderGift(state,y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, & 
           &                       derivs,jakob,bjakob)
-       import :: derivs_t, jakob_t, bjakob_t
+       import :: derivs_t, jakob_t, bjakob_t, steper_state_t
        implicit none
+       type(steper_state_t), intent(IN OUT) :: state
        integer, intent(IN) :: nv
        real, intent(IN)    :: dydx(nv), yscal(nv), ratdum(:), htry, eps, btemp
        real, intent(INOUT) :: x, y(nv)
@@ -134,10 +136,11 @@ Module bnIntegrate_interface
 
 
   interface
-     subroutine bn_rosenMa28(y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  & 
+     subroutine bn_rosenMa28(state,y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  & 
           &                      derivs,jakob,bjakob) 
-       import :: derivs_t, jakob_t, bjakob_t
+       import :: derivs_t, jakob_t, bjakob_t, steper_state_t
        implicit none
+       type(steper_state_t), intent(IN OUT) :: state
        integer, intent(IN) :: n
        real, intent(IN)    :: dydx(n), yscal(n), ratdum(:), htry, eps, btemp
        real, intent(INOUT) :: x, y(n)
@@ -149,10 +152,11 @@ Module bnIntegrate_interface
   end interface
 
   interface
-     subroutine bn_rosenGift(y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  & 
+     subroutine bn_rosenGift(state,y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  & 
           &                      derivs,jakob,bjakob) 
-       import :: derivs_t, jakob_t, bjakob_t
+       import :: derivs_t, jakob_t, bjakob_t, steper_state_t
        implicit none
+       type(steper_state_t), intent(IN OUT) :: state
        integer, intent(IN) :: n
        real, intent(IN)    :: dydx(n), yscal(n), ratdum(:), htry, eps, btemp
        real, intent(INOUT) :: x, y(n)

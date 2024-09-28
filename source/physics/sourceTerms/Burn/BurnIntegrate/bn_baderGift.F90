@@ -61,14 +61,14 @@
 !!***
 !!---------------------------------------------------------------------------------
 
-subroutine bn_baderGift(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
+subroutine bn_baderGift(state,y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
      &                       derivs,jakob,bjakob)
 
   use Burn_data, ONLY: aion
   use Driver_interface, ONLY : Driver_abort
   !  Ummm.... bit of a mystery why I can use the interfaces in bn_netIntRosen but not here.
   use bnIntegrate_interface, ONLY: bn_baderStepGift, bn_pzExtr
-  use bnNetwork_interface, ONLY: derivs_t, jakob_t, bjakob_t
+  use bnNetwork_interface, ONLY: derivs_t, jakob_t, bjakob_t, steper_state_t
 
   implicit none
 
@@ -88,6 +88,7 @@ subroutine bn_baderGift(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
 
 
 !!  declare arguments
+  type(steper_state_t), intent(IN OUT) :: state
   integer, intent(IN) :: nv
   real, intent(IN)    :: dydx(nv), yscal(nv), ratdum(:), htry, eps, btemp
   real, intent(INOUT) :: x, y(nv)
@@ -96,23 +97,27 @@ subroutine bn_baderGift(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
   procedure(jakob_t) :: jakob
   procedure(bjakob_t) :: bjakob
 
+  integer, parameter :: nmax = 30, kmaxx=7, imax=kmaxx+1
 
-!!  declare local variables; you  need to save all of them or all hell breaks loose.
-  logical, save       ::   first,reduct
-  integer, parameter  ::   nmax = 30, kmaxx=7, imax=kmaxx+1
-  integer, save       ::   i,iq,k,kk,km,kmax,kopt
-  integer, save       :: nvold,nseq(imax),ii
-  real, save          :: eps1,epsold,errmax,fact,h,red,scale,xwork,wrkmin, &
-       &                 xest,xnew,a(imax),alf(kmaxx,kmaxx),err(kmaxx), &
-       &                 yerr(nmax),ysav(nmax),yseq(nmax),&
-       &                 dfdy(nmax,nmax)
-  real, parameter    :: safe1 = 0.25e0, safe2 = 0.7e0, redmax=1.0e-5, &
-       &                  redmin = 0.7e0, tiny = 1.0e-30, scalmx = 0.1e0
+  integer :: i,ii,iq,k,kk,km
+  real :: errmax,fact,h,red,scale,xwork,wrkmin, &
+          xest,xnew,err(kmaxx),yerr(nmax), &
+          ysav(nmax),yseq(nmax), &
+          dfdy(nmax,nmax)
+  real, parameter :: safe1 = 0.25e0, safe2 = 0.7e0, redmax=1.0e-5, &
+                     redmin = 0.7e0, tiny = 1.0e-30, scalmx = 0.1e0
 
 
-  data             first/.true./, epsold/-1.0e0/, nvold/-1/
-  data             nseq /2, 6, 10, 14, 22, 34, 50, 70/
-
+  associate(first => state%first, &
+            reduct => state%reduct, &
+            nvold => state%nvold, &
+            eps1 => state%eps1, &
+            epsold => state%epsold, &
+            kmax => state%kmax, &
+            kopt => state%kopt, &
+            nseq => state%nseq, &
+            a => state%a, &
+            alf => state%alf)
 
 !!  a new tolerance or a new number , so reinitialize
   if (eps .ne. epsold  .or.  nv .ne. nvold) then
@@ -267,6 +272,9 @@ subroutine bn_baderGift(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
         kopt = kopt + 1
      end if
   end if
+
+  end associate
+
   return
 end subroutine bn_baderGift
 
@@ -293,12 +301,12 @@ subroutine bn_baderStepGift(btemp,y,dydx,dfdy,ratdum,nmax,n,xs,htot,nnstep,yout,
 
 !!  declare local variables
   integer, parameter  :: nmaxx=30
-  integer, save       ::  i,j,nn
-  real, save          ::  h,x,del(nmaxx),ytemp(nmaxx)
+  integer       ::  i,j,nn
+  real           ::  h,x,del(nmaxx),ytemp(nmaxx)
 
 !!  for the gift linear algebra
   integer, parameter  :: nmaxp1 = nmaxx + 1
-  real, save          :: dmat(nmaxx,nmaxx), av(nmaxx,nmaxp1)
+  real          :: dmat(nmaxx,nmaxx), av(nmaxx,nmaxp1)
 
 
 !!  stepsize this trip, and make the a matrix
