@@ -48,7 +48,7 @@ def load_recipe_v1():
 def load_recipe_v2():
     """
     Everything on Milhoja, on *CPU*,
-    then FluxCorrection *outside* of Milhoja. Expect wrong results
+    *NO* flux correction. Expect wrong results
     """
     recipe = flashx.TimeStepRecipe()
 
@@ -58,8 +58,6 @@ def load_recipe_v2():
     burn_burner = recipe.add_work("Burn_burner", after=hydro_advance, map_to="cpu")
     burn_update = recipe.add_work("Burn_update", after=burn_burner, map_to="cpu")
     orch_end = recipe.end_orchestration(begin_node=orch_begin, after=burn_update)
-
-    _fluxCorrection = recipe.add_fluxCorrection(after=orch_end)
 
     return recipe
 
