@@ -129,8 +129,8 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
   integer         ::  i,k,nok,nbad,kount
   integer, parameter ::  tdim=10, iprint=0, nostore=0
 
-  real            ::  stptry,stpmin,ys2(NSPECIES),                           &
-       &                 ttime(tdim),elem(NSPECIES,tdim)
+  real            ::  stptry,stpmin,ys2(NSPECIES), &
+                      ttime(tdim),elem(NSPECIES,tdim)
 
   real, parameter ::  avo  = 6.0221367e23,     ev2erg = 1.602e-12,           &
        &                  conv = ev2erg*1.0e6*avo, tol    = 1.0e-5,          &
@@ -144,6 +144,7 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
   real :: btemp, bden
   real :: abar, zbar, z2bar, ytot1, bye
   real :: sneut
+  logical :: screen_init
 
   !..set the the material and network variables
   btemp = temp
@@ -172,7 +173,8 @@ subroutine bn_burner(tstep,temp,density,xIn,xOut,sdotRate)
   !! in most netoworks, the weak subroutine does not exist.
   !! so it is now called from Aprox19's bn_networkScreen
 !!  call bn_networkWeak(ymass)
-  call bn_networkScreen(btemp, bden, bye, ratraw, ymass, scfac, nrat, ratdum)
+  screen_init = .true.
+  call bn_networkScreen(screen_init, btemp, bden, bye, ratraw, ymass, scfac, nrat, ratdum)
 
 
   !..set the time step variables for a single point burn

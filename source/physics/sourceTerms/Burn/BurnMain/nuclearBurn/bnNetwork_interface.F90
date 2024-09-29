@@ -76,8 +76,9 @@ Module bnNetwork_interface
   end interface
 
   interface
-     subroutine bn_networkScreen(btemp, bden, bye, ratraw, ymass, scfac, nrat, ratdum)
+     subroutine bn_networkScreen(screen_init, btemp, bden, bye, ratraw, ymass, scfac, nrat, ratdum)
         implicit none
+        logical, intent(INOUT) :: screen_init
         integer, intent(IN) :: nrat
         real, intent(IN) :: btemp, bden, bye, ymass(NSPECIES)
         real, intent(IN OUT) :: scfac(nrat), ratraw(nrat), ratdum(nrat)
@@ -97,10 +98,8 @@ Module bnNetwork_interface
   abstract interface
      subroutine derivs_t(tt,y,btemp,ratdum,dydt)
        implicit none
-       real, intent(IN) :: tt, btemp
-       real, intent(IN), dimension(:) :: ratdum
-       real, intent(INOUT), dimension(:)  :: y
-       real, intent(OUT), dimension(:) :: dydt
+       real, intent(IN)  :: tt, y(:), btemp, ratdum(:)     ! NOTE: btemp is reserved for Aprox19
+       real, intent(OUT) :: dydt(:)
      end subroutine derivs_t
    end interface
 
@@ -158,10 +157,8 @@ Module bnNetwork_interface
   interface
      subroutine bn_network(tt,y,btemp,ratdum,dydt)
        implicit none
-       real, intent(IN) :: tt, btemp
-       real, intent(IN), dimension(:) :: ratdum
-       real, intent(INOUT), dimension(:)  :: y
-       real, intent(OUT), dimension(:) :: dydt
+       real, intent(IN)  :: tt, y(:), btemp, ratdum(:)     ! NOTE: btemp is reserved for Aprox19
+       real, intent(OUT) :: dydt(:)
      end subroutine bn_network
   end interface
 

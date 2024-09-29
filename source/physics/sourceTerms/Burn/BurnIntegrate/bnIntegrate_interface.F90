@@ -96,7 +96,7 @@ Module bnIntegrate_interface
     real :: x(13)
     real :: qcol(50, 13)
     real :: d(50)
-  end type pzextr_state_t
+  end type pzExtr_state_t
 
   interface
      subroutine bn_pzExtr(state,iest,xest,yest,yz,dy,nv) 
