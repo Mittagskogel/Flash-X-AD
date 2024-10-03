@@ -32,7 +32,7 @@
 !<
 
 !!Reorder(4): fl[xyz], fluxBuf[XYZ]
-!!NOVARIANTS
+!!VARIANTS(GPU): hy_rk_saveFluxBuf
 
 subroutine hy_rk_saveFluxBuf(stage, fluxBufX, fluxBufY, fluxBufZ, &
                              flx, fly, flz, &

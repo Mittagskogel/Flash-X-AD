@@ -32,7 +32,7 @@
 !<
 
 !!REORDER(4): solnData
-!!NOVARIANTS
+!!VARIANTS(GPU): hy_rk_renormAbundance, Driver_abort
 
 #include "constants.h"
 #include "Simulation.h"

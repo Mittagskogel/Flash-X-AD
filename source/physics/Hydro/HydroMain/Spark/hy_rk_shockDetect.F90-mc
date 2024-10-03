@@ -27,7 +27,7 @@
 !<
 
 !!Reorder(4): Uin
-!!NOVARIANTS
+!!VARIANTS(GPU): hy_rk_shockDetect
 subroutine hy_rk_shockDetect(Uin, Vc, blkLimitsGC, loGC)
 
    use Hydro_data, ONLY: hy_threadWithinBlock, &

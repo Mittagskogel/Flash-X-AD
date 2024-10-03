@@ -144,7 +144,10 @@ IF nontelescoping
 	REQUIRES physics/Hydro/HydroMain/Spark/NonTelescoping
 ENDIF
 
+VARIANTS Null
 USESETUPVARS Milhoja
 IF Milhoja
-	REQUIRES physics/Hydro/HydroMain/Spark/milhoja
+  REQUIRES physics/Hydro/HydroMain/Spark/milhoja
+  VARIANTS GPU
 ENDIF
+

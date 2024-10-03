@@ -17,7 +17,9 @@
 !!
 !<
 
-!!NOVARIANTS
+!!VARIANTS(GPU): Hydro_prepBlock, &
+!!               hy_rk_shockDetect, &
+!!               hy_rk_initSolnScratch
 !!Reorder(4): Uin,hy_starState,hy_tmpState
 subroutine Hydro_prepBlock(Uin, hy_Vc, blkLimits, blkLimitsGC, hy_starState, hy_tmpState, &
                            stage, lo, loGC)
