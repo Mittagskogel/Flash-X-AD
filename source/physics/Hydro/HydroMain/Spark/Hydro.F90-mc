@@ -153,7 +153,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         loGC(:) = blkLimitsGC(LOW, :)
         @M hy_map_scr_ptrs
         if (hy_geometry /= CARTESIAN) then
-	   @M hy_map_fareas
+           @M hy_map_fareas
            @M hy_map_geom
         elseif (.not. hy_telescoping) then
            @M hy_map_fareas
@@ -164,13 +164,13 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
            @M hy_fill_fareas
         end if
 
+        call Timers_start("computations")
         call Hydro_prepBlock(Uin, hy_Vc, blkLimits, blkLimitsGC, hy_starState, hy_tmpState, &
                                 stage, lo, loGC)
         if (.not. hy_telescoping) then
            @M hy_DIR_TARGET_enter_data(to, [Uin])
         end if
 
-        
         if (hy_geometry /= CARTESIAN) then
            @M hy_DIR_TARGET_enter_data(to, [hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol])
            @M hy_DIR_TARGET_enter_data(to, [hy_xCenter, hy_xLeft, hy_xRight])
@@ -198,10 +198,8 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         if (.not. hy_telescoping .and. stage == 1) then
            @M hy_DIR_TARGET_update_from([hy_tmpState])
         end if
-        call Timers_stop("scratch")
 
 
-        
         !! Begin loop over stages for the telescoping mode.
         !!@M hy_stages_t !! this is the do loop statement for telescoping version
            ! calculate gravitational acceleration based on current value of GPOT_VAR
@@ -218,6 +216,8 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
              hy_xCenter, hy_yCenter, hy_zCenter, &
              hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
              hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
+
+        call Timers_stop("computations")
 
         if ((.not. hy_telescoping) .and. hy_geometry == CARTESIAN) then
            @M hy_DIR_TARGET_exit_data(release, [hy_fareaX, hy_fareaY, hy_fareaZ])
@@ -239,7 +239,6 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
                                  hy_fluxBufZ, &
                                  blkLimits(LOW,:))
         end if
-        call Timers_stop("Offloaded Section")
         @M hy_DIR_TARGET_exit_data(release, [hy_starState, hy_tmpState])
         @M hy_DIR_TARGET_exit_data(release, [hy_flx, hy_fly, hy_flz])
         @M hy_DIR_TARGET_exit_data(release, [hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ])
@@ -272,7 +271,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
                 blkLimits(LOW,:),isFluxDensity=(/hy_telescoping/))
 
            if (hy_geometry /= CARTESIAN) then
-	      @M hy_map_fareas
+              @M hy_map_fareas
               @M hy_map_geom
               @M hy_fill_geom
            endif
