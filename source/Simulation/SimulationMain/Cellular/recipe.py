@@ -61,6 +61,38 @@ def load_recipe_v2():
 
     return recipe
 
+def load_recipe_v3():
+    """
+    Everything on Milhoja, Hydro on GPU then Burn on CPU,
+    *NO* flux correction. Expect wrong results
+    """
+    recipe = flashx.TimeStepRecipe()
+
+    orch_begin = recipe.begin_orchestration(after=recipe.root)
+    hydro_prepBlock = recipe.add_work("Hydro_prepBlock", after=orch_begin, map_to="gpu")
+    hydro_advance = recipe.add_work("Hydro_advance", after=hydro_prepBlock, map_to="gpu")
+    burn_burner = recipe.add_work("Burn_burner", after=hydro_advance, map_to="cpu")
+    burn_update = recipe.add_work("Burn_update", after=burn_burner, map_to="cpu")
+    orch_end = recipe.end_orchestration(begin_node=orch_begin, after=burn_update)
+
+    return recipe
+
+def load_recipe_v4():
+    """
+    Everything on Milhoja, Hydro on CPU and GPU then Burn on CPU,
+    *NO* flux correction. Expect wrong results
+    """
+    recipe = flashx.TimeStepRecipe()
+
+    orch_begin = recipe.begin_orchestration(after=recipe.root)
+    hydro_prepBlock = recipe.add_work("Hydro_prepBlock", after=orch_begin, map_to="cpu,gpu")
+    hydro_advance = recipe.add_work("Hydro_advance", after=hydro_prepBlock, map_to="cpu,gpu")
+    burn_burner = recipe.add_work("Burn_burner", after=hydro_advance, map_to="cpu")
+    burn_update = recipe.add_work("Burn_update", after=burn_burner, map_to="cpu")
+    orch_end = recipe.end_orchestration(begin_node=orch_begin, after=burn_update)
+
+    return recipe
+
 
 def append_orch_to_flash_par():
     with open("flash.par", "a") as file:
@@ -74,7 +106,7 @@ if __name__ == "__main__":
     logger.add(sys.stdout, level=0)
     logger.enable(flashx.__name__)
 
-    load_recipe = load_recipe_v2
+    load_recipe = load_recipe_v4
 
     # recipe
     recipe = load_recipe()
