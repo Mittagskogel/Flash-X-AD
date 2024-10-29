@@ -1,6 +1,6 @@
 !!****cr* source/physics/RadTrans/RadTransMain/TwoMoment/Thornado/RadTrans
 !! NOTICE
-!!  Copyright 2022 UChicago Argonne, LLC and contributors
+!!  Copyright 2024 UChicago Argonne, LLC and contributors
 !!
 !!  Licensed under the Apache License, Version 2.0 (the "License");
 !!  you may not use this file except in compliance with the License.
@@ -33,6 +33,8 @@
 !!
 !!   2020     Initial RadTrans                       - Ran Chu
 !!   2021     Added THORNADO_SWE                     - Ran Chu
+!!   2023     Replaced Eos_everywhere w/ Eos_wrapped - Steven Fromm
+!!   2024     Replaced Eos_wrapped w/ Eos_multiDim   - Anshu Dubey
 !!
 !!***
 
@@ -43,8 +45,11 @@ subroutine RadTrans( dt, pass )
 #include "Simulation.h"
 #include "constants.h"
 
+#ifdef NSPECIES > 0
+  use Burn_interface, ONLY : Burn_makeAbundanceYeConsistent
+#endif
   use Driver_interface, ONLY : Driver_abort
-  use Eos_interface, ONLY : Eos_everywhere
+  use Eos_interface, ONLY : Eos_multiDim!Eos_everywhere
   use FluidFieldsModule, ONLY : uCF
   use GeometryFieldsModuleE, ONLY : uGE
   use GeometryFieldsModule, ONLY : uGF
@@ -370,10 +375,22 @@ subroutine RadTrans( dt, pass )
   end do ! iterator loop
   
   call Grid_releaseTileIterator( itor )
-  
+
+#if NSPECIES > 0
+  ! Make composition consistent with change in electron fraction from transport
+  !call Burn_makeAbundanceYeConsistent
+#endif
+
   call Timers_start( "eos" )
 
-  call Eos_everywhere( MODE_DENS_EI )
+  call Grid_getTileIterator( itor, LEAF, tiling=rt_enableTiling )
+  do while( itor % isValid() )
+    call itor%currentTile(tileDesc)
+    call tileDesc % getDataPtr( Uin, CENTER )
+    call Eos_multiDim(MODE_DENS_EI,tileDesc%limits,Uin)
+    call itor % next()
+  end do
+  call Grid_releaseTileIterator( itor )
 
   call Timers_stop( "eos" )
 

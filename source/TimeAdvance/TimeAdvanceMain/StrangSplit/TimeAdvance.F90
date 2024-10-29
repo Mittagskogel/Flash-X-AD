@@ -41,6 +41,7 @@ subroutine TimeAdvance(dt, dtold, time)
    use Burn_interface, ONLY: Burn
    use Deleptonize_interface, ONLY: Deleptonize
    use Timers_interface, ONLY: Timers_start, Timers_stop
+   use Stir_interface, ONLY : Stir
    implicit none
 
    real, intent(IN) :: dt, dtold, time
@@ -69,7 +70,7 @@ subroutine TimeAdvance(dt, dtold, time)
    call Timers_start("sourceTerms")
    call Burn(dt)
    call Deleptonize(.false., dt, time)
-
+   call Stir(dt)
    call Timers_stop("sourceTerms")
 #ifdef DEBUG_ADVANCE
    print *, 'returned from sourceTerms'
