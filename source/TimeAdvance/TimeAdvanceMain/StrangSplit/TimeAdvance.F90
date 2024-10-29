@@ -42,6 +42,7 @@ subroutine TimeAdvance(dt, dtold, time)
    use Deleptonize_interface, ONLY: Deleptonize
    use Timers_interface, ONLY: Timers_start, Timers_stop
    use Stir_interface, ONLY : Stir
+   use TimeAdvance_data, ONLY : ta_useAsyncGrav
    implicit none
 
    real, intent(IN) :: dt, dtold, time
@@ -52,10 +53,11 @@ subroutine TimeAdvance(dt, dtold, time)
 #endif
 
    if (.NOT. Hydro_gravPotIsAlreadyUpdated()) then
-      call Timers_start("Gravity pot prep")
-      call Gravity_beginPotential()
-!!$     call Gravity_finishPotential()
-      call Timers_stop("Gravity pot prep")
+      if (ta_useAsyncGrav) then
+         call Timers_start("Gravity pot prep")
+         call Gravity_beginPotential()
+         call Timers_stop("Gravity pot prep")
+      end if
    end if
 
 #ifndef DRIVER_DIFFULAST
@@ -94,7 +96,11 @@ subroutine TimeAdvance(dt, dtold, time)
    ! #. Calculate gravitational potentials - 2nd Operation
    if (.NOT. Hydro_gravPotIsAlreadyUpdated()) then
       call Timers_start("Gravity potential")
-      call Gravity_finishPotential()
+      if (ta_useAsyncGrav) then
+         call Gravity_finishPotential()
+      else
+         call Gravity_potential()
+      end if
       call Timers_stop("Gravity potential")
 #ifdef DEBUG_ADVANCE
       print *, 'return from Gravity_potential '  ! DEBUG
