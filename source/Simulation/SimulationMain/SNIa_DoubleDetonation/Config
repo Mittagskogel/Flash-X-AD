@@ -26,7 +26,6 @@ IF withParticles
     PARTICLEPROP ptemp REAL
     PARTICLEMAP TO pdens FROM VARIABLE dens
     PARTICLEMAP TO ptemp FROM VARIABLE temp
-ENDIF
 
 #
 # progenitor

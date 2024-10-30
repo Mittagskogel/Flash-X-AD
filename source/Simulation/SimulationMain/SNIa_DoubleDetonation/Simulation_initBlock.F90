@@ -25,7 +25,7 @@ subroutine Simulation_initBlock(solnData, tileDesc)
   use Driver_interface, ONLY : Driver_abort
   use Grid_interface, ONLY : Grid_getCellCoords, Grid_getGeometry, &
      Grid_renormAbundance
-  use Eos_interface, ONLY : Eos_wrapped, Eos_getAbarZbar
+  use Eos_interface, ONLY : Eos_multiDim, Eos_getAbarZbar
   use Grid_tile, ONLY : Grid_tile_t
   use Multispecies_interface, ONLY : Multispecies_getSumFrac
   use PhysicalConstants_interface, ONLY : PhysicalConstants_get
@@ -330,7 +330,7 @@ subroutine Simulation_initBlock(solnData, tileDesc)
      end do
   end do
 
-  call Eos_wrapped(MODE_DENS_TEMP,tileLimits,solnData)
+  call Eos_multiDim(MODE_DENS_TEMP,tileLimits,solnData)
 
   ! Giant traffic cone
   do k = tileLimits(LOW,KAXIS), tileLimits(HIGH,KAXIS)
