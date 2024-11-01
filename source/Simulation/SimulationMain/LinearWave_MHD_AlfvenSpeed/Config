@@ -1,4 +1,4 @@
-# 1D MHD Linear Wave problem for the slow magnetosonic wave
+# 1D MHD Linear Wave problem for the Alfven speed test
 
 REQUIRES Driver
 REQUIRES physics/Eos/EosMain/Gamma
@@ -32,15 +32,15 @@ D sim_length Length of the computational domain in the x-direction
 PARAMETER sim_lengthx REAL 1.                  [0 to ]
 
 D sim_Bx Magnetic field vector in x-direction
-PARAMETER sim_Bx      REAL 1.                  [0 to ]
+PARAMETER sim_Bx      REAL 1.
 
 D sim_By Magnetic field vector in y-direction
-PARAMETER sim_By      REAL 1.41421356237       [0 to ]
+PARAMETER sim_By      REAL 1.41421356237
 
 D sim_Bz Magnetic field vectory in z-direction
-PARAMETER sim_Bz      REAL 0.5                 [0 to ]
+PARAMETER sim_Bz      REAL 0.5
 
-D sim_Direction Direction of propagation for wave, +1 for right and -1 for left
+D sim_Direction Direction of propagation for wave, -1 for left, +1 for right
 PARAMETER sim_Direction REAL 1.0
 
 USESETUPVARS StaticHyArrays
