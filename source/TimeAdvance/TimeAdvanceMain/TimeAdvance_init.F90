@@ -1,4 +1,4 @@
-!> @copyright Copyright 2023 UChicago Argonne, LLC and contributors
+!> @copyright Copyright 2024 UChicago Argonne, LLC and contributors
 !!
 !! @licenseblock
 !!   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,11 +17,14 @@
 !! @brief Initialize any variables that are needed by TimeAdvance unit
 !!
 !! @details
-!! @anchor TimeAdvance_init_stub
 !!
-!! This procedure is a place holder for any initializations that TimeAdvance
-!! unit might need
+!! This procedure implements initializations that the TimeAdvance
+!! unit needs.
 
 subroutine TimeAdvance_init()
+  use RuntimeParameters_interface, ONLY: RuntimeParameters_get
+  use TimeAdvance_data, ONLY: ta_useAsyncGrav
   implicit none
+
+  call RuntimeParameters_get("ta_useAsyncGrav", ta_useAsyncGrav)
 end subroutine TimeAdvance_init

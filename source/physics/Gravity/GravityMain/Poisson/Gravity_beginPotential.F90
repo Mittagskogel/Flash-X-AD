@@ -1,4 +1,4 @@
-!!****if* source/physics/Gravity/GravityMain/Poisson/Gravity_potential
+!!****if* source/physics/Gravity/GravityMain/Poisson/Gravity_beginPotential
 !! NOTICE
 !!  Copyright 2022 UChicago Argonne, LLC and contributors
 !!
@@ -11,13 +11,13 @@
 !!  See the License for the specific language governing permissions and
 !!  limitations under the License.
 !!
-!! NAME 
+!! NAME
 !!
-!!     Gravity_potential
+!!  Gravity_beginPotential
 !!
 !! SYNOPSIS
 !!
-!!  call Gravity_potential(   optional,integer(IN) :: potentialIndex)
+!!  call Gravity_beginPotential(optional,integer(IN) :: potentialIndex)
 !!
 !! DESCRIPTION
 !!
@@ -25,6 +25,8 @@
 !!      blocks specified in the list, for the gravity implementations
 !!      (i.e., various Poisson implementations), which make use of it
 !!      in computing the gravitational acceleration.
+!!
+!!      The resulting potential can be considered as zone-averaged.
 !!
 !!      Supported boundary conditions are isolated (0) and
 !!      periodic (1).  The same boundary conditions are applied
@@ -91,7 +93,7 @@
 
 !!REORDER(4): solnVec
 
-subroutine Gravity_potential( potentialIndex)
+subroutine Gravity_beginPotential( potentialIndex)
 
 
   use Gravity_data, ONLY : grav_poisfact, grav_temporal_extrp, grav_boundary, &
@@ -104,7 +106,7 @@ subroutine Gravity_potential( potentialIndex)
        GRID_PDE_BND_ISOLATED, GRID_PDE_BND_DIRICHLET, &
        Grid_getTileIterator, Grid_releaseTileIterator, &
        Grid_notifySolnDataUpdate, &
-       Grid_beginPoisson, Grid_finalizePoisson
+       Grid_beginPoisson
   use Grid_tile,     ONLY : Grid_tile_t
   use Grid_iterator, ONLY : Grid_iterator_t
   
@@ -223,6 +225,28 @@ subroutine Gravity_potential( potentialIndex)
         end do
 
 
+#if defined(SGXO_VAR) && defined(SGYO_VAR) && defined(SGZO_VAR)
+        if (saveLastPot) then   !... but only if we are saving the old potential - kW
+           call Driver_abort("[Gravity_potential] Not tested third!")
+           ! If tiling is used here, we probably need to write this as an
+           ! explicit loop nest over the tile's indices
+           solnVec(SGXO_VAR,:,:,:) = solnVec(SGAX_VAR,:,:,:)
+           solnVec(SGYO_VAR,:,:,:) = solnVec(SGAY_VAR,:,:,:)
+           solnVec(SGZO_VAR,:,:,:) = solnVec(SGAZ_VAR,:,:,:)
+        end if
+#endif
+
+        ! for direct acceleration calculation by tree solver, added by R. Wunsch
+#if defined(GAOX_VAR) && defined(GAOY_VAR) && defined(GAOZ_VAR)
+        if (saveLastPot) then 
+           call Driver_abort("[Gravity_potential] Not tested fourth!")
+           ! If tiling is used here, we probably need to write this as an
+           ! explicit loop nest over the tile's indices
+           solnVec(GAOX_VAR,:,:,:) = solnVec(GACX_VAR,:,:,:)
+           solnVec(GAOY_VAR,:,:,:) = solnVec(GACY_VAR,:,:,:)
+           solnVec(GAOZ_VAR,:,:,:) = solnVec(GACZ_VAR,:,:,:)
+        end if
+#endif
         call tileDesc%releaseDataPtr(solnVec, CENTER)
         call itor%next()
      enddo
@@ -261,48 +285,11 @@ subroutine Gravity_potential( potentialIndex)
 #endif
 
   invscale=grav_poisfact*invscale
+  call Grid_notifySolnDataUpdate( (/newPotVar/) )
   call Grid_beginPoisson (newPotVar, density, bcTypes, bcValues, &
        invscale)
-  call Grid_finalizePoisson (newPotVar, density, bcTypes, bcValues, &
-       invscale)
-  call Grid_notifySolnDataUpdate( (/newPotVar/) )
 
-! Un-junk PDEN if it exists and if requested.
-
-#ifdef PDEN_VAR
-  if (grav_unjunkPden) then
-     density = PDEN_VAR
-#ifdef DENS_VAR           
-     call Driver_abort("[Gravity_potential] Not tested I guess!")
-     ! I (JO) added this line to create the iterator.  I don't know if it is
-     ! correct or if this code has ever been called.
-     call Grid_getTileIterator(itor, LEAF, tiling=.FALSE.)
-     do while(itor%isValid())
-        call itor%currentTile(tileDesc)
-        call tileDesc%getDataPtr(solnVec, CENTER)
-        ! If tiling is used here, we probably need to write this as an
-        ! explicit loop nest over the tile's indices
-        solnVec(density,:,:,:) = solnVec(density,:,:,:) + &
-             solnVec(DENS_VAR,:,:,:)
-        call tileDesc%releaseDataPtr(solnVec, CENTER)
-        call itor%next()
-     enddo
-     call Grid_releaseTileIterator(itor)
-     if (density .NE. PDEN_VAR) call Grid_notifySolnDataUpdate( (/density/) )
-#endif
-  end if
-#endif
-
-!!$  if (.NOT. present(potentialIndex)) then
-!!$     ! Compute acceleration of the sink particles caused by gas and vice versa
-!!$     call Particles_sinkAccelGasOnSinksAndSinksOnGas()
-!!$  end if
-  
-  
-#ifdef USEBARS
-  call MPI_Barrier (grv_meshComm, ierr)
-#endif  
   call Timers_stop ("gravity")
   
   return
-end subroutine Gravity_potential
+end subroutine Gravity_beginPotential
