@@ -29,7 +29,6 @@
 !!  a specified block.  This version sets up the Linear wave
 !!  problem.
 !!
-!!  Reference: Sod, G. A., 1978, J. Comp. Phys., 27, 1
 !!
 !! 
 !! ARGUMENTS
