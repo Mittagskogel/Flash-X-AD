@@ -24,3 +24,25 @@ of theta=45 degrees.
 v and B. 
  - (Third option) Note that if you want the length of the line of propegation to equal one, you must
 modify the endpoints in x and y such that ```xmax/sqrt(2)+ymax/sqrt(2)=1```. 
+
+# 1D Plot script arguments (BrioWu_6panel_finalstate_1D.py)
+- Plots the final rho, P, vx, vy, by, and eint states. The inputs are the following:
+	1) dataDIR  = directory in which data are stored
+	2) ifinal   = Number for the final output in '####' format, e.g., this problem by default
+outputs ${probName}_hdf5_chk_0001 as the final checkpoint data file, thus
+ifinal = 0001.
+	3) nX       = Number of zones in x-direction (plot script assumes 1D data)
+	4) plttype  = either 'chk' or 'plt_cnt'
+	5) probName = name of data, e.g., 'BrioWu'
+
+# 2D Plot script arguments (BrioWu_6panel_finalstate_1D.py)
+- Plots the final rho, P, vx, vy, by, and divB states. The inputs are the following:
+	1) dataDIR  = directory in which data are stored
+	2) ifinal   = Number for the final output in '####' format, e.g., this problem by default
+outputs ${probName}_hdf5_chk_0001 as the final checkpoint data file, thus
+ifinal = 0001.
+	3) nX           = Number of zones in x-direction
+	4) nY           = Number of zones in y-direction (plot script assumes 2D data)
+	4) plttype      = either 'chk' or 'plt_cnt'
+	5) solntype_OPT = either 1, 2, or 3 for x-axis shock prop., y-axis shock prop., or
+x=y shock prop. respectively.
