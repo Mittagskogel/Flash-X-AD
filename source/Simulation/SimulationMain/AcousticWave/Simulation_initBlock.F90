@@ -64,7 +64,7 @@ subroutine Simulation_initBlock(solnData, tileDesc)
 
   real :: xx, yy,  zz, xxL, xxR, L
   
-  real,allocatable, dimension(:) ::xCenter,xLeft,xRight,yCoord,zCoord
+  real,allocatable, dimension(:) :: xCoord,yCoord,zCoord
 
   real :: rhoZone, velxZone, velyZone, velzZone, presZone, & 
        eintZone, enerZone, ekinZone, gameZone, gamcZone 
@@ -73,24 +73,13 @@ subroutine Simulation_initBlock(solnData, tileDesc)
   integer :: hi(1:MDIM)
 
   lo(:) = tileDesc%limits(LOW,  :)
-  hi(:) = tileDesc%limits(HIGH, :)
-  allocate(  xLeft(lo(IAXIS):hi(IAXIS)))
-  allocate( xRight(lo(IAXIS):hi(IAXIS)))
-  allocate(xCenter(lo(IAXIS):hi(IAXIS)))
+  hi(:) = tileDesc%limits(HIGH, :) 
+  allocate( xCoord(lo(IAXIS):hi(IAXIS)))
   allocate( yCoord(lo(JAXIS):hi(JAXIS)))
-  allocate( zCoord(lo(KAXIS):hi(KAXIS)))
-  xLeft = 0.0
-  xRight = 0.0
-  xCenter = 0.0
+  allocate( zCoord(lo(KAXIS):hi(KAXIS))) 
+  xCoord = 0.0
   yCoord = 0.0
   zCoord = 0.0
-
-  call Grid_getCellCoords(IAXIS, LEFT_EDGE, tileDesc%level, &
-                          lo, hi, xLeft)
-  call Grid_getCellCoords(IAXIS, CENTER, tileDesc%level, &
-                          lo, hi, xCenter)
-  call Grid_getCellCoords(IAXIS, RIGHT_EDGE, tileDesc%level, &
-                          lo, hi, xRight)
 
 #if NDIM == 3
   call Grid_getCellCoords(KAXIS, CENTER, tileDesc%level, &
@@ -132,10 +121,8 @@ subroutine Simulation_initBlock(solnData, tileDesc)
 
         do i = lo(IAXIS), hi(IAXIS)
            
-           ! get the cell center, left, and right positions in x
-           xxL = xLeft(i)
-           xx  = xCenter(i)
-           xxR = xRight(i)
+           ! get  cell center x-coordinate
+           xx  = xCoord(i)
 
            ! Perturb initial state with a sine wave 
            rhoZone  = sim_rho + sim_amp * sim_cs**(-2) * &
@@ -195,9 +182,7 @@ subroutine Simulation_initBlock(solnData, tileDesc)
      enddo
   enddo
 
-  deallocate(xLeft)
-  deallocate(xRight)
-  deallocate(xCenter)
+  deallocate(xCoord)
   deallocate(yCoord)
   deallocate(zCoord)
  
