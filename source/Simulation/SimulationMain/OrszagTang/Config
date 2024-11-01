@@ -1,0 +1,23 @@
+#	Configuration file for the Orszag-Tang problem
+
+REQUIRES Driver
+REQUIRES physics/Hydro
+REQUIRES physics/Eos
+
+D sim_gamma adiabatic index
+PARAMETER sim_gamma     REAL    1.666666666666667       [0 to ]
+
+D sim_rho Constant density state 25/36pi
+PARAMETER sim_rho	REAL    0.221048532072       [0 to ]
+
+D sim_p Constant Pressure state 5/12pi
+PARAMETER sim_p	REAL    0.132629119243       [0 to ]
+
+USESETUPVARS StaticHyArrays
+IF StaticHyArrays
+   LINKIF Hydro_data.F90.staticArrays               physics/Hydro/HydroMain/unsplit
+   LINKIF hy_computeFluxes_fluxbuf.F90.staticArrays physics/Hydro/HydroMain/unsplit
+   LINKIF hy_computeFluxes.F90.staticArrays         physics/Hydro/HydroMain/unsplit/levelFlux
+   LINKIF hy_getRiemannState.F90.staticArrays       physics/Hydro/HydroMain/unsplit
+ENDIF
+

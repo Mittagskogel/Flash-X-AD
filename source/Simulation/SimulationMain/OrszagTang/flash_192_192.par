@@ -1,87 +1,93 @@
-#	Runtime parameters for the Sod shock-tube problem.
-#       Version for testing simpleUnsplit Hydro with AMR implementations that 
-#       are configured to allow for dynamic Grid refinement.
-#    
-#       Note that the refine/derefine cutoffs are set equal so that all AMR
-#       implementations reduce to identical refinement operations.  Since the
-#       different implementations likely use different interpolation
-#       implementations, the actual refinement sequence may differ.
-#
+#	Runtime parameters for the Orszag-Tang 2D problem
 
 #	Parameters for initial model
-#		Density, pressure, and velocity on either side of interface
-sim_rhoLeft	    = 1.
-sim_rhoRight	= 0.125
-sim_pLeft		= 1.
-sim_pRight		= 0.1
-sim_uLeft		= 0.
-sim_uRight		= 0.
 
-#		Angle and position of interface relative to x and y axes
-sim_xangle		= 0
-sim_yangle		= 90.
-sim_posn		= 0.5
+#	Density and pressure background states
 
-#		Gas ratio of specific heats
-gamma           = 1.4
+sim_rho = 0.221048532072 # 25/36pi 
+sim_p   = 0.132629119243 # 5/12pi
+
+#	Gas ratio of specific heats
+gamma           = 1.666666666666667
 
 #	Computational volume parameters
-#		Grid dimensionality and geometry
+#	Grid dimensionality and geometry
 geometry = cartesian
 
-#		Size of computational volume
+#	Size of computational volume
 xmin		= 0.
 xmax		= 1.
 ymin		= 0.
 ymax		= 1.
 
-#		Boundary conditions
-xl_boundary_type = "outflow"
-xr_boundary_type = "outflow"
+#	Boundary conditions
 
-yl_boundary_type = "outflow"
-yr_boundary_type = "outflow"
+xl_boundary_type = "periodic"
+xr_boundary_type = "periodic"
 
-gr_useTiling = .TRUE.
-gr_tileSizeX = 4
-gr_tileSizeY = 2
-gr_tileSizeZ = 1
+yl_boundary_type = "periodic"
+yr_boundary_type = "periodic"
+
 
 #	Simulation (grid, time, I/O) parameters
-cfl		= 0.3
-restart = .true.
+
+cfl     = 0.25
+basenm  = "OrszagTang_"
+restart = .false.
 
 #	checkpoint file output parameters
-checkpointFileIntervalTime = 0
-checkpointFileNumber       = 1
+checkpointFileIntervalTime = .5
+checkpointFileIntervalStep = 0
+checkpointFileNumber = 0
 
 #	plotfile output parameters
-plotfileIntervalTime = 0
+plotfileIntervalTime = 0.
 plotfileIntervalStep = 0
-plotfileNumber       = 0
+plotfileNumber = 0
 
-nend            = 1000
-tmax            = .2
+nend            = 1000000
+tmax            = .5
 
-run_comment     = "Sod problem, vertical direction"
-log_file        = "sod.log"
-eintSwitch      = 0.0
-flux_correct    = .FALSE.
+run_comment     = "Orszag Tang 2D problem"
+log_file        = "OrszagTang.log"
+eintSwitch     = 1.e-4
 
 plot_var_1 = "dens"
 plot_var_2 = "pres"
-plot_var_3 = "temp"
+plot_var_3 = "eint"
+plot_var_4 = "velx"
+plot_var_5 = "vely"
+plot_var_6 = "velz"
+plot_var_7 = "magx"
+plot_var_8 = "magy"
+plot_var_9 = "magz"
 
-#    AMR refinement parameters  
-lrefine_max       = 6
-refine_var_1      = "dens"
-refine_cutoff_1   = 0.2
-derefine_cutoff_1 = 0.2
+#	AMR refinement parameters  
+lrefine_max  = 6
+refine_var_1 = "dens"
 
 # These parameters are used only for the uniform grid
-iProcs = 2	#number or procs in the i direction	
-jProcs = 1
+iGridSize = 192 # defined as nxb * iprocs
+jGridSize = 192
+#kGridSize = 1
+iProcs = 4	# number or procs in the i direction	
+jProcs = 4
 kProcs = 1
+
+# When using UG, iProcs, jProcs and kProcs must be specified.
+# These are the processors along each of the dimensions
+#FIXEDBLOCKSIZE mode ::
+# When using fixed blocksize, iGridSize etc are redundant in
+# runtime parameters. These quantities are calculated as 
+# iGridSize = NXB*iprocs
+# jGridSize = NYB*jprocs
+# kGridSize = NZB*kprocs
+#NONFIXEDBLOCKSIZE mode ::
+# iGridSize etc must be specified. They constitute the global
+# number of grid points in the physical domain without taking 
+# the guard cell into account. The local blocksize is calculated
+# as iGridSize/iprocs  etc.
+ 
 
 ## -------------------------------------------------------------##
 ##  SWITCHES SPECIFIC TO THE UNSPLIT HYDRO SOLVER               ##
@@ -98,7 +104,7 @@ use_steepening	= .false. # use contact steepening (originally for PPM)
 use_upwindTVD	= .false. # use upwind biased TVD slope for PPM (need nguard=6)
 
 #	II. RIEMANN SOLVERS:
-RiemannSolver	= "HLL"       # Roe, HLL, HLLC, LLF, Marquina
+RiemannSolver	= "Roe"       # Roe, HLL, HLLC, LLF, Marquina
 entropy         = .false.     # Entropy fix for the Roe solver
 
 hy_fPresInMomFlux = 1.0       # Part of pressure gradient term in momentum equation to include in momentum fluxes
