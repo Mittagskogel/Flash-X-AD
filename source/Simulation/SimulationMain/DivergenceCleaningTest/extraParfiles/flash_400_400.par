@@ -1,0 +1,128 @@
+#	Runtime parameters for the Sod shock-tube problem.
+
+#	Parameters for initial model
+
+#	Density, pressure, and velocity on either side of interface
+
+sim_rho = 1.
+sim_p   = 0.6
+sim_ux  = 0.
+sim_uy  = 0.
+sim_uz  = 0.
+sim_Bx  = 0.
+sim_By  = 0.
+sim_Bz  = 0.
+#	Perturbation parameters
+sim_perturb = 1
+sim_rG      = 0.2
+
+#	Gas ratio of specific heats
+gamma           = 1.666666666666666666667
+
+#	Computational volume parameters
+#	Grid dimensionality and geometry
+geometry = cartesian
+
+#	Size of computational volume
+xmin		= -2.
+xmax		= 2.
+ymin		= -2
+ymax		= 2.
+
+#	Boundary conditions
+
+xl_boundary_type = "periodic"
+xr_boundary_type = "periodic"
+
+yl_boundary_type = "periodic"
+yr_boundary_type = "periodic"
+
+
+#	Simulation (grid, time, I/O) parameters
+
+cfl     = 0.25
+basenm  = "divBtest_"
+restart = .false.
+
+#	checkpoint file output parameters
+checkpointFileIntervalTime = .2
+checkpointFileIntervalStep = 0
+checkpointFileNumber = 0
+
+#	plotfile output parameters
+plotfileIntervalTime = 0.
+plotfileIntervalStep = 0
+plotfileNumber = 0
+
+nend            = 1000000
+tmax            = 2.
+
+run_comment     = "Divergence cleaning test"
+log_file        = "divBtest.log"
+eintSwitch     = 1.e-4
+
+
+plot_var_1 = "dens"
+plot_var_2 = "pres"
+plot_var_3 = "eint"
+plot_var_4 = "velx"
+
+#	AMR refinement parameters  
+lrefine_max  = 6
+refine_var_1 = "dens"
+
+# These parameters are used only for the uniform grid
+iGridSize = 400 # defined as nxb * iprocs
+jGridSize = 400
+#kGridSize = 1
+iProcs = 4	# number or procs in the i direction	
+jProcs = 4
+kProcs = 1
+
+# When using UG, iProcs, jProcs and kProcs must be specified.
+# These are the processors along each of the dimensions
+#FIXEDBLOCKSIZE mode ::
+# When using fixed blocksize, iGridSize etc are redundant in
+# runtime parameters. These quantities are calculated as 
+# iGridSize = NXB*iprocs
+# jGridSize = NYB*jprocs
+# kGridSize = NZB*kprocs
+#NONFIXEDBLOCKSIZE mode ::
+# iGridSize etc must be specified. They constitute the global
+# number of grid points in the physical domain without taking 
+# the guard cell into account. The local blocksize is calculated
+# as iGridSize/iprocs  etc.
+ 
+
+## -------------------------------------------------------------##
+##  SWITCHES SPECIFIC TO THE UNSPLIT HYDRO SOLVER               ##
+#	I. INTERPOLATION SCHEME:
+order		= 2      # Interpolation order (first/second/third/fifth order)
+slopeLimiter    = "mc"   # Slope limiters (minmod, mc, vanLeer, hybrid, limited)
+LimitedSlopeBeta= 1.     # Slope parameter for the "limited" slope by Toro
+charLimiting	= .true. # Characteristic limiting vs. Primitive limiting
+
+use_avisc	= .false. # use artificial viscosity (originally for PPM)
+#cvisc		= 0.1     # coefficient for artificial viscosity
+use_flattening	= .false. # use flattening (dissipative) (originally for PPM)
+use_steepening	= .false. # use contact steepening (originally for PPM)
+use_upwindTVD	= .false. # use upwind biased TVD slope for PPM (need nguard=6)
+
+#	II. RIEMANN SOLVERS:
+RiemannSolver	= "Roe"       # Roe, HLL, HLLC, LLF, Marquina
+entropy         = .false.     # Entropy fix for the Roe solver
+
+hy_fPresInMomFlux = 1.0       # Part of pressure gradient term in momentum equation to include in momentum fluxes
+
+#	III. STRONG SHOCK HANDELING SCHEME:
+shockDetect	= .false.     # Shock Detect for numerical stability
+## -------------------------------------------------------------##
+
+## ---------------------------------------------------------------##
+##  SWITCHES SPECIFIC TO THE SUPER-TIME-STEPPING (STS) ALGORITHM  ##
+##  NOTE: For details on using STS runtime parameters, please     ##
+##        refer to user's guide (Driver chapter).                 ##
+useSTS                  = .false.
+nstepTotalSTS           = 5
+nuSTS                   = 0.2
+## ---------------------------------------------------------------##

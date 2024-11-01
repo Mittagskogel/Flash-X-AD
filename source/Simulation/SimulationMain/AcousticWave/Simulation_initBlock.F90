@@ -92,6 +92,20 @@ subroutine Simulation_initBlock(solnData, tileDesc)
   call Grid_getCellCoords(IAXIS, RIGHT_EDGE, tileDesc%level, &
                           lo, hi, xRight)
 
+#if NDIM == 3
+  call Grid_getCellCoords(KAXIS, CENTER, tileDesc%level, &
+                          lo, hi, zCoord)
+  call Grid_getCellCoords(JAXIS, CENTER, tileDesc%level, &
+                          lo, hi, yCoord)
+#endif
+#if NDIM == 2
+  call Grid_getCellCoords(JAXIS, CENTER, tileDesc%level, &
+                          lo, hi, yCoord)
+#endif
+  call Grid_getCellCoords(IAXIS, CENTER, tileDesc%level, &
+                          lo, hi, xCoord) 
+
+
 #ifdef DEBUG_SIMULATION
 98 format('initBlock:',A4,'(',I3,':   ,',   I3,':   ,',   I3,':   ,',   I3,':   )')
 99 format('initBlock:',A4,'(',I3,':',I3,',',I3,':',I3,',',I3,':',I3,',',I3,':',I3,')')
