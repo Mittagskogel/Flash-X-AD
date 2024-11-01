@@ -3,7 +3,6 @@
 #	Parameters for initial model
 
 sim_amp       = 1.e-6 # Wave amplitude
-#sim_gamma     = 1.66666666666667 # Gas ratio of specific heats
 gamma         = 1.66666666666667 # Gas ratio of specific heats
 sim_rho       = 1. # Mass density
 sim_P         = 0.6 # Pressure
@@ -41,26 +40,26 @@ yr_boundary_type = "periodic"
 #	Simulation (grid, time, I/O) parameters
 
 cfl     = 0.5 #0.8
-basenm  = "linWave_MHD_FM_"
+basenm  = "linWave_MHD_SM_"
 restart = .false.
 
 #	checkpoint file output parameters
-checkpointFileIntervalTime = 0.5
+checkpointFileIntervalTime = 2.
 checkpointFileIntervalStep = 0
 checkpointFileNumber       = 0
 
 #	plotfile output parameters
-plotfileIntervalTime = 0.5
+plotfileIntervalTime = 2.
 plotfileIntervalStep = 0
 plotfileNumber       = 0
 
 nend = 1000000
-tmax = 0.5
+tmax = 2.
 
 dr_shortenlaststepbeforetmax = .true.
 
-run_comment = "Linear wave (FM) MHD problem, 1D"
-log_file    = "linWave_FM_MHD.log"
+run_comment = "Linear wave (SM) MHD problem, 1D"
+log_file    = "linWave_SM_MHD.log"
 eintSwitch  = 1.e-4 # what is this?
 
 plot_var_1 = "dens"
@@ -80,7 +79,7 @@ refine_var_1 = "dens"
 # These parameters are used only for the uniform grid
 
 
-iGridSize = 2048 #defined as nxb * iprocs
+iGridSize = 64 #defined as nxb * iprocs
 #jGridSize = 8
 #kGridSize = 1
 iProcs = 1	#number or procs in the i direction	
