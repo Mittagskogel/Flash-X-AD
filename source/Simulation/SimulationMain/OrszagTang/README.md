@@ -24,3 +24,4 @@ ifinal = 0001.
 	4) plttype   = either 'chk' or 'plt_cnt'	
 	5) nmax      = ifinal in integer form, e.g., OrszagTang_hdf5_chk_0050 would correspond
 to an nmax of 50
+	(plot script assumes basenm = OrszagTang in parfile)

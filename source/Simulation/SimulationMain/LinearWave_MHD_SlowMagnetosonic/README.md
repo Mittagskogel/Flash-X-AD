@@ -15,4 +15,4 @@ outputs ${probName}_hdf5_chk_0001 as the final checkpoint data file, thus
 ifinal = 0001.
 	3) nX       = Number of zones in x-direction (plot script assumes 1D data)
 	4) plttype  = either 'chk' or 'plt_cnt'
-	5) probName = name of data, e.g., 'linWave_MHD_SM'
+	5) probName = name of data, e.g., 'linWave_MHD_SM' -> must match basenm parameter in par file

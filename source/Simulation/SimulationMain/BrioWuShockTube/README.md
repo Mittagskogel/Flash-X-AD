@@ -33,7 +33,7 @@ outputs ${probName}_hdf5_chk_0001 as the final checkpoint data file, thus
 ifinal = 0001.
 	3) nX       = Number of zones in x-direction (plot script assumes 1D data)
 	4) plttype  = either 'chk' or 'plt_cnt'
-	5) probName = name of data, e.g., 'BrioWu'
+	5) probName = name of data, e.g., 'BrioWu' -> must match basenm parameter in par file
 
 # 2D Plot script arguments (BrioWu_6panel_finalstate_1D.py)
 - Plots the final rho, P, vx, vy, by, and divB states. The inputs are the following:
@@ -46,3 +46,4 @@ ifinal = 0001.
 	4) plttype      = either 'chk' or 'plt_cnt'
 	5) solntype_OPT = either 1, 2, or 3 for x-axis shock prop., y-axis shock prop., or
 x=y shock prop. respectively.
+	(Note that this plot script assumes that basenm=BrioWu)
