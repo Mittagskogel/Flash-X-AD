@@ -1,0 +1,134 @@
+#	Runtime parameters for the 1D Linear Wave (Fast magnetosnic wave) problem.
+
+#	Parameters for initial model
+
+sim_amp       = 1.e-6 # Wave amplitude
+gamma         = 1.66666666666667 # Gas ratio of specific heats
+sim_rho       = 1. # Mass density
+sim_P         = 0.6 # Pressure
+sim_vx        = 0.0 # Velocity in x-direction
+sim_vy        = 0.0 # Velocity in y-direction
+sim_vz        = 0.0 # Velocity in z-direction
+sim_e         = 0.9 # Internal energy given by epsilon = P / (gamma-1)
+sim_lengthx   = 1.0 # xmax - xmin
+sim_Bx        = 1.0 # Magnetic field in x-direction
+sim_By        = 1.41421356237 # Magnetic field in y-direction
+sim_Bz        = 0.5 # Magnetic field in z-direction
+sim_Direction = 1.0 # Direction of propagation, either +1 or -1
+
+#	Computational volume parameters
+#	Grid dimensionality and geometry
+
+geometry = cartesian
+
+#	Size of computational volume
+
+xmin = 0.
+xmax = 1.
+ymin = 0.
+ymax = 1.
+
+#	Boundary conditions
+
+xl_boundary_type = "periodic"
+xr_boundary_type = "periodic"
+
+yl_boundary_type = "periodic"
+yr_boundary_type = "periodic"
+
+
+#	Simulation (grid, time, I/O) parameters
+
+cfl     = 0.5 #0.8
+basenm  = "linWave_MHD_SM_"
+restart = .false.
+
+#	checkpoint file output parameters
+checkpointFileIntervalTime = 2.
+checkpointFileIntervalStep = 0
+checkpointFileNumber       = 0
+
+#	plotfile output parameters
+plotfileIntervalTime = 2.
+plotfileIntervalStep = 0
+plotfileNumber       = 0
+
+nend = 1000000
+tmax = 2.
+
+dr_shortenlaststepbeforetmax = .true.
+
+run_comment = "Linear wave (SM) MHD problem, 1D"
+log_file    = "linWave_SM_MHD.log"
+eintSwitch  = 1.e-4 # what is this?
+
+plot_var_1 = "dens"
+plot_var_2 = "pres"
+plot_var_3 = "eint"
+plot_var_4 = "velx"
+plot_var_5 = "vely"
+plot_var_6 = "velz"
+plot_var_7 = "magx"
+plot_var_8 = "magy"
+plot_var_9 = "magz"
+
+#    AMR refinement parameters  
+lrefine_max  = 6
+refine_var_1 = "dens"
+
+# These parameters are used only for the uniform grid
+
+
+iGridSize = 16 #defined as nxb * iprocs
+#jGridSize = 8
+#kGridSize = 1
+iProcs = 1	#number or procs in the i direction	
+jProcs = 1
+kProcs = 1
+
+# When using UG, iProcs, jProcs and kProcs must be specified.
+# These are the processors along each of the dimensions
+#FIXEDBLOCKSIZE mode ::
+# When using fixed blocksize, iGridSize etc are redundant in
+# runtime parameters. These quantities are calculated as 
+# iGridSize = NXB*iprocs
+# jGridSize = NYB*jprocs
+# kGridSize = NZB*kprocs
+#NONFIXEDBLOCKSIZE mode ::
+# iGridSize etc must be specified. They constitute the global
+# number of grid points in the physical domain without taking 
+# the guard cell into account. The local blocksize is calculated
+# as iGridSize/iprocs  etc.
+
+## -------------------------------------------------------------##
+##  SWITCHES SPECIFIC TO THE UNSPLIT HYDRO SOLVER               ##
+#	I. INTERPOLATION SCHEME:
+order		= 2      # Interpolation order (first/second/third/fifth order)
+slopeLimiter    = "mc"   # Slope limiters (minmod, mc, vanLeer, hybrid, limited)
+LimitedSlopeBeta= 1.     # Slope parameter for the "limited" slope by Toro
+charLimiting	= .true. # Characteristic limiting vs. Primitive limiting
+
+use_avisc	= .false. # use artificial viscosity (originally for PPM)
+#cvisc		= 0.1     # coefficient for artificial viscosity
+use_flattening	= .false. # use flattening (dissipative) (originally for PPM)
+use_steepening	= .false. # use contact steepening (originally for PPM)
+use_upwindTVD	= .false. # use upwind biased TVD slope for PPM (need nguard=6)
+
+#	II. RIEMANN SOLVERS:
+RiemannSolver	= "Roe"       # Roe, HLL, HLLC, LLF, Marquina
+entropy         = .false.     # Entropy fix for the Roe solver
+
+hy_fPresInMomFlux = 1.0       # Part of pressure gradient term in momentum equation to include in momentum fluxes
+
+#	III. STRONG SHOCK HANDELING SCHEME:
+shockDetect	= .false.     # Shock Detect for numerical stability
+## -------------------------------------------------------------##
+
+## ---------------------------------------------------------------##
+##  SWITCHES SPECIFIC TO THE SUPER-TIME-STEPPING (STS) ALGORITHM  ##
+##  NOTE: For details on using STS runtime parameters, please     ##
+##        refer to user's guide (Driver chapter).                 ##
+useSTS                  = .false.
+nstepTotalSTS           = 5
+nuSTS                   = 0.2
+## ---------------------------------------------------------------##
