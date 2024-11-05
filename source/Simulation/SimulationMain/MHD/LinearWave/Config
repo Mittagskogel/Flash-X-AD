@@ -1,0 +1,37 @@
+# 1D MHD Linear Wave problems
+
+REQUIRES Driver
+REQUIRES physics/Eos/EosMain/Gamma
+REQUIRES physics/Hydro
+
+D sim_wave  Which type of wave
+PARAMETER sim_wave STRING "alfven" ["alfven", "fast", "slow"]
+
+D sim_dir  Direction of propagation for wave, -1 for left, +1 for right
+D sim_amp  Amplitude of the perturbation wave
+D sim_len  Wavelength of the perturbation wave
+PARAMETER sim_amp  REAL     1.e-6  [0 to ]
+PARAMETER sim_len  REAL     1.0    [0 to ]
+PARAMETER sim_dir  INTEGER  1      [-1,1]
+
+
+D sim_dens Initial mass density
+D sim_pres Initial pressure
+PARAMETER sim_dens  REAL 1.0  [0 to ]
+PARAMETER sim_pres  REAL 0.6  [0 to ]
+
+D sim_vx Initial velocity in the x-direction
+D sim_vy Initial velocity in the y-direction
+D sim_vz Initial velocity in the z-direction
+PARAMETER sim_velx  REAL 0.0
+PARAMETER sim_vely  REAL 0.0
+PARAMETER sim_velz  REAL 0.0
+
+
+D sim_Bx Magnetic field vector in x-direction
+D sim_By Magnetic field vector in y-direction
+D sim_Bz Magnetic field vectory in z-direction
+PARAMETER sim_magx      REAL 1.
+PARAMETER sim_magy      REAL 1.41421356237
+PARAMETER sim_magz      REAL 0.5
+
