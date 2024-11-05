@@ -28,7 +28,7 @@
 !!
 !! ARGUMENTS
 !!
-!!  
+!!
 !!
 !! PARAMETERS
 !!
@@ -37,35 +37,35 @@
 !!***
 
 subroutine Simulation_init()
-  
-  use Simulation_data
-  use Driver_interface, ONLY : Driver_getMype, Driver_abort
-  use RuntimeParameters_interface, ONLY : RuntimeParameters_get
-  use Logfile_interface, ONLY : Logfile_stamp 
-  implicit none
-#include "constants.h"
+
+   use Simulation_data
+
+   use RuntimeParameters_interface, ONLY: RuntimeParameters_get
+
 #include "Simulation.h"
-  real angle, uxLprime, uxRprime, uyLprime, uyRprime, &
-  BxLprime, BxRprime, ByLprime, ByRprime
+#include "constants.h"
 
-  call Driver_getMype(MESH_COMM, sim_meshMe)
+   implicit none
 
-  call RuntimeParameters_get('smallp',  sim_smallP)
-  call RuntimeParameters_get('smallx',  sim_smallX) 
-  call RuntimeParameters_get('gamma',   sim_gamma)
-  call RuntimeParameters_get('sim_rho', sim_rho) 
-  call RuntimeParameters_get('sim_p',   sim_p)
-  call RuntimeParameters_get('sim_ux',  sim_ux)
-  call RuntimeParameters_get('sim_uy',  sim_uy)
-  call RuntimeParameters_get('sim_uz',  sim_uz)
-  call RuntimeParameters_get('sim_Bx',  sim_Bx)
-  call RuntimeParameters_get('sim_By',  sim_By)
-  call RuntimeParameters_get('sim_Bz',  sim_Bz)
-  call RuntimeParameters_get('sim_perturb', sim_perturb)
-  call RuntimeParameters_get('sim_rG', sim_rG)
+   real :: gamma
 
-  call Logfile_stamp( "initializing Divergence cleaning problem",  &
-       "[Simulation_init]") 
+   call RuntimeParameters_get('gamma', gamma)
+
+   call RuntimeParameters_get('sim_dens', sim_dens)
+   call RuntimeParameters_get('sim_pres', sim_pres)
+   call RuntimeParameters_get('sim_velx', sim_velx)
+   call RuntimeParameters_get('sim_vely', sim_vely)
+   call RuntimeParameters_get('sim_velz', sim_velz)
+   call RuntimeParameters_get('sim_magx', sim_magx)
+   call RuntimeParameters_get('sim_magy', sim_magy)
+   call RuntimeParameters_get('sim_magz', sim_magz)
+
+   call RuntimeParameters_get('sim_rG', sim_rG)
+
+   sim_eint = sim_pres/(sim_dens*(gamma - 1.0))
+
+   sim_game = gamma
+   sim_gamc = gamma
 
 end subroutine Simulation_init
 

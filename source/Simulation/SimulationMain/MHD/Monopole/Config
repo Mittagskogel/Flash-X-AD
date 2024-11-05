@@ -1,40 +1,25 @@
-#	Configuration file for the Divergence cleaning problem
-#	(Sod, G. A., 1978, J. Comp. Phys., 27, 1)
+#	Configuration file for the monopole test
 
 REQUIRES Driver
 REQUIRES physics/Hydro
-REQUIRES physics/Eos
+REQUIRES physics/Eos/EosMain/Gamma
 
-D sim_gamma adiabatic index
-PARAMETER sim_gamma     REAL    1.666666666666666666667       [0 to ]
+D sim_dens Constant density state
+D sim_pres Constant Pressure state
+D sim_velx Constant x-velocity
+D sim_vely Constant y-velocity
+D sim_velz Constant z-velocity
+D sim_magx x-component of B-field
+D sim_magy y-component of B-field
+D sim_magz z-component of B-field
+PARAMETER sim_dens  REAL  1.0  [0 to ]
+PARAMETER sim_pres  REAL  0.6  [0 to ]
+PARAMETER sim_velx  REAL  0.0
+PARAMETER sim_vely  REAL  0.0
+PARAMETER sim_velz  REAL  0.0
+PARAMETER sim_magx  REAL  0.0
+PARAMETER sim_magy  REAL  0.0
+PARAMETER sim_magz  REAL  0.0
 
-D sim_rho Constant density state
-PARAMETER sim_rho	REAL    1.       [0 to ]
-
-D sim_p Constant Pressure state
-PARAMETER sim_p	REAL    0.6       [0 to ]
-
-D sim_u Constant x-velocity
-PARAMETER sim_ux	REAL    0.
-
-D sim_uy Constant y-velocity
-PARAMETER sim_uy	REAL    0.
-
-D sim_uz Constant z-velocity
-PARAMETER sim_uz	REAL    0.
-
-D sim_Bx x-component of B-field
-PARAMETER sim_Bx	REAL    0.
-
-D sim_By y-component of B-field
-PARAMETER sim_By	REAL    0.
-
-D sim_Bz z-component of B-field
-PARAMETER sim_Bz	REAL    0.
-
-D sim_perturb Optional parameter. Set equal to one to perturb initial magnetic field with a gaussian monopole.
-PARAMETER sim_perturb INTEGER 1
-
-D sim_rG Radius at which I introduce the perturbation to the B-field if sim_perturb=1
-PARAMETER sim_rG REAL 0.2
-
+D sim_rG Cutoff radius of the perturbation
+PARAMETER sim_rG  REAL  0.2

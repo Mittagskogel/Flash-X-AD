@@ -15,186 +15,89 @@
 !!
 !!  Simulation_initBlock
 !!
-!!
-!! SYNOPSIS
-!!
-!!  Simulation_initBlock(integer(IN) :: blockID) 
-!!                       
-!!
-!!
-!!
-!! DESCRIPTION
-!!
-!!  Initializes fluid data (density, pressure, velocity, etc.) for
-!!  a specified block. 
-!!
-!!
-!! 
-!! ARGUMENTS
-!!
-!!  blockID -           the number of the block to update
-!!
-!! PARAMETERS
-!!
-!!
 !!***
 
 !!REORDER(4): solnData
 subroutine Simulation_initBlock(solnData, tileDesc)
 
-#include "constants.h"
+   use Simulation_data
+   use Grid_interface, ONLY: Grid_getCellCoords
+   use Grid_tile, ONLY: Grid_tile_t
+
 #include "Simulation.h"
-#include "Eos.h"
+#include "constants.h"
 
-  use Simulation_data, ONLY: sim_rho,  sim_p, &
-     & sim_ux, sim_uy, sim_uz, sim_Bx, sim_By, &
-     & sim_Bz, sim_smallX, gamma=>sim_gamma, sim_smallP, &
-     & sim_perturb, sim_rG
+   implicit none
 
-  use Eos_interface, ONLY : Eos, Eos_multiDim
-  use Grid_interface, ONLY : Grid_getCellCoords
-  use Grid_tile, ONLY : Grid_tile_t
+   real, dimension(:, :, :, :), pointer :: solnData
+   type(Grid_tile_t), intent(in) :: tileDesc
 
-  implicit none
+   integer :: i, j, k, n
+   integer :: iMax, jMax, kMax
 
-  real,dimension(:,:,:,:),pointer :: solnData
-  type(Grid_tile_t), intent(in) :: tileDesc
+   real :: r, Bx
 
-  integer :: i, j, k, n
-  integer :: iMax, jMax, kMax
+   real, allocatable, dimension(:) :: xCoord, yCoord, zCoord
 
-  real :: xx, yy, zz, r
-  
-  real :: lPosn
+   integer, dimension(MDIM) :: lo, hi
 
-  real,allocatable, dimension(:) ::xCoord, yCoord, zCoord
+   lo(:) = tileDesc%limits(LOW, :)
+   hi(:) = tileDesc%limits(HIGH, :)
 
-  real :: rhoZone, velxZone, velyZone, velzZone, presZone, & 
-       eintZone, enerZone, ekinZone, gameZone, gamcZone, &
-       BxZone, ByZone, BzZone, perturb 
+   allocate (xCoord(lo(IAXIS):hi(IAXIS)))
+   allocate (yCoord(lo(JAXIS):hi(JAXIS)))
+   allocate (zCoord(lo(KAXIS):hi(KAXIS)))
 
-  integer :: lo(1:MDIM)
-  integer :: hi(1:MDIM)
+   xCoord = 0.0
+   yCoord = 0.0
+   zCoord = 0.0
 
-  lo(:) = tileDesc%limits(LOW,  :)
-  hi(:) = tileDesc%limits(HIGH, :) 
-  allocate( xCoord(lo(IAXIS):hi(IAXIS))) 
-  allocate( yCoord(lo(JAXIS):hi(JAXIS)))
-  allocate( zCoord(lo(KAXIS):hi(KAXIS))) 
-  xCoord = 0.0 
-  yCoord = 0.0
-  zCoord = 0.0
-
-#if NDIM == 3
-  call Grid_getCellCoords(KAXIS, CENTER, tileDesc%level, &
-                          lo, hi, zCoord)
-  call Grid_getCellCoords(JAXIS, CENTER, tileDesc%level, &
-                          lo, hi, yCoord)
+#if NDIM > 2
+   call Grid_getCellCoords(KAXIS, CENTER, tileDesc%level, lo, hi, zCoord)
 #endif
-#if NDIM == 2
-  call Grid_getCellCoords(JAXIS, CENTER, tileDesc%level, &
-                          lo, hi, yCoord)
+#if NDIM > 1
+   call Grid_getCellCoords(JAXIS, CENTER, tileDesc%level, lo, hi, yCoord)
 #endif
-  call Grid_getCellCoords(IAXIS, CENTER, tileDesc%level, &
-                          lo, hi, xCoord) 
+   call Grid_getCellCoords(IAXIS, CENTER, tileDesc%level, lo, hi, xCoord)
 
-#ifdef DEBUG_SIMULATION
-98 format('initBlock:',A4,'(',I3,':   ,',   I3,':   ,',   I3,':   ,',   I3,':   )')
-99 format('initBlock:',A4,'(',I3,':',I3,',',I3,':',I3,',',I3,':',I3,',',I3,':',I3,')')
-  print 99,"solnData" ,(lbound(solnData ,i),ubound(solnData ,i),i=1,4)
-  print*,'tile limits:',tileDesc%limits
-  print*,'grown tile limits:',tileDesc%limitsGC
-#endif
-!------------------------------------------------------------------------------
+   do k = lo(KAXIS), hi(KAXIS)
+      do j = lo(JAXIS), hi(JAXIS)
+         do i = lo(IAXIS), hi(IAXIS)
+            r = sqrt(xCoord(i)**2 + yCoord(j)**2 + zCoord(k)**2)
 
-! Loop over cells in the block.  For each, compute the physical position of 
-! its left and right edge and its center as well as its physical width.  
-! Then decide which side of the initial discontinuity it is on and initialize 
-! the hydro variables appropriately.
-  yy = 0.
-  zz = 0. 
-  do k = lo(KAXIS), hi(KAXIS)
-  
-     ! get the coordinates of the cell center in the z-direction
-#if NDIM >2
-     zz = zCoord(k)
-#endif   
-     do j = lo(JAXIS), hi(JAXIS)
-        
-        ! get the coordinates of the cell center in the y-direction
-#if NDIM >1
-        yy = yCoord(j) 
-#endif
-        do i = lo(IAXIS), hi(IAXIS)
-           
-           ! get the cell center, left, and right positions in x
-           xx = xCoord(i)
-           r  = sqrt(xx**2 + yy**2 + zz**2)
+            Bx = 0.0
+            if (r <= sim_rG) Bx = exp(-1.*r**2/sim_rG**2) - exp(-1.)
 
-           perturb = 0.
-           ! set up gaussian perturbation similar to gyhydro paper
-           if (r <= sim_rG) then 
-             select case(sim_perturb)
-               case(1)
-                 perturb = exp(-1. * r**2 / sim_rG**2) - exp(-1.)
-               case default
-                 perturb = 0.
-             end select 
-           endif  
-           presZone = sim_p
-           rhoZone  = sim_rho
-           velxZone = sim_ux
-           velyZone = sim_uy
-           velzZone = sim_uz 
-           BxZone   = sim_Bx + perturb 
-           ByZone   = sim_By
-           BzZone   = sim_Bz 
-           ! Compute the gas energy and set the gamma-values needed for the equation of 
-           ! state.
-           ekinZone = 0.5 * (velxZone**2 + & 
-                velyZone**2 + & 
-                velzZone**2)
-
-           eintZone = presZone / ((gamma-1.) * rhoZone)
-           gameZone = gamma
-           gamcZone = gamma
-           enerZone = eintZone + ekinZone
-           enerZone = max(enerZone, sim_smallP)
-
-           ! store the variables in the current zone via Grid put methods
-           ! data is put stored one cell at a time with these calls to Grid_putData           
-
-           solnData(DENS_VAR, i,j,k) = rhoZone
-           solnData(PRES_VAR, i,j,k) = presZone
-           solnData(VELX_VAR, i,j,k) = velxZone
-           solnData(VELY_VAR, i,j,k) = velyZone
-           solnData(VELZ_VAR, i,j,k) = velzZone 
-           solnData(MAGX_VAR, i,j,k) = BxZone
-           solnData(MAGY_VAR, i,j,k) = ByZone
-           solnData(MAGZ_VAR, i,j,k) = BzZone
+            solnData(DENS_VAR, i, j, k) = sim_dens
+            solnData(PRES_VAR, i, j, k) = sim_pres
+            solnData(VELX_VAR, i, j, k) = sim_velx
+            solnData(VELY_VAR, i, j, k) = sim_vely
+            solnData(VELZ_VAR, i, j, k) = sim_velz
+            solnData(MAGX_VAR, i, j, k) = sim_magx + Bx
+            solnData(MAGY_VAR, i, j, k) = sim_magy
+            solnData(MAGZ_VAR, i, j, k) = sim_magz
 
 #ifdef ENER_VAR
-           solnData(ENER_VAR, i,j,k) =  enerZone
+            solnData(ENER_VAR, i, j, k) = sim_eint + 0.5*(sim_velx**2 + sim_vely**2 + sim_velz**2)
 #endif
 #ifdef EINT_VAR
-           solnData(EINT_VAR, i,j,k) =  eintZone
+            solnData(EINT_VAR, i, j, k) = sim_eint
 #endif
-#ifdef GAME_VAR          
-           solnData(GAME_VAR, i,j,k) =  gameZone
+#ifdef GAME_VAR
+            solnData(GAME_VAR, i, j, k) = sim_game
 #endif
 #ifdef GAMC_VAR
-           solnData(GAMC_VAR, i,j,k) =  gamcZone
+            solnData(GAMC_VAR, i, j, k) = sim_gamc
 #endif
 #ifdef TEMP_VAR
-           solnData(TEMP_VAR, i,j,k) =  1.e-10
+            solnData(TEMP_VAR, i, j, k) = 1.e-10
 #endif
-        enddo
-     enddo
-  enddo
- 
-  deallocate(xCoord)
-  deallocate(yCoord)
-  deallocate(zCoord)
- 
-  return
+         end do
+      end do
+   end do
+
+   deallocate (xCoord)
+   deallocate (yCoord)
+   deallocate (zCoord)
+
 end subroutine Simulation_initBlock

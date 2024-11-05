@@ -1,6 +1,6 @@
 !!****if* source/Simulation/SimulationMain/DivergenceCleaningTest/Simulation_data
 !! NOTICE
-!!  Copyright 2022 UChicago Argonne, LLC and contributors
+!!  Copyright 2024 UChicago Argonne, LLC and contributors
 !!
 !!  Licensed under the Apache License, Version 2.0 (the "License");
 !!  you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 !!
 !! DESCRIPTION
 !!
-!!  Store the simulation data for the Divergence cleaning test
+!!  Store the simulation data for the monopole test
 !!
 !! ARGUMENTS
 !!
@@ -28,26 +28,17 @@
 !! PARAMETERS
 !!
 !!
-!!   
+!!
 !!
 !!***
 
 module Simulation_data
-#include "Simulation.h"
-  implicit none
 
-  !! *** Runtime Parameters *** !!
+   implicit none
 
-  real, save :: sim_rho, sim_p
-  real, save :: sim_ux, sim_uy, sim_uz
-  real, save :: sim_Bx, sim_By, sim_Bz
-  real, save :: sim_gamma, sim_smallP, sim_smallX, sim_rG
+   real, save :: sim_dens, sim_pres, sim_eint, sim_game, sim_gamc
+   real, save :: sim_velx, sim_vely, sim_velz
+   real, save :: sim_magx, sim_magy, sim_magz
 
-  !! *** Variables pertaining to Simulation Setup 'Brio Wu' *** !! 
-  logical, save :: sim_gCell
-
-  integer, save :: sim_meshMe
-  integer, save :: sim_perturb
+   real, save :: sim_rG
 end module Simulation_data
-
-
