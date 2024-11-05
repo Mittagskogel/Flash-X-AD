@@ -1,6 +1,6 @@
 !!****if* source/Simulation/SimulationMain/OrszagTang/Simulation_data
 !! NOTICE
-!!  Copyright 2022 UChicago Argonne, LLC and contributors
+!!  Copyright 2024 UChicago Argonne, LLC and contributors
 !!
 !!  Licensed under the Apache License, Version 2.0 (the "License");
 !!  you may not use this file except in compliance with the License.
@@ -22,30 +22,12 @@
 !!
 !!  Store the simulation data for the Orszag-Tang problem
 !!
-!! ARGUMENTS
-!!
-!!
-!! PARAMETERS
-!!
-!! sim_rho      constant background density
-!! sim_P        constant background pressure
-!! sim_gamma    adibatic index
 !!***
 
 module Simulation_data
-#include "Simulation.h"
-  implicit none
+   implicit none
 
-  !! *** Runtime Parameters *** !!
+   real, save :: sim_dens, sim_pres, sim_eint, sim_game, sim_gamc
 
-  real, save :: sim_rho, sim_p 
-  real, save :: sim_gamma, sim_smallP, sim_smallX
-
-  !! *** Variables pertaining to Simulation Setup 'Brio Wu' *** !! 
-  logical, save :: sim_gCell
-
-  integer, save :: sim_meshMe
-  integer, save :: sim_perturb
 end module Simulation_data
-
 

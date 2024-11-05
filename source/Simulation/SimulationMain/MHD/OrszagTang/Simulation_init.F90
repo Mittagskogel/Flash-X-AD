@@ -28,7 +28,7 @@
 !!
 !! ARGUMENTS
 !!
-!!  
+!!
 !!
 !! PARAMETERS
 !!
@@ -38,25 +38,27 @@
 !!***
 
 subroutine Simulation_init()
-  
-  use Simulation_data
-  use Driver_interface, ONLY : Driver_getMype, Driver_abort
-  use RuntimeParameters_interface, ONLY : RuntimeParameters_get
-  use Logfile_interface, ONLY : Logfile_stamp 
-  implicit none
-#include "constants.h"
+
+   use Simulation_data
+
+   use RuntimeParameters_interface, only: RuntimeParameters_get
+
 #include "Simulation.h"
+#include "constants.h"
 
-  call Driver_getMype(MESH_COMM, sim_meshMe)
+   implicit none
 
-  call RuntimeParameters_get('smallp',  sim_smallP)
-  call RuntimeParameters_get('smallx',  sim_smallX) 
-  call RuntimeParameters_get('gamma',   sim_gamma)
-  call RuntimeParameters_get('sim_rho', sim_rho) 
-  call RuntimeParameters_get('sim_p',   sim_p)
- 
-  call Logfile_stamp( "initializing Orszag-Tan problem",  &
-       "[Simulation_init]") 
+   real :: gamma
+
+   call RuntimeParameters_get('gamma', gamma)
+
+   call RuntimeParameters_get('sim_dens', sim_dens)
+   call RuntimeParameters_get('sim_pres', sim_pres)
+
+   sim_eint = sim_pres/(sim_dens*(gamma - 1.0))
+
+   sim_game = gamma
+   sim_gamc = gamma
 
 end subroutine Simulation_init
 

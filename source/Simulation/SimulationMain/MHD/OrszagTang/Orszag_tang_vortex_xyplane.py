@@ -6,12 +6,7 @@ from matplotlib import cm
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 import sys
 
-# plot (or checkpoint) file is taken as the first CLI
-plotDIR      = str(sys.argv[1])
-ifinal       = str(sys.argv[2])
-nX           = int(sys.argv[3])
-nY           = int(sys.argv[4])
-plttype      = str(sys.argv[5])
+fname = sys.argv[1]
 
 def plotFunction(x, y, func, cbarlabel, vname):
 	fs_label  = 14
@@ -41,8 +36,8 @@ def plotFunction(x, y, func, cbarlabel, vname):
 
 def readData():
 
-	fname_r = plotDIR + "OrszagTang_hdf5_" + str(plttype) + "_" + str(ifinal)
-	with h5py.File(fname_r, "r") as hf:
+	#fname_r = plotDIR + "OrszagTang_hdf5_" + str(plttype) + "_" + str(ifinal)
+	with h5py.File(fname, "r") as hf:
 		rps_arr      = hf["real runtime parameters"][()]
 		sps_arr      = hf["string runtime parameters"][()]
 		iscalars_arr = hf["integer scalars"][()]
