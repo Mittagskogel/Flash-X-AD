@@ -15,30 +15,6 @@
 !!
 !!  Simulation_initBlock
 !!
-!!
-!! SYNOPSIS
-!!
-!!  Simulation_initBlock(integer(IN) :: blockID)
-!!
-!!
-!!
-!!
-!! DESCRIPTION
-!!
-!!  Initializes fluid data (density, pressure, velocity, etc.) for
-!!  a specified block.  This version sets up the Linear wave
-!!  problem.
-!!
-!!  Reference: Sod, G. A., 1978, J. Comp. Phys., 27, 1
-!!
-!!
-!! ARGUMENTS
-!!
-!!  blockID -           the number of the block to update
-!!
-!! PARAMETERS
-!!
-!!
 !!***
 
 !!REORDER(4): solnData

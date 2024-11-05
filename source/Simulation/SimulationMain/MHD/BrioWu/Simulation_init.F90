@@ -28,7 +28,7 @@
 !!
 !! ARGUMENTS
 !!
-!!  
+!!
 !!
 !! PARAMETERS
 !!
@@ -46,92 +46,81 @@
 !!  sim_ByLeft      B-field y-component in the left part of the grid
 !!  sim_ByRight     B-field y-component in the right part of the grid
 !!  sim_BzLeft      B-field z-component in the left part of the grid
-!!  sim_BzRight     B-field z-component in the right part of the grid 
+!!  sim_BzRight     B-field z-component in the right part of the grid
 !!  sim_posnR      Point of intersection between the shock plane and the x-axis
 !!
 !!***
 
 subroutine Simulation_init()
-  
-  use Simulation_data
-  use Driver_interface, ONLY : Driver_getMype, Driver_abort
-  use RuntimeParameters_interface, ONLY : RuntimeParameters_get
-  use Logfile_interface, ONLY : Logfile_stamp 
-  implicit none
-#include "constants.h"
+
+   use Simulation_data
+   use RuntimeParameters_interface, ONLY: RuntimeParameters_get
+
 #include "Simulation.h"
-  real angle, uxLprime, uxRprime, uyLprime, uyRprime, &
-  BxLprime, BxRprime, ByLprime, ByRprime
+#include "constants.h"
 
-  call Driver_getMype(MESH_COMM, sim_meshMe)
+   implicit none
+   real :: gamma
+   real, dimension(MDIM) :: nx, ny, nz ! in rotated coords
+   real :: vxL, vyL, vzL
+   real :: vxR, vyR, vzR
+   real :: BxL, ByL, BzL
+   real :: BxR, ByR, BzR
 
-  call RuntimeParameters_get('smallp', sim_smallP)
-  call RuntimeParameters_get('smallx', sim_smallX) 
-  
-  call RuntimeParameters_get('gamma', sim_gamma)
-  
-  call RuntimeParameters_get('sim_rhoLeft', sim_rhoLeft)
-  call RuntimeParameters_get('sim_rhoRight', sim_rhoRight)
-  
-  call RuntimeParameters_get('sim_pLeft', sim_pLeft)
-  call RuntimeParameters_get('sim_pRight', sim_pRight)
-  
-  call RuntimeParameters_get('sim_uxLeft', sim_uxLeft)
-  call RuntimeParameters_get('sim_uxRight', sim_uxRight)
+   call RuntimeParameters_get('gamma', gamma)
 
-  call RuntimeParameters_get('sim_uyLeft', sim_uyLeft)
-  call RuntimeParameters_get('sim_uyRight', sim_uyRight)
+   call RuntimeParameters_get("sim_densLeft", sim_densLeft)
+   call RuntimeParameters_get("sim_presLeft", sim_presLeft)
+   call RuntimeParameters_get("sim_velxLeft", vxL)
+   call RuntimeParameters_get("sim_velyLeft", vyL)
+   call RuntimeParameters_get("sim_velzLeft", vzL)
+   call RuntimeParameters_get("sim_magxLeft", BxL)
+   call RuntimeParameters_get("sim_magyLeft", ByL)
+   call RuntimeParameters_get("sim_magzLeft", BzL)
 
-  call RuntimeParameters_get('sim_uzLeft', sim_uzLeft)
-  call RuntimeParameters_get('sim_uzRight', sim_uzRight)
+   call RuntimeParameters_get("sim_densRight", sim_densRight)
+   call RuntimeParameters_get("sim_presRight", sim_presRight)
+   call RuntimeParameters_get("sim_velxRight", vxR)
+   call RuntimeParameters_get("sim_velyRight", vyR)
+   call RuntimeParameters_get("sim_velzRight", vzR)
+   call RuntimeParameters_get("sim_magxRight", BxR)
+   call RuntimeParameters_get("sim_magyRight", ByR)
+   call RuntimeParameters_get("sim_magzRight", BzR)
 
-  call RuntimeParameters_get('sim_BxLeft', sim_BxLeft)
-  call RuntimeParameters_get('sim_BxRight', sim_BxRight)
+   call RuntimeParameters_get('sim_posn', sim_posn)
 
-  call RuntimeParameters_get('sim_ByLeft', sim_ByLeft)
-  call RuntimeParameters_get('sim_ByRight', sim_ByRight)
+   call RuntimeParameters_get('sim_direction', sim_direction)
 
-  call RuntimeParameters_get('sim_BzLeft', sim_BzLeft)
-  call RuntimeParameters_get('sim_BzRight', sim_BzRight)
-   
-  call RuntimeParameters_get('sim_posn', sim_posn)
+   select case (sim_direction)
+   case (1)
+      ! x-axis aligned
+      nx = [1.0, 0.0, 0.0]
+      ny = [0.0, 1.0, 0.0]
+      nz = [0.0, 0.0, 1.0]
+   case (2)
+      ! y-axis aligned
+      nx = [0.0, 1.0, 0.0]
+      ny = [-1.0, 0.0, 0.0]
+      nz = [0.0, 0.0, 1.0]
+   case (3)
+      ! x=y aligned
+      nx = [1.0/sqrt(2.0), 1.0/sqrt(2.0), 0.0]
+      ny = [-1.0/sqrt(2.0), 1.0/sqrt(2.0), 0.0]
+      nz = [0.0, 0.0, 1.0]
+   end select ! sim_direction
 
-  call RuntimeParameters_get('sim_direction', sim_direction)
- 
-  call Logfile_stamp( "initializing Simple Sod problem",  &
-       "[Simulation_init]")
+   sim_normal = nx
 
-  ! rotating initial state vectors if the shock is chosen to travel 
-  ! along either the y-axis (90 degree rotation around z) or the line
-  ! y=x (45 degree rotation around z). Case(1) requires no rotation, 
-  ! so we only need to compute rotations for cases 2 and 3
-#if NDIM >=2
-  angle = 0.
-  select case(sim_direction) 
-    case(2) ! Shock travels along y-axis (90 degree rotation)
-      angle = PI / 2. 
-    case(3) ! Shock travels along x=y line (45 degree rotation)
-      angle = PI / 4. 
-  end select
-  ! Rotate velocity field
-  uxLprime    = sim_uxLeft  * cos(angle) - sim_uyLeft  * sin(angle) 
-  uyLprime    = sim_uxLeft  * sin(angle) + sim_uyLeft  * cos(angle) 
-  uxRprime    = sim_uxRight * cos(angle) - sim_uyRight * sin(angle) 
-  uyRprime    = sim_uxRight * sin(angle) + sim_uyRight * cos(angle) 
-  sim_uxLeft  = uxLprime
-  sim_uyLeft  = uyLprime 
-  sim_uxRight = uxRprime
-  sim_uyRight = uyRprime 
+   sim_eintLeft = sim_presLeft/(sim_densLeft*(gamma - 1.0))
+   sim_eintRight = sim_presRight/(sim_densRight*(gamma - 1.0))
 
-  ! Rotate magnetic field
-  BxLprime    = sim_BxLeft  * cos(angle) - sim_ByLeft  * sin(angle) 
-  ByLprime    = sim_BxLeft  * sin(angle) + sim_ByLeft  * cos(angle)
-  BxRprime    = sim_BxRight * cos(angle) - sim_ByRight * sin(angle) 
-  ByRprime    = sim_BxRight * sin(angle) + sim_ByRight * cos(angle)
-  sim_BxLeft  = BxLprime
-  sim_ByLeft  = ByLprime
-  sim_BxRight = BxRprime
-  sim_ByRight = ByRprime
-#endif
+   sim_velLeft = vxL*nx + vyL*ny + vzL*nz
+   sim_magLeft = BxL*nx + ByL*ny + BzL*nz
+
+   sim_velRight = vxR*nx + vyR*ny + vzR*nz
+   sim_magRight = BxR*nx + ByR*ny + BzR*nz
+
+   sim_gamc = gamma
+   sim_game = gamma
 end subroutine Simulation_init
 

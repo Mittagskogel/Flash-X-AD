@@ -1,60 +1,42 @@
-#	Configuration file for the Sod shock-tube problem
-#	(Sod, G. A., 1978, J. Comp. Phys., 27, 1)
+#	Configuration file for the Brio-Wu MHD shock-tube problem
 
 REQUIRES Driver
 REQUIRES physics/Hydro
-REQUIRES physics/Eos
+REQUIRES physics/Eos/EosMain/Gamma
 
-D sim_gamma adiabatic index
-PARAMETER sim_gamma     REAL    2.       [0 to ]
+D sim_densLeft Density in the left part of the grid
+D sim_presLeft Pressure in the left part of the grid
+D sim_velxLeft Fluid x-velocity in the left part of the grid
+D sim_velyLeft Fluid y-velocity in the left part of the grid
+D sim_velzLeft Fluid z-velocity in the left part of the grid
+D sim_magxLeft B-field x-component in the left part of the grid
+D sim_magyLeft B-field y-component in the left part of the grid
+D sim_magzLeft B-field z-component in the left part of the grid
+PARAMETER sim_densLeft  REAL  1.0  [0 to ]
+PARAMETER sim_presLeft  REAL  1.0  [0 to ]
+PARAMETER sim_velxLeft  REAL  0.0
+PARAMETER sim_velyLeft  REAL  0.0
+PARAMETER sim_velzLeft  REAL  0.0
+PARAMETER sim_magxLeft  REAL  0.75
+PARAMETER sim_magyLeft  REAL  1.0
+PARAMETER sim_magzLeft  REAL  0.0
 
-D sim_rhoLeft Density in the left part of the grid 
-PARAMETER sim_rhoLeft	REAL    1.       [0 to ]
-
-D sim_rhoRight Density in the right part of the grid 
-PARAMETER sim_rhoRight	REAL    0.125    [0 to ]
-
-D sim_pLeft Pressure  in the left part of the grid 
-PARAMETER sim_pLeft	REAL    1.       [0 to ]
-
-D sim_pRight Pressure  in the right part of the grid 
-PARAMETER sim_pRight	REAL    0.1      [0 to ]
-
-D sim_uLeft fluid velocity in the left part of the grid 
-PARAMETER sim_uxLeft	REAL    0.
-
-D sim_uRight fluid velocity in the right part of the grid 
-PARAMETER sim_uxRight	REAL    0.
-
-D sim_uyLeft fluid y-velocity in the left part of the grid 
-PARAMETER sim_uyLeft	REAL    0.
-
-D sim_uyRight fluid y-velocity in the right part of the grid 
-PARAMETER sim_uyRight	REAL    0.
-
-D sim_uzLeft fluid z-velocity in the left part of the grid 
-PARAMETER sim_uzLeft	REAL    0.
-
-D sim_uzRight fluid z-velocity in the right part of the grid 
-PARAMETER sim_uzRight	REAL    0.
-
-D sim_Bx B-field in x direction for left initial state
-PARAMETER sim_Bxleft	REAL    0.75
-
-D sim_Bx B-field in x direction for right initial state
-PARAMETER sim_BxRight   REAL    0.75
-
-D sim_ByLeft B-field in y-direction at the left part of the grid 
-PARAMETER sim_ByLeft	REAL    1.
-
-D sim_ByRight B-field in y-direction at the right part of the grid 
-PARAMETER sim_ByRight	REAL    -1.
-
-D sim_BzLeft B-field in z-direction at the left part of the grid 
-PARAMETER sim_BzLeft	REAL    0.
-
-D sim_BzRight B-field in z-direction at the right part of the grid 
-PARAMETER sim_BzRight	REAL    0.
+D sim_densRight Density in the left part of the grid
+D sim_presRight Pressure in the left part of the grid
+D sim_velxRight Fluix x-velocity in the left part of the grid
+D sim_velyRight Fluix y-velocity in the left part of the grid
+D sim_velzRight Fluix z-velocity in the left part of the grid
+D sim_magxRight B-field x-component in the left part of the grid
+D sim_magyRight B-field y-component in the left part of the grid
+D sim_magzRight B-field z-component in the left part of the grid
+PARAMETER sim_densRight  REAL   0.125  [0 to ]
+PARAMETER sim_presRight  REAL   0.1    [0 to ]
+PARAMETER sim_velxRight  REAL   0.0
+PARAMETER sim_velyRight  REAL   0.0
+PARAMETER sim_velzRight  REAL   0.0
+PARAMETER sim_magxRight  REAL   0.75
+PARAMETER sim_magyRight  REAL  -1.0
+PARAMETER sim_magzRight  REAL   0.0
 
 D sim_posnR  Position of shock along specified direction
 PARAMETER sim_posn	    REAL    0.5

@@ -4,19 +4,30 @@
 
 #	Density, pressure, and velocity on either side of interface
 
-sim_rhoLeft  = 1.
-sim_rhoRight = 0.125
-sim_pLeft    = 1.
-sim_pRight   = 0.1
-sim_uLeft    = 0.
-sim_uRight   = 0.
+sim_densLeft    = 1.
+sim_presLeft    = 1.
+sim_velxLeft    = 0.
+sim_velyLeft    = 0.
+sim_velzLeft    = 0.
+sim_magxLeft    = 0.75
+sim_magyLeft    = 1.0
+sim_magzLeft    = 0.
+
+sim_densRight   = 0.125
+sim_presRight   = 0.1
+sim_velxRight   = 0.
+sim_velyRight   = 0.
+sim_velzRight   = 0.
+sim_magxRight   = 0.75
+sim_magyRight   = -1.0
+sim_magzRight   = 0.
 
 #	Shock parameters
-sim_direction = 1
+sim_direction = 1 # 1 = aligned along x, 2 = aligned along y, 3 = aligned along x=y
 sim_posn		  = 0.5
 
 #	Gas ratio of specific heats
-gamma           = 1.4
+gamma           = 2.0
 
 #	Computational volume parameters
 #	Grid dimensionality and geometry
@@ -39,12 +50,11 @@ yr_boundary_type = "outflow"
 
 #	Simulation (grid, time, I/O) parameters
 
-cfl     = 0.5
-basenm  = "sodsimple_"
+cfl     = 0.2
 restart = .false.
 
 #	checkpoint file output parameters
-checkpointFileIntervalTime = .2
+checkpointFileIntervalTime = .08
 checkpointFileIntervalStep = 0
 checkpointFileNumber = 0
 
@@ -54,44 +64,28 @@ plotfileIntervalStep = 0
 plotfileNumber = 0
 
 nend            = 1000000
-tmax            = .2
+tmax            = .08
 
-run_comment     = "Sod problem"
-log_file        = "sod.log"
-eintSwitch     = 1.e-4
+basenm       = "briowu_2d_x_"
+log_file     = "briowu_2d_x.log"
+run_comment  = "Brio Wu - 2D x-axis"
 
 
 plot_var_1 = "dens"
 plot_var_2 = "pres"
-plot_var_3 = "eint"
-plot_var_4 = "velx"
+plot_var_3 = "velx"
+plot_var_4 = "vely"
+plot_var_5 = "magy"
 
 #	AMR refinement parameters  
 lrefine_max  = 6
 refine_var_1 = "dens"
 
-# These parameters are used only for the uniform grid
-iGridSize = 100 # defined as nxb * iprocs
-jGridSize = 100
-#kGridSize = 1
-iProcs = 1	# number or procs in the i direction	
+iGridSize = 512
+jGridSize = 1
+iProcs = 1
 jProcs = 1
-kProcs = 1
 
-# When using UG, iProcs, jProcs and kProcs must be specified.
-# These are the processors along each of the dimensions
-#FIXEDBLOCKSIZE mode ::
-# When using fixed blocksize, iGridSize etc are redundant in
-# runtime parameters. These quantities are calculated as 
-# iGridSize = NXB*iprocs
-# jGridSize = NYB*jprocs
-# kGridSize = NZB*kprocs
-#NONFIXEDBLOCKSIZE mode ::
-# iGridSize etc must be specified. They constitute the global
-# number of grid points in the physical domain without taking 
-# the guard cell into account. The local blocksize is calculated
-# as iGridSize/iprocs  etc.
- 
 
 ## -------------------------------------------------------------##
 ##  SWITCHES SPECIFIC TO THE UNSPLIT HYDRO SOLVER               ##
