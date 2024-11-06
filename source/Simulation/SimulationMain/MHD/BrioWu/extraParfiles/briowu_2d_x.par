@@ -47,7 +47,6 @@ xr_boundary_type = "outflow"
 yl_boundary_type = "outflow"
 yr_boundary_type = "outflow"
 
-
 #	Simulation (grid, time, I/O) parameters
 
 cfl     = 0.2
@@ -70,52 +69,13 @@ basenm       = "briowu_2d_x_"
 log_file     = "briowu_2d_x.log"
 run_comment  = "Brio Wu - 2D x-axis"
 
-
 plot_var_1 = "dens"
 plot_var_2 = "pres"
 plot_var_3 = "velx"
 plot_var_4 = "vely"
 plot_var_5 = "magy"
 
-#	AMR refinement parameters  
-lrefine_max  = 6
-refine_var_1 = "dens"
-
 iGridSize = 512
 jGridSize = 1
 iProcs = 1
 jProcs = 1
-
-
-## -------------------------------------------------------------##
-##  SWITCHES SPECIFIC TO THE UNSPLIT HYDRO SOLVER               ##
-#	I. INTERPOLATION SCHEME:
-order		= 2      # Interpolation order (first/second/third/fifth order)
-slopeLimiter    = "mc"   # Slope limiters (minmod, mc, vanLeer, hybrid, limited)
-LimitedSlopeBeta= 1.     # Slope parameter for the "limited" slope by Toro
-charLimiting	= .true. # Characteristic limiting vs. Primitive limiting
-
-use_avisc	= .false. # use artificial viscosity (originally for PPM)
-#cvisc		= 0.1     # coefficient for artificial viscosity
-use_flattening	= .false. # use flattening (dissipative) (originally for PPM)
-use_steepening	= .false. # use contact steepening (originally for PPM)
-use_upwindTVD	= .false. # use upwind biased TVD slope for PPM (need nguard=6)
-
-#	II. RIEMANN SOLVERS:
-RiemannSolver	= "Roe"       # Roe, HLL, HLLC, LLF, Marquina
-entropy         = .false.     # Entropy fix for the Roe solver
-
-hy_fPresInMomFlux = 1.0       # Part of pressure gradient term in momentum equation to include in momentum fluxes
-
-#	III. STRONG SHOCK HANDELING SCHEME:
-shockDetect	= .false.     # Shock Detect for numerical stability
-## -------------------------------------------------------------##
-
-## ---------------------------------------------------------------##
-##  SWITCHES SPECIFIC TO THE SUPER-TIME-STEPPING (STS) ALGORITHM  ##
-##  NOTE: For details on using STS runtime parameters, please     ##
-##        refer to user's guide (Driver chapter).                 ##
-useSTS                  = .false.
-nstepTotalSTS           = 5
-nuSTS                   = 0.2
-## ---------------------------------------------------------------##

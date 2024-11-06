@@ -1,4 +1,4 @@
-#	Runtime parameters for the 1D MHD Linear Wave (AS) test.
+#	Runtime parameters for the 1D MHD Linear Wave (FM) test.
 
 #	Parameters for initial model
 
@@ -34,7 +34,6 @@ xmax = 1.
 xl_boundary_type = "periodic"
 xr_boundary_type = "periodic"
 
-
 #	Simulation (grid, time, I/O) parameters
 
 #	checkpoint file output parameters
@@ -60,46 +59,5 @@ basenm      = "linwave_fast_nxb_00032_"
 log_file    = "linwave_fast_nxb_00032.log"
 run_comment = "Linear Wave, Fast Magnetosonic, 1D"
 
-
-#    AMR refinement parameters  
-lrefine_max  = 6
-refine_var_1 = "dens"
-
-# These parameters are used only for the uniform grid
-
-
 iGridSize = 32
 iProcs = 1
-
-## -------------------------------------------------------------##
-##  SWITCHES SPECIFIC TO THE UNSPLIT HYDRO SOLVER               ##
-#	I. INTERPOLATION SCHEME:
-order		= 2      # Interpolation order (first/second/third/fifth order)
-slopeLimiter    = "mc"   # Slope limiters (minmod, mc, vanLeer, hybrid, limited)
-LimitedSlopeBeta= 1.     # Slope parameter for the "limited" slope by Toro
-charLimiting	= .true. # Characteristic limiting vs. Primitive limiting
-
-use_avisc	= .false. # use artificial viscosity (originally for PPM)
-#cvisc		= 0.1     # coefficient for artificial viscosity
-use_flattening	= .false. # use flattening (dissipative) (originally for PPM)
-use_steepening	= .false. # use contact steepening (originally for PPM)
-use_upwindTVD	= .false. # use upwind biased TVD slope for PPM (need nguard=6)
-
-#	II. RIEMANN SOLVERS:
-RiemannSolver	= "Roe"       # Roe, HLL, HLLC, LLF, Marquina
-entropy         = .false.     # Entropy fix for the Roe solver
-
-hy_fPresInMomFlux = 1.0       # Part of pressure gradient term in momentum equation to include in momentum fluxes
-
-#	III. STRONG SHOCK HANDELING SCHEME:
-shockDetect	= .false.     # Shock Detect for numerical stability
-## -------------------------------------------------------------##
-
-## ---------------------------------------------------------------##
-##  SWITCHES SPECIFIC TO THE SUPER-TIME-STEPPING (STS) ALGORITHM  ##
-##  NOTE: For details on using STS runtime parameters, please     ##
-##        refer to user's guide (Driver chapter).                 ##
-useSTS                  = .false.
-nstepTotalSTS           = 5
-nuSTS                   = 0.2
-## ---------------------------------------------------------------##
