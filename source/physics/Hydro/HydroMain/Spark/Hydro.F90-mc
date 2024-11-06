@@ -45,7 +45,6 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
   use Grid_iterator, ONLY : Grid_iterator_t
   use Timers_interface, ONLY : Timers_start, Timers_stop
   use Logfile_interface, ONLY : Logfile_stampVarMask
-  use Eos_interface, ONLY : Eos_multiDim
   use IO_interface, ONLY : IO_setScalar
   use Hydro_interface, ONLY : Hydro_prepBlock, Hydro_advance
 
@@ -76,7 +75,6 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
 
 #include "Simulation.h"
 #include "constants.h"
-#include "Eos.h"
 #include "Spark.h"
 
 #include "Flashx_mpi_implicitNone.fh"
@@ -164,9 +162,6 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
            @M hy_fill_fareas
         end if
 
-        call Timers_start("computations")
-        call Hydro_prepBlock(Uin, hy_Vc, blkLimits, blkLimitsGC, hy_starState, hy_tmpState, &
-                                stage, lo, loGC)
         if (.not. hy_telescoping) then
            @M hy_DIR_TARGET_enter_data(to, [Uin])
         end if
@@ -191,19 +186,14 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
 
         @M hy_DIR_TARGET_update_to([deltas, grownLimits, blkLimits, blkLimitsGC, limits, lo, loGC])
 
-        ! DivB will technically be lagged by 1 step, but we need ghost zones to
-        ! compute the gradients. I ain't doing more communication for a diagnostic...
-
+        call Timers_start("computations")
+        call Hydro_prepBlock(Uin, hy_Vc, blkLimits, blkLimitsGC, hy_starState, hy_tmpState, &
+                                stage, lo, loGC)
 
         if (.not. hy_telescoping .and. stage == 1) then
            @M hy_DIR_TARGET_update_from([hy_tmpState])
         end if
 
-
-        !! Begin loop over stages for the telescoping mode.
-        !!@M hy_stages_t !! this is the do loop statement for telescoping version
-           ! calculate gravitational acceleration based on current value of GPOT_VAR
-           ! This is stored in module-scope variable hy_grav
         call Hydro_advance(stage, Uin, dt, dtOld, &
              hy_starState, hy_tmpState, &
              hy_flx, hy_fly, hy_flz, &
@@ -218,6 +208,8 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
              hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
 
         call Timers_stop("computations")
+
+        @M hy_DIR_TARGET_update_from([hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ])
 
         if ((.not. hy_telescoping) .and. hy_geometry == CARTESIAN) then
            @M hy_DIR_TARGET_exit_data(release, [hy_fareaX, hy_fareaY, hy_fareaZ])
@@ -333,8 +325,6 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
             @M hy_setLimits
 
             @M hy_DIR_TARGET_update_to([deltas, grownLimits, blkLimits, blkLimitsGC, limits, lo, loGC])
-            ! DivB will technically be lagged by 1 step, but we need ghost zones to
-            ! compute the gradients. I ain't doing more communication for a diagnostic...
             @M hy_map_scr_ptrs
             @M hy_DIR_TARGET_enter_data(alloc, [hy_starState, hy_tmpState])
             @M hy_DIR_TARGET_enter_data(alloc, [hy_flx, hy_fly, hy_flz])
@@ -342,69 +332,30 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
             @M hy_DIR_TARGET_enter_data(alloc, [hy_grav, hy_flat3d, hy_Vc])
             @M hy_DIR_TARGET_enter_data(alloc, [hy_rope, hy_flux, hy_uPlus, hy_uMinus])
 
-            call Timers_start("Offloaded Section")
+            call Timers_start("computations")
+            call Hydro_prepBlock(Uin, hy_Vc, blkLimits, blkLimitsGC, hy_starState, hy_tmpState, &
+                                 stage, lo, loGC)
 
-            call hy_rk_shockDetect(Uin, hy_Vc, blkLimitsGC, loGC)
+            if (.not. hy_telescoping .and. stage == 1) then
+               @M hy_DIR_TARGET_update_from([hy_tmpState])
+            end if
 
-            call Timers_start("scratch")
-            call hy_rk_initSolnScratch(stage, Uin, hy_starState, hy_tmpState, &
-                                       blkLimits, blkLimitsGC, lo, loGC)
-            call Timers_stop("scratch")
+            call Hydro_advance(stage, Uin, dt, dtOld, &
+                 hy_starState, hy_tmpState, &
+                 hy_flx, hy_fly, hy_flz, &
+                 hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
+                 hy_grav, hy_flat3d, &
+                 hy_rope, hy_flux, hy_uPlus, hy_uMinus, &
+                 deltas, &
+                 blkLimits, blkLimitsGC, &
+                 lo, loGC, &
+                 hy_xCenter, hy_yCenter, hy_zCenter, &
+                 hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
+                 hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
 
-            !! Begin loop over stages for the telescoping mode.
-            do stage=1, last_stage
+            call Timers_stop("computations")
 
-               ! calculate gravitational acceleration based on current value of GPOT_VAR
-               ! This is stored in hy_grav
-               call hy_rk_getGraveAccel(hy_starState, hy_grav, &
-                                        hy_xCenter, hy_yCenter, deltas, &
-                                        blkLimitsGC, loGC)
-
-               call hy_rk_getFlatteningLimiter(stage, hy_starState, hy_flat3d, limits, loGC)
-
-               ! Perform reconstruction and flux calculation
-               ! In Stage 1, compute low-side fluxes and update for NSTENCIL guardcells
-               call Timers_start("getFaceFlux")
-               call hy_rk_getFaceFlux(stage, hy_starState, hy_flat3d, hy_flx, hy_fly, hy_flz, &
-                                      limits, deltas, &
-                                      hy_rope, hy_flux, hy_uPlus, hy_uMinus, &
-                                      loGC)
-               call Timers_stop("getFaceFlux")
-
-               call hy_rk_saveFluxBuf(stage, hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
-                                      hy_flx, hy_fly, hy_flz, &
-                                      hy_fareaX, hy_fareaY, hy_fareaZ, &
-                                      blkLimits, lo, loGC)
-
-               ! Now update solution based on conservative fluxes
-               ! See select_RK_scheme() for explicit outline of C1, C2, & C3
-               ! U* = C1 * U0 + C2 * U* + C3 * dt*L(U*)
-               call Timers_start("updateSoln")
-               call hy_rk_updateSoln(stage, hy_starState, hy_tmpState, &
-                                     hy_grav, hy_flx, hy_fly, hy_flz, &
-                                     deltas, hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol, hy_xCenter, &
-                                     hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
-                                     dt, dtOld, limits, lo, loGC)
-               call Timers_stop("updateSoln")
-
-#if NSCIES>0
-               call hy_rk_renormAbundance(blkLimitsGC, hy_starState, loGC)
-#endif
-               ! Update EOS based on intermediate solution
-               @M hy_DIR_TARGET_update_from([hy_starState, limits])
-               call Timers_start("eos")
-               call Eos_multiDim(MODE_DENS_EI, limits(:, :, stage),lo, hy_starState)
-               call Timers_stop("eos")
-               @M hy_DIR_TARGET_update_to([hy_starState])
-
-               if (stage == last_stage) then
-                  ! Finally, store the output and free up the scratch array
-                  @M hy_updateState
-               endif
-
-            end do !stage loop
             @M hy_DIR_TARGET_update_from([hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ])
-            call Timers_stop("Offloaded Section")
 
             !In the last stage, modify fluxes on the coarse side of fine coarse boundaries.
             !This incorporates fluxes calculated in the last stage & the 'flux difference'

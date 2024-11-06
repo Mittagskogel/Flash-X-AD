@@ -45,6 +45,8 @@ subroutine Hydro_prepBlock(Uin, hy_Vc, blkLimits, blkLimitsGC, hy_starState, hy_
    integer, dimension(LOW:HIGH, MDIM), intent(IN) :: blkLimits, blkLimitsGC
    integer, intent(IN) :: stage
 
+   ! DivB will technically be lagged by 1 step, but we need ghost zones to
+   ! compute the gradients. I ain't doing more communication for a diagnostic...
    @M hy_calcDivB
    if (hy_telescoping .OR. stage == 1) call hy_rk_shockDetect(Uin, hy_Vc, blkLimitsGC, loGC)
    call hy_rk_initSolnScratch(stage, Uin, hy_starState, hy_tmpState, &
