@@ -21,24 +21,28 @@
 !!
 !!
 
+!!VARIANTS(GPU): Eos_vector, &
+!!               eos_idealGamma, &
+!!               eos_helmSpecies, &
+!!               Driver_abort
+
 
 #include "constants.h"
 #include "Eos.h"
 #include "Simulation.h"
 
-subroutine @M Eos_vector_name (mode, vecLen, eosData, massFrac1, derivs)
+subroutine Eos_vector(mode, vecLen, eosData, massFrac1, derivs)
 
 !==============================================================================
   use Driver_interface, ONLY : Driver_abort
   use Eos_data, ONLY : eos_meshMe, eos_type
-  use eos_localInterface, ONLY : eos_idealGamma, eos_helmSpecies, eos_weakLib,&
-        eos_idealGamma_GPU, eos_helmSpecies_GPU, eos_weakLib_GPU   
+  use eos_localInterface, ONLY : eos_idealGamma, eos_helmSpecies, eos_weakLib
 
   @M eos_DIR_routine(vector)
 
-  @M eos_DIR_routine_none(Driver_abort_GPU)
-  @M eos_DIR_routine_none(eos_idealGamma_GPU)
-  @M eos_DIR_routine_none(eos_helmSpecies_GPU)
+  @M eos_DIR_routine_none(Driver_abort)
+  @M eos_DIR_routine_none(eos_idealGamma)
+  @M eos_DIR_routine_none(eos_helmSpecies)
 
   implicit none
   integer, INTENT(in) :: mode, vecLen
@@ -115,6 +119,6 @@ subroutine @M Eos_vector_name (mode, vecLen, eosData, massFrac1, derivs)
 #endif   
 
   return
-end subroutine @M Eos_vector_name
+end subroutine Eos_vector
 
 

@@ -58,9 +58,14 @@
 #include "Multispecies.h"
 #endif
 
-subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
+!!VARIANTS(GPU): eos_helmSpecies, &
+!!               eos_helm, &
+!!               Driver_abort
 
-  use Driver_interface, ONLY : @M eos_helm_driver_abort_name
+subroutine eos_helmSpecies(mode, @M eos_args, massFrac, derivs)
+
+  use Driver_interface, ONLY : Driver_abort
+  use eos_localInterface, ONLY: eos_helm
 
   use eos_helmData, ONLY: eos_tol, eos_maxNewton,&
        eos_forceConstantInput, eos_useMultiSpecies, &
@@ -69,8 +74,8 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
 
   @M eos_helm_DIR_routine( )
 
-  @M eos_helm_DIR_routine_none(Driver_abort_GPU)
-  @M eos_helm_DIR_routine_none(eos_helm_GPU)
+  @M eos_helm_DIR_routine_none(Driver_abort)
+  @M eos_helm_DIR_routine_none(eos_helm)
 
   implicit none
 
@@ -105,7 +110,7 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
 
   if(eos_useMultiSpecies) then 
      if(.not.present(massFrac)) then
-        call @M eos_helm_driver_abort_name ("[Eos] Helmholtz with species needs mass fractions")
+        call Driver_abort ("[Eos] Helmholtz with species needs mass fractions")
      end if
   end if
 
@@ -149,10 +154,10 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
   
   if (mode==MODE_DENS_TEMP) then
      
-     call @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
-                            dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
-                            deaRow, dezRow, &
-                            pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
+     call eos_helm(ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
+                   dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
+                   deaRow, dezRow, &
+                   pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
      pres=ptotRow
      eint=etotRow
      gamc=gamcRow
@@ -182,10 +187,10 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
         esaveRow = ewantRow
      end if
      !  ewantRow is our desired EI input
-     call @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
-                            dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
-                            deaRow, dezRow, &
-                            pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
+     call eos_helm(ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
+                   dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
+                   deaRow, dezRow, &
+                   pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
      
      tnew = tempRow - (etotRow - ewantRow)  & 
           &           / detRow
@@ -213,10 +218,10 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
      do i = 2, eos_maxNewton
         if (error< eos_tol) goto 70
         
-        call @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
-                               dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
-                               deaRow, dezRow, &
-                               pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
+        call eos_helm(ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
+                      dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
+                      deaRow, dezRow, &
+                      pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
         
         tnew = tempRow - (etotRow - ewantRow)  & 
              &              / detRow
@@ -260,7 +265,7 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
      print *, ' ewant= ', ewantRow
      
         
-     call @M eos_helm_driver_abort_name ('[Eos] Error: too many iterations in Helmholtz Eos')
+     call Driver_abort ('[Eos] Error: too many iterations in Helmholtz Eos')
      
      
      ! Land here if the Newton iteration converged
@@ -270,10 +275,10 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
      
      
      ! Crank through the entire eos one last time
-     call @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
-                            dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
-                            deaRow, dezRow, &
-                            pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
+     call eos_helm(ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
+                   dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
+                   deaRow, dezRow, &
+                   pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
      !  In MODE_DENS_EI, we should be generating temperature and pressure (plus gamma and entropy)
      temp=tempRow
      pres=ptotRow
@@ -303,10 +308,10 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
         psaveRow = pwantRow
      end if
      ! Initialize the errors
-     call @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
-                            dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
-                            deaRow, dezRow, &
-                            pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
+     call eos_helm(ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
+                   dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
+                   deaRow, dezRow, &
+                   pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
      
      tnew = tempRow - (ptotRow - pwantRow)  & 
           &           / dptRow
@@ -336,10 +341,10 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
         if (error .LT. eos_tol) goto 170
         
         ! do eos only over this single item
-        call @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
-                               dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
-                               deaRow, dezRow, &
-                               pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
+        call eos_helm(ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
+                      dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
+                      deaRow, dezRow, &
+                      pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
         
         tnew = tempRow - (ptotRow - pwantRow)  & 
              &              / dptRow
@@ -382,7 +387,7 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
      print *, ' pres = ', ptotRow
      print *, ' pwant= ', pwantRow
      
-     call @M eos_helm_driver_abort_name ('[Eos] Error: too many Newton-Raphson iterations in Eos')
+     call Driver_abort ('[Eos] Error: too many Newton-Raphson iterations in Eos')
      
      
      ! Land here if the Newton iteration converged
@@ -391,10 +396,10 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
      
      
      ! Crank through the entire eos one last time
-     call @M eos_helm_name (ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
-                            dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
-                            deaRow, dezRow, &
-                            pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
+     call eos_helm(ptotRow, tempRow, denRow, gamcRow, etotRow, stotRow, abarRow, zbarRow, &
+                   dpdRow, dptRow, dstRow, dedRow, detRow, dsdRow, &
+                   deaRow, dezRow, &
+                   pelRow, neRow, etaRow, detatRow, cvRow, cpRow)
      
      ! Fill the FLASH arrays with the results.  
      temp=tempRow
@@ -417,7 +422,7 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
      
   else if (mode .NE. MODE_EOS_NOP) then
      if (eos_meshMe .EQ. MASTER_PE) print*, '[Eos] Error: unknown input mode', mode
-     call @M eos_helm_driver_abort_name ('[Eos] Error: unknown input mode in subroutine Eos')
+     call Driver_abort('[Eos] Error: unknown input mode in subroutine Eos')
   end if
      
   ! Get the optional values
@@ -442,9 +447,6 @@ subroutine @M eos_hh_name (mode, @M eos_args, massFrac, derivs)
 
   return
 
-end subroutine @M eos_hh_name 
-
-
-
+end subroutine eos_helmSpecies
 
 

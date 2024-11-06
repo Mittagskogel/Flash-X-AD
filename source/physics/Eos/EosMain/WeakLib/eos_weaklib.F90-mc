@@ -30,8 +30,7 @@
 #include "Simulation.h"
 #include "Eos.h"
 
-
-SUBROUTINE @M eos_wl_name (mode,vecLen,eosData, massFrac,derivs)
+SUBROUTINE eos_weakLib(mode,vecLen,eosData, massFrac,derivs)
 
   USE Driver_interface, ONLY : Driver_abort
   USE eos_weaklib_inter, ONLY: eos_weaklib_short
@@ -81,6 +80,6 @@ SUBROUTINE @M eos_wl_name (mode,vecLen,eosData, massFrac,derivs)
 
   RETURN
 
-END SUBROUTINE @M eos_wl_name
+END SUBROUTINE eos_weakLib
 
 

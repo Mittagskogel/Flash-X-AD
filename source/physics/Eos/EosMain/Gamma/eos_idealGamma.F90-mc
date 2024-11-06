@@ -46,17 +46,20 @@
 #include "Simulation.h"
   
 
-subroutine @M eos_gam_name (mode, @M eos_args, massFrac, derivs)
+!!VARIANTS(GPU): eos_idealGamma, &
+!!               Driver_abort
+
+subroutine eos_idealGamma(mode, @M eos_args, massFrac, derivs)
   
   !==============================================================================
   use Eos_data, ONLY : eos_gasConstant, eos_gamma, &
        eos_singleSpeciesA, eos_singleSpeciesZ
   use eos_idealGammaData, ONLY: eos_gammam1
-  use Driver_interface, ONLY : @M eos_gam_driver_abort_name
+  use Driver_interface, ONLY : Driver_abort
 
   @M eos_gam_DIR_routine( )
 
-  @M eos_gam_DIR_routine_none(Driver_abort_GPU)
+  @M eos_gam_DIR_routine_none(Driver_abort)
 
   implicit none
   
@@ -127,7 +130,7 @@ subroutine @M eos_gam_name (mode, @M eos_args, massFrac, derivs)
      
      ! unrecognized value for mode
   else 
-     call @M eos_gam_driver_abort_name ("[Eos] Unrecognized input mode given to Eos")
+     call Driver_abort("[Eos] Unrecognized input mode given to Eos")
   endif
   
   
@@ -159,7 +162,7 @@ subroutine @M eos_gam_name (mode, @M eos_args, massFrac, derivs)
   
   
   return
-end subroutine @M eos_gam_name
+end subroutine eos_idealGamma
 
 !! FOR FUTURE  : This section is not in use in FLASH 3 yet. none
 !! of the current setups use entropy. This will be taken care of 

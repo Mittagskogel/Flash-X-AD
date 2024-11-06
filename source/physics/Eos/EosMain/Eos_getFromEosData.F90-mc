@@ -28,14 +28,16 @@
 #include "Simulation.h"
   
 
+!!VARIANTS(GPU): Eos_getFromEosData, &
+!!               Driver_abort
 ! solnData depends on the ordering on unk
 !!REORDER(4): solnData
 
 
-subroutine @M Eos_getFromEosData_name (vecB, vecE, eosData,range, lo, solnData)
+subroutine Eos_getFromEosData(vecB, vecE, eosData,range, lo, solnData)
 
   use Eos_data, ONLY: eos_mapLookup
-  use Driver_interface, ONLY : @M eos_driver_abort_name
+  use Driver_interface, ONLY : Driver_abort
 
   @M eos_DIR_routine(vector)
 
@@ -79,7 +81,7 @@ subroutine @M Eos_getFromEosData_name (vecB, vecE, eosData,range, lo, solnData)
             !! consolidate the data at the point into eosData
    @M loop_end_3d
   return
-end subroutine @M Eos_getFromEosData_name
+end subroutine Eos_getFromEosData
 
 
 

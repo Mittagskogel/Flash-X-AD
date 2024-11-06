@@ -23,11 +23,12 @@
 #include "Simulation.h"
   
 
+!!VARIANTS(GPU): Eos_fillEosData
 ! solnData depends on the ordering on unk
 !!REORDER(4): solnData
 
 
-subroutine @M Eos_fillEosData_name (range, lo, solnData, vecB, vecE, eosData)
+subroutine Eos_fillEosData(range, lo, solnData, vecB, vecE, eosData)
 
   use Eos_data, ONLY: eos_eintSwitch, eos_smalle, eos_mapLookup
 
@@ -79,7 +80,7 @@ subroutine @M Eos_fillEosData_name (range, lo, solnData, vecB, vecE, eosData)
   @M loop_end_3d
   vecE = base_n + (ihi - ilo + 1)*(jhi - jlo + 1)*(khi - klo + 1)
   return
-end subroutine @M Eos_fillEosData_name
+end subroutine Eos_fillEosData
 
 
 

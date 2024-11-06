@@ -22,6 +22,11 @@
 !!
 
 ! solnData depends on the ordering on unk
+!!VARIANTS(GPU): Eos_multiDim, &
+!!               Eos_fillEosData, &
+!!               Eos_getFromEosData, &
+!!               Eos_vector, &
+!!               Driver_abort
 !!REORDER(4): solnData
 !!
 
@@ -29,17 +34,17 @@
 #include "constants.h"
 #include "Simulation.h"
  
-subroutine @M Eos_multidim_name (mode,range,lo,solnData @M eos_scratchArgs)
+subroutine Eos_multiDim(mode,range,lo,solnData @M eos_scratchArgs)
 
-  use Driver_interface, ONLY : @M eos_driver_abort_name
-  use Eos_interface, ONLY : @M Eos_fillEosData_name, @M Eos_getFromEosData_name, @M Eos_vector_name
+  use Driver_interface, ONLY : Driver_abort
+  use Eos_interface, ONLY : Eos_fillEosData, Eos_getFromEosData, Eos_vector
 
   @M eos_DIR_routine(vector)
 
-  @M eos_DIR_routine_none(Driver_abort_GPU)
-  @M eos_DIR_routine_vector(Eos_fillEosData_GPU)
-  @M eos_DIR_routine_vector(Eos_vector_GPU)
-  @M eos_DIR_routine_vector(Eos_getFromEosData_GPU)
+  @M eos_DIR_routine_none(Driver_abort)
+  @M eos_DIR_routine_vector(Eos_fillEosData)
+  @M eos_DIR_routine_vector(Eos_vector)
+  @M eos_DIR_routine_vector(Eos_getFromEosData)
 
 #include "FortranLangFeatures.fh"
 
@@ -71,7 +76,7 @@ subroutine @M Eos_multidim_name (mode,range,lo,solnData @M eos_scratchArgs)
 
   @M eos_scratch_alloc
   
-  call @M Eos_fillEosData_name (range, lo, solnData,1, vecLen, eosData)
+  call Eos_fillEosData(range, lo, solnData,1, vecLen, eosData)
   base_n = 0
   !! for readability
   ilo = range(LOW,  IAXIS)
@@ -89,9 +94,9 @@ subroutine @M Eos_multidim_name (mode,range,lo,solnData @M eos_scratchArgs)
                  (i - ilo) + 1
              massFrac(1:NSPECIES,n) = solnData(SPECIES_BEGIN:SPECIES_END,i,j,k)
   @M loop_end_3d   
-  call @M Eos_vector_name (mode,vecLen,eosData, massFrac)
-  call @M Eos_getFromEosData_name (1, vecLen, eosData, range, lo, solnData)
+  call Eos_vector(mode,vecLen,eosData, massFrac)
+  call Eos_getFromEosData(1, vecLen, eosData, range, lo, solnData)
   
   @M eos_scratch_dealloc
   
-end subroutine @M Eos_multidim_name
+end subroutine Eos_multiDim
