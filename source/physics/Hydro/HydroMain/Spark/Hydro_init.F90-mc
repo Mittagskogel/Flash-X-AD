@@ -242,7 +242,7 @@ subroutine Hydro_init()
   hy_tiny = 1.e-32
 
   @M hy_DIR_TARGET_update_to([hy_cvisc, hy_limRad, hy_tiny, hy_gravConst, hy_4piGinv, hy_bref])
-  @M hy_DIR_TARGET_update_to([hy_smalldens, hy_smallE, hy_smallpres, hy_smallX, hy_smallu])
+  @M hy_DIR_TARGET_update_to([hy_smalldens, hy_smallE, hy_smallpres, hy_smallX, hy_smallu, hy_mp5ZeroTol])
   @M hy_DIR_TARGET_update_to([hy_fluxCorrect, hy_fluxCorrectPerLevel, hy_fluxCorVars, hy_geometry])
   @M hy_DIR_TARGET_update_to([hy_hybridRiemann, hy_flattening, hy_alphaGLM, hy_lChyp])
   @M hy_DIR_TARGET_update_to([hy_coeffs, hy_weights, hy_limitsArray, hy_coeffArray,hy_globalLBnd])
