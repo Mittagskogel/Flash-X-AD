@@ -15,6 +15,24 @@
 !!
 !!  Simulation_initBlock
 !!
+!!
+!! SYNOPSIS
+!!
+!!  call Simulation_initBlock(real,pointer :: solnData(:,:,:,:),
+!!                            integer(IN)  :: blockDesc  )
+!!
+!!
+!!
+!! DESCRIPTION
+!!  This routine applies initial conditions of a specific simulation
+!!  to the specified block.
+!!
+!!
+!! ARGUMENTS
+!!
+!!  solnData  -        pointer to solution data
+!!  blockDesc -        describes the block to initialize
+!!
 !!***
 
 !!REORDER(4): solnData

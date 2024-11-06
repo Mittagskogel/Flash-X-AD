@@ -5,11 +5,9 @@ import sys
 
 fnames = sys.argv[1:]
 
-# pre-allocating arrays (considered a sin by some)
 divbs = []
 ts = []
 
-# cycles over first and last state
 for fname in fnames:
 	with h5py.File(fname, "r") as hf:
 		ts.append(hf["real scalars"][1][1])

@@ -1,6 +1,6 @@
-!!****if* source/Simulation/SimulationMain/Sod/Simulation_initBlock
+!!****if* source/Simulation/SimulationMain/MHD/BrioWu/Simulation_initBlock
 !! NOTICE
-!!  Copyright 2022 UChicago Argonne, LLC and contributors
+!!  Copyright 2024 UChicago Argonne, LLC and contributors
 !!
 !!  Licensed under the Apache License, Version 2.0 (the "License");
 !!  you may not use this file except in compliance with the License.
@@ -14,6 +14,24 @@
 !! NAME
 !!
 !!  Simulation_initBlock
+!!
+!!
+!! SYNOPSIS
+!!
+!!  call Simulation_initBlock(real,pointer :: solnData(:,:,:,:),
+!!                            integer(IN)  :: blockDesc  )
+!!
+!!
+!!
+!! DESCRIPTION
+!!  This routine applies initial conditions of a specific simulation
+!!  to the specified block.
+!!
+!!
+!! ARGUMENTS
+!!
+!!  solnData  -        pointer to solution data
+!!  blockDesc -        describes the block to initialize
 !!
 !!***
 

@@ -147,15 +147,9 @@ axs[2,1].plot(r, divB, "r-", fillstyle="none", ms=1.5)
 # Coordinate labels
 axs[-1,0].set_xlabel(rf"${rname}$")
 axs[-1,1].set_xlabel(rf"${rname}$")
-# axs[0, 0].set_xlabel(rf"${rname}$")
-# axs[0, 1].set_xlabel(rf"${rname}$")
-# axs[1, 0].set_xlabel(rf"${rname}$")
-# axs[1, 1].set_xlabel(rf"${rname}$")
 
 axs[0,0].set_ylabel(r"$\rho$")
-# axs[0, 1].set_ylabel(r"Internal Energy")
 axs[0,1].set_ylabel(r"$P$")
-# axs[1, 1].set_ylabel(r"Velocity")
 
 axs[1,0].set_ylabel(r"$v_n$")
 axs[1,1].set_ylabel(r"$v_\perp$")
@@ -167,10 +161,3 @@ fig.suptitle(rf"Brio Wu Shock Tube - $t = {t:0.1f}$")
 
 fig.savefig(f"{fig_name}.pdf")
 fig.savefig(f"{fig_name}.png")
-
-# ii = int(0.85*nxb)
-
-# print(D[iz,iy,ii], sx[iz,iy,ii],sy[iz,iy,ii],sz[iz,iy,ii],tau[iz,iy,ii])
-# print(dens[ii], eint[ii], pres[ii], vx[ii], 0.0, vz[ii], W[ii])
-
-# print(divB)

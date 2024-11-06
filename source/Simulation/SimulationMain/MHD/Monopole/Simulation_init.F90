@@ -1,6 +1,6 @@
 !!****if* source/Simulation/SimulationMain/DivergenceCleaningTest/Simulation_init
 !! NOTICE
-!!  Copyright 2022 UChicago Argonne, LLC and contributors
+!!  Copyright 2024 UChicago Argonne, LLC and contributors
 !!
 !!  Licensed under the Apache License, Version 2.0 (the "License");
 !!  you may not use this file except in compliance with the License.
@@ -23,16 +23,7 @@
 !!
 !! DESCRIPTION
 !!
-!!  Initializes all the parameters needed for the Sod shock tube
-!!  problem
-!!
-!! ARGUMENTS
-!!
-!!
-!!
-!! PARAMETERS
-!!
-!!
+!!  Initializes the MHD monopole problem
 !!
 !!***
 

@@ -22,16 +22,6 @@
 !!
 !!  Store the simulation data for 1D MHD linear wave problems
 !!
-!! ARGUMENTS
-!!
-!!
-!! PARAMETERS
-!!
-!!
-!!
-!!
-!!
-!!
 !!***
 module Simulation_data
 
@@ -39,7 +29,7 @@ module Simulation_data
 
    implicit none
 
-   real, save :: sim_dens, sim_pres, sim_eint, sim_gamc, sim_game
+   real, save :: sim_dens, sim_pres, sim_gamc, sim_game
    real, save :: sim_velx, sim_vely, sim_velz
    real, save :: sim_magx, sim_magy, sim_magz
 

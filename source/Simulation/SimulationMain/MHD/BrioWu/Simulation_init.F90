@@ -1,6 +1,6 @@
 !!****if* source/Simulation/SimulationMain/Sod/Simulation_init
 !! NOTICE
-!!  Copyright 2022 UChicago Argonne, LLC and contributors
+!!  Copyright 2024 UChicago Argonne, LLC and contributors
 !!
 !!  Licensed under the Apache License, Version 2.0 (the "License");
 !!  you may not use this file except in compliance with the License.
@@ -23,31 +23,7 @@
 !!
 !! DESCRIPTION
 !!
-!!  Initializes all the parameters needed for the Sod shock tube
-!!  problem
-!!
-!! ARGUMENTS
-!!
-!!
-!!
-!! PARAMETERS
-!!
-!!  sim_rhoLeft    Density in the left part of the grid
-!!  sim_rhoRight   Density in the right part of the grid
-!!  sim_pLeft      Pressure  in the left part of the grid
-!!  sim_pRight     Pressure  in the righ part of the grid
-!!  sim_uxRight     fluid x-velocity in the right part of the grid
-!!  sim_uyLeft      fluid y-velocity in the left part of the grid
-!!  sim_uyRight     fluid y-velocity in the right part of the grid
-!!  sim_uzLeft      fluid z-velocity in the left part of the grid
-!!  sim_uzRight     fluid z-velocity in the right part of the grid
-!!  sim_BxLeft      B-field x-component in left state
-!!  sim_BxRight     B-field x-component in right state
-!!  sim_ByLeft      B-field y-component in the left part of the grid
-!!  sim_ByRight     B-field y-component in the right part of the grid
-!!  sim_BzLeft      B-field z-component in the left part of the grid
-!!  sim_BzRight     B-field z-component in the right part of the grid
-!!  sim_posnR      Point of intersection between the shock plane and the x-axis
+!!  Initializes all the Brio Wu shock tube problem
 !!
 !!***
 

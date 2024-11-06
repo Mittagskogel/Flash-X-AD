@@ -23,8 +23,8 @@
 !!  Store the simulation data for the Brio-Wu Shock tube problem
 !!
 !!***
-
 module Simulation_data
+
 #include "Simulation.h"
 #include "constants.h"
 

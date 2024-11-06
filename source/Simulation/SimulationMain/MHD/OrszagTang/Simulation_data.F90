@@ -1,4 +1,4 @@
-!!****if* source/Simulation/SimulationMain/OrszagTang/Simulation_data
+!!****if* source/Simulation/SimulationMain/MHD/OrszagTang/Simulation_data
 !! NOTICE
 !!  Copyright 2024 UChicago Argonne, LLC and contributors
 !!

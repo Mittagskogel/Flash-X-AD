@@ -23,14 +23,8 @@
 !!
 !! DESCRIPTION
 !!
-!!  Initializes all the parameters needed for the MHD Linear wave (AS)
-!!  problem
+!!  Initializes the MHD linear wave problem
 !!
-!! ARGUMENTS
-!!
-!!
-!!
-!! PARAMETERS
 !!
 !!***
 
@@ -72,8 +66,6 @@ subroutine Simulation_init()
    sim_gamc = gamma
    sim_game = gamma
    sim_gamma = gamma
-
-   sim_eint = sim_pres/(sim_dens*(gamma - 1.0))
 
    sim_V0 = [sim_dens, sim_velx, sim_vely, sim_velz, sim_pres, sim_magx, sim_magy, sim_magz]
 
