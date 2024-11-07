@@ -76,6 +76,6 @@ plot_var_4 = "vely"
 plot_var_5 = "magy"
 
 iGridSize = 512
-jGridSize = 1
+jGridSize = 512
 iProcs = 1
 jProcs = 1

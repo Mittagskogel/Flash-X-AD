@@ -23,7 +23,7 @@ sim_magyRight   = -1.0
 sim_magzRight   = 0.
 
 #	Shock parameters
-sim_direction = 1 # 1 = aligned along x, 2 = aligned along y, 3 = aligned along x=y
+sim_direction = 2 # 1 = aligned along x, 2 = aligned along y, 3 = aligned along x=y
 sim_posn		  = 0.5
 
 #	Gas ratio of specific heats
@@ -76,6 +76,6 @@ plot_var_4 = "vely"
 plot_var_5 = "magy"
 
 iGridSize = 512
-jGridSize = 1
+jGridSize = 512
 iProcs = 1
 jProcs = 1
