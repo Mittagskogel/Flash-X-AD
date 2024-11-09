@@ -66,7 +66,6 @@ subroutine Burn (  dt  )
   use Burn_data, ONLY : bn_nuclearTempMin, bn_nuclearTempMax, bn_nuclearDensMin, &
        &   bn_nuclearDensMax, bn_nuclearNI56Max, bn_useShockBurn, &
        &   bn_useBurn, bn_gcMaskSD
-  use Burn_dataEOS, only: ytot1, bye
   use Driver_interface, ONLY : Driver_abort
   use Eos_interface, ONLY : Eos_multiDim
   use Grid_interface, ONLY : Grid_fillGuardCells, Grid_getCellCoords, &
@@ -103,7 +102,7 @@ subroutine Burn (  dt  )
   logical :: okBurnTemp, okBurnDens, okBurnShock, okBurnNickel
   logical, parameter :: getGuardCells = .true.
 
-  real, dimension(NSPECIES) :: xmass
+  real, dimension(NSPECIES) :: xmass, ymass
 
   real,    allocatable :: shock(:,:,:)
   real,    allocatable, target :: xIn(:,:,:,:,:), xOut(:,:,:,:,:)
@@ -124,6 +123,7 @@ subroutine Burn (  dt  )
   integer, parameter :: shock_mode = 1
   real, parameter :: shock_thresh = 0.33
   real :: ei, ek, enuc
+  real :: abar, zbar, z2bar, ytot1, bye
   integer :: i, j, k, m, n, ii, jj, kk, mm, nn
 #ifdef DEBUG_GRID_GCMASK
   logical,save :: gcMaskLogged =.FALSE.
@@ -232,8 +232,8 @@ subroutine Burn (  dt  )
 
      ! Shock detector
      if (.NOT. bn_useShockBurn) then
-        call Hydro_shockStrength(solnData, shock, lo, hi, loHalo, hiHalo, &
-           xCoord,yCoord,zCoord,shock_thresh,shock_mode)
+        call Hydro_shockStrength(solnData, lo, hi, loHalo, hiHalo, &
+             xCoord,yCoord,zCoord,shock_thresh,shock_mode)
      else
         shock(:,:,:) = 0.0
      endif
@@ -397,7 +397,7 @@ subroutine Burn (  dt  )
 #endif
 
                  xmass = xOut(1:NSPECIES,ii,jj,kk,thisBlock)
-                 call bn_azbar
+                 call bn_azbar(xmass, ymass, abar, zbar, z2bar, ytot1, bye)
 
 #ifdef YE_MSCALAR
                  solnData(YE_MSCALAR,i,j,k) = bye
