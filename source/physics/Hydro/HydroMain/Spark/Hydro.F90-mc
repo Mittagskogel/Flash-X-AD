@@ -325,7 +325,6 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
             endif
             if ((.not. hy_telescoping) .and. hy_geometry == CARTESIAN) then
                @M hy_map_fareas
-               @M hy_fill_fareas
                @M hy_DIR_TARGET_enter_data(to, [hy_fareaX, hy_fareaY, hy_fareaZ])
             end if
 
