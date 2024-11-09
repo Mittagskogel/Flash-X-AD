@@ -76,7 +76,7 @@ subroutine Hydro_prepBlock(Uin, blkLimits, blkLimitsGC, deltas, &
          @M Grid_getLeftEdgeCoords(hy_globalLBnd, IAXIS, deltas, i, hy_xLeft)
          @M Grid_getRightEdgeCoords(hy_globalLBnd, IAXIS, deltas, i, hy_xRight)
       end do
-#if NDIN > 1
+#if NDIM > 1
       @M hy_DIR_parallel_loop(1)
       do j = blkLimitsGC(LOW, JAXIS), blkLimitsGC(HIGH, JAXIS)
          @M Grid_getCenterCoords(hy_globalLBnd, JAXIS, deltas, j, hy_yCenter)
