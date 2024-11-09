@@ -81,6 +81,10 @@ subroutine Hydro_shockStrength(solnData, lo,hi,loHalo,hiHalo,&
 
 !------------------------------------------------------------------------------
 
+#ifndef SHOK_VAR
+  call Driver_abort("Hydro_shockStrength: SHOK_VAR is not defined")
+#endif
+
 #ifdef DEBUG_HYDRO_GUARDCELLS
   if (guardCells .GE. NGUARD) then
      call Driver_abort("Hydro_shockStrength: too many guard cell layers requested")
@@ -438,6 +442,7 @@ subroutine Hydro_shockStrength(solnData, lo,hi,loHalo,hiHalo,&
              shockd = stren
           end if
 
+#ifdef SHOK_VAR
           select case (mode)
           case(1)
              ! nothing
@@ -454,6 +459,8 @@ subroutine Hydro_shockStrength(solnData, lo,hi,loHalo,hiHalo,&
           jm = min(max(j,blkLimits(LOW,JAXIS)),blkLimits(HIGH,JAXIS))
           km = min(max(k,blkLimits(LOW,KAXIS)),blkLimits(HIGH,KAXIS))
           solnData(SHOK_VAR,im,jm,km) = max(solnData(SHOK_VAR,im,jm,km),shockd)
+#endif
+
 #endif
 
        enddo

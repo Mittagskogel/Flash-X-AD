@@ -60,7 +60,6 @@ VARIABLE ener TYPE: PER_MASS   	EOSMAP:  ENER # specific total energy (T+U)
 #VARIABLE game               	EOSMAP:  GAME # internal energy gamma
 VARIABLE temp                  	EOSMAP:  TEMP # temperature
 VARIABLE eint TYPE: PER_MASS   	EOSMAP:  EINT # specific internal energy (U)
-VARIABLE shok # flag variable for shock detection
 
 
 D UnitSystem	System of Units, must be "none" for simpleUnsplit Hydro solver
