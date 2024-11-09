@@ -169,17 +169,6 @@ module hy_rk_interface
      end subroutine hy_rk_saveFluxBuf
    end interface
 
-!!$   interface
-!!$      subroutine hy_rk_eos_wrapped(stage,mode,idxRange,starState, &
-!!$                                   loGC, mask)
-!!$       implicit none
-!!$       integer, intent(in) :: stage, mode, loGC(3)
-!!$       integer, dimension(2, MDIM, MAXSTAGE), intent(in) :: idxRange
-!!$       real, intent(IN OUT) :: starState(1:, loGC(1):, loGC(2):, loGC(3):)
-!!$       logical, dimension(EOS_VARS+1:EOS_NUM), optional, intent(IN) :: mask
-!!$      end subroutine hy_rk_eos_wrapped
-!!$   end interface
-
    @M hy_rk_interface_GPU
 
 end module hy_rk_interface
