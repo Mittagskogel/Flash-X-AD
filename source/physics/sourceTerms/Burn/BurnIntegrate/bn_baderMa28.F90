@@ -75,7 +75,7 @@
 
 
 
-subroutine bn_baderMa28(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, & 
+subroutine bn_baderMa28(state,y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, & 
      &                   derivs,jakob,bjakob)
 
 
@@ -83,12 +83,13 @@ subroutine bn_baderMa28(y,dydx,ratdum,nv,x,btemp,htry,eps,yscal,hdid,hnext, &
   use Driver_interface, ONLY : Driver_abort
   ! can't use jakob interface; see notes in bnNetwork_interface for the mystery.
   use bnIntegrate_interface, ONLY: bn_baderStepMa28, bn_pzExtr, pzExtr_state_t
-  use bnNetwork_interface, ONLY: derivs_t, jakob_t, bjakob_t
+  use bnNetwork_interface, ONLY: derivs_t, jakob_t, bjakob_t, steper_state_t
 
   implicit none
 
 
   !!  argument declarations
+  type(steper_state_t), intent(IN OUT) :: state
   integer, intent(IN) :: nv
   real, intent(IN)    :: dydx(nv), yscal(nv), ratdum(:), htry, eps, btemp
   real, intent(INOUT) :: x, y(nv)

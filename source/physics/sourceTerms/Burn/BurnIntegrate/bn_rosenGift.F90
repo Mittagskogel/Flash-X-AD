@@ -70,14 +70,14 @@
 !!
 !!***
 
-subroutine bn_rosenGift(y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  &
+subroutine bn_rosenGift(state,y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  &
      &                      derivs,jakob,bjakob)
 
   use Driver_interface, ONLY : Driver_abort
   use Logfile_interface, ONLY: Logfile_stampMessage
   use bn_interface, ONLY: bn_gift
   use Burn_data, ONLY : bn_meshMe
-  use bnIntegrate_interface, ONLY: derivs_t, jakob_t, bjakob_t
+  use bnNetwork_interface, ONLY: derivs_t, jakob_t, bjakob_t, steper_state_t
 
   implicit none
 
@@ -86,6 +86,7 @@ subroutine bn_rosenGift(y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  &
 !! argument declarations
   ! Note that bjakob is not used in this routine, and jakob explanation found in
   ! bnNetwork_interface
+  type(steper_state_t), intent(IN OUT) :: state
   integer, intent(IN) :: n
   real, intent(IN)    :: dydx(n), yscal(n), ratdum(:), htry, eps, btemp
   real, intent(INOUT) :: x, y(n)
@@ -97,12 +98,12 @@ subroutine bn_rosenGift(y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  &
 
 !! local variables
   integer, parameter  :: nmax=30, maxtry=400
-  real, save          :: errmax,h,xsav,dysav(nmax),err(nmax),g1(nmax),  &
-       &                 g2(nmax),g3(nmax),g4(nmax),ysav(nmax),xx
+  real :: errmax,h,xsav,dysav(nmax),err(nmax),g1(nmax),  &
+          g2(nmax),g3(nmax),g4(nmax),ysav(nmax),xx
   real, parameter     ::    safety=0.9e0, grow=1.5e0, pgrow=-0.25e0,  &
        &           shrnk=0.5e0,  pshrnk=-1.0e0/3.0e0, errcon=0.1296e0
 
-  integer, save       :: i,j,jtry
+  integer :: i,j,jtry
   real :: dydx_out(n)
 
 !!  shampine parameter set
@@ -121,9 +122,9 @@ subroutine bn_rosenGift(y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  &
 
 
 !!  for the gift linear algebra
-  integer, parameter   :: nmaxp1 = nmax + 1
-  real, save           :: dfdy(nmax,nmax), dmat(nmax,nmax), &
-       &                 av(nmax,nmaxp1)
+  integer, parameter :: nmaxp1 = nmax + 1
+  real :: dfdy(nmax,nmax), dmat(nmax,nmax), &
+          av(nmax,nmaxp1)
 
 !!-------------------------------------------------------------------------------
 

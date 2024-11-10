@@ -71,18 +71,19 @@
 !!***
 !!---------------------------------------------------------------------------------
 
-subroutine bn_rosenMa28(y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  & 
+subroutine bn_rosenMa28(state,y,dydx,ratdum,n,x,btemp,htry,eps,yscal,hdid,hnext,  & 
      &                      derivs,jakob,bjakob) 
 
   use Driver_interface, ONLY : Driver_abort
   use Logfile_interface, ONLY: Logfile_stampMessage
-  use bnIntegrate_interface, ONLY: derivs_t, jakob_t, bjakob_t
+  use bnIntegrate_interface, ONLY: derivs_t, jakob_t, bjakob_t, steper_state_t
   use Burn_data, ONLY : bn_meshMe
 #include "constants.h"
 
   implicit none
 
 !! argument declarations
+  type(steper_state_t), intent(IN OUT) :: state
   integer, intent(IN) :: n
   real, intent(IN)    :: dydx(n), yscal(n), ratdum(:), htry, eps, btemp
   real, intent(INOUT) :: x, y(n)
