@@ -112,6 +112,10 @@ subroutine Burn (  dt  )
   ! ----------------------- check if burning is requested in runtime parameters -------
   if (.not. bn_useBurn) return
 
+#ifndef SHOK_VAR
+  call Driver_abort("[Burn.F90] SHOK_VAR is not defined")
+#endif
+
   !---------------------------------------------------------------------------------
   nullify(solnData)
   ! start the timer ticking

@@ -104,7 +104,6 @@ subroutine Burn (  dt  )
 
   real, dimension(NSPECIES) :: xmass, ymass
 
-  real,    allocatable :: shock(:,:,:)
   real,    allocatable, target :: xIn(:,:,:,:,:), xOut(:,:,:,:,:)
   real,    allocatable, target :: sdot(:,:,:,:), tmp(:,:,:,:), rho(:,:,:,:)
   logical, allocatable, target :: burnedZone(:,:,:,:)
@@ -136,6 +135,10 @@ subroutine Burn (  dt  )
 
   ! ----------------------- check if burning is requested in runtime parameters -------
   if (.not. bn_useBurn) return
+
+#ifndef SHOK_VAR
+  call Driver_abort("[Burn.F90] SHOK_VAR is not defined")
+#endif
 
   !---------------------------------------------------------------------------------
   nullify(solnData)
@@ -209,10 +212,6 @@ subroutine Burn (  dt  )
      jSize = hi(JAXIS)-lo(JAXIS)+1
      kSize = hi(KAXIS)-lo(KAXIS)+1
 
-     allocate(shock(loHalo(IAXIS):hiHalo(IAXIS),&
-                    loHalo(JAXIS):hiHalo(JAXIS),&
-                    loHalo(KAXIS):hiHalo(KAXIS)))
-
      ! identify the range of batches in each block (use floor/ceil in case of overlap)
      batch_lo(thisBlock) = nzones / xnet_nzbatchmx + 1
      nzones = nzones + iSize * jSize * kSize
@@ -235,7 +234,7 @@ subroutine Burn (  dt  )
         call Hydro_shockStrength(solnData, lo, hi, loHalo, hiHalo, &
              xCoord,yCoord,zCoord,shock_thresh,shock_mode)
      else
-        shock(:,:,:) = 0.0
+        solnData(SHOK_VAR, :, :, :) = 0.0
      endif
 
      solnData(NMPI_VAR,:,:,:) = xnet_myid
@@ -270,7 +269,7 @@ subroutine Burn (  dt  )
 
               okBurnTemp = (tmp(ii,jj,kk,thisBlock) >= bn_nuclearTempMin .AND. tmp(ii,jj,kk,thisBlock) <= bn_nuclearTempMax)
               okBurnDens = (rho(ii,jj,kk,thisBlock) >= bn_nuclearDensMin .AND. rho(ii,jj,kk,thisBlock) <= bn_nuclearDensMax)
-              okBurnShock = (shock(i,j,k) <= 0.0 .OR. (shock(i,j,k) > 0.0 .AND. bn_useShockBurn))
+              okBurnShock = (solnData(SHOK_VAR,i,j,k) <= 0.0 .OR. (solnData(SHOK_VAR,i,j,k) > 0.0 .AND. bn_useShockBurn))
 
               if (okBurnTemp .AND. okBurnDens .AND. okBurnShock) then
 
@@ -296,7 +295,6 @@ subroutine Burn (  dt  )
      deallocate(xCoord)
      deallocate(yCoord)
      deallocate(zCoord)
-     deallocate(shock)
 
      call itor%next()
 
