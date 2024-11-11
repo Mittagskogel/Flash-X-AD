@@ -73,7 +73,7 @@ subroutine Burn_burner(Uin, loGC, blkLimits, dt)
 
             tmp  = Uin(TEMP_VAR,i,j,k)
             rho  = Uin(DENS_VAR,i,j,k)
-            sdot = 0.0e0
+            sdot = Uin(ENUC_VAR,i,j,k)
 
             okBurnTemp = (tmp >= bn_nuclearTempMin .AND. tmp <= bn_nuclearTempMax)
             okBurnDens = (rho >= bn_nuclearDensMin .AND. rho <= bn_nuclearDensMax)
