@@ -4,181 +4,303 @@
 #------------------------------------------------
 # Tests for - Sod
 #------------------------------------------------
-# Sod -t "Comparison/Sod/UG/2d/simpleUnsplit" -np 1 \
-# 	-e OMP_NUM_THREADS=1 -cbase 2023-01-18
-# Sod -t "Comparison/Sod/UG/2d/unsplit" -np 4 -cbase 2023-01-18
-# Sod -t "Comparison/Sod/UG/2d/spark" -np 4 -cbase 2023-01-18
-# Sod -t "Comparison/Sod/AMR/3d/cube16/Paramesh/unsplit" -np 8 -cbase 2023-01-18
-# Sod -t "Comparison/Sod/AMR/3d/cube16/pm4Nolwf/unsplit" -np 8 -cbase 2023-01-18
-# Sod -t "Composite/Sod/PseudoUG/2d/AMReX/simpleUnsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
-# Sod -t "Composite/Sod/PseudoUG/2d/AMReX/unsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
-# Sod -t "Composite/Sod/PseudoUG/2d/AMReX/spark" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
-# Sod -t "Composite/Sod/PseudoUG/2d/AMReX/sparkMT" -np 4 \
-# 	-e OMP_NUM_THREADS=2 -cbase 2023-01-18 -rbase 2023-01-19
-# Sod -t "Composite/Sod/PseudoUG/2d/AMReX/sparkPIO" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
-# Sod -t "Composite/Sod/AMR/2d/Paramesh/unsplit" -np 1 -cbase 2024-09-16_2 -rbase 2024-09-16_2
-# Sod -t "Composite/Sod/PseudoUG/2d/Paramesh/unsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
-# Sod -t "Composite/Sod/PseudoUG/2d/Paramesh/sparkMT" -np 4 \
-# 	-e OMP_NUM_THREADS=2 -cbase 2023-01-18 -rbase 2023-01-19
-# Sod -t "Composite/Sod/PseudoUG/2d/Paramesh/simpleUnsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
-# Sod -t "Composite/Sod/AMR/2d/AMReX/simpleUnsplit" -np 1 -cbase 2023-01-18 -rbase 2023-01-19
-# Sod -t "Composite/Sod/AMR/2d/AMReX/unsplit" -np 2 -cbase 2023-01-18 -rbase 2023-01-19
-# Sod -t "Composite/Sod/AMR/2d/Paramesh/simpleUnsplit" -np 1 -cbase 2024-09-16_2 -rbase 2024-09-16_2
-# Sod -t "Composite/Sod/AMR/2d/pm4Bittree/simpleUnsplit" -np 1 -cbase 2024-09-16_2 -rbase 2024-09-16_2
-# Sod -t "Composite/Sod/AMR/2d/pm4AltMortonBittree/TBL/unsplit" -np 2 \
-# 	-e OMP_NUM_THREADS=2 -e OMP_STACKSIZE=16M -cbase 2024-09-16_2 -rbase 2024-09-16_2
-# Sod -t "Composite/Sod/AMR/2d/pm4AltMortonBittree/unsplit" -np 2 \
-# 	-e OMP_NUM_THREADS=1 -cbase 2024-09-16_2 -rbase 2024-09-16_2
+Sod -t "Comparison/Sod/UG/2d/simpleUnsplit" -np 1 \
+	-e OMP_NUM_THREADS=1 -cbase 2023-01-18
+Sod -t "Comparison/Sod/UG/2d/unsplit" -np 4 -cbase 2023-01-18
+Sod -t "Comparison/Sod/UG/2d/spark" -np 4 -cbase 2023-01-18
+Sod -t "Comparison/Sod/AMR/3d/cube16/Paramesh/unsplit" -np 8 -cbase 2023-01-18
+Sod -t "Comparison/Sod/AMR/3d/cube16/pm4Nolwf/unsplit" -np 8 -cbase 2023-01-18
+Sod -t "Composite/Sod/PseudoUG/2d/AMReX/simpleUnsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
+Sod -t "Composite/Sod/PseudoUG/2d/AMReX/unsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
+Sod -t "Composite/Sod/PseudoUG/2d/AMReX/spark" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
+Sod -t "Composite/Sod/PseudoUG/2d/AMReX/sparkMT" -np 4 \
+	-e OMP_NUM_THREADS=2 -cbase 2023-01-18 -rbase 2023-01-19
+Sod -t "Composite/Sod/PseudoUG/2d/AMReX/sparkPIO" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
+Sod -t "Composite/Sod/AMR/2d/Paramesh/unsplit" -np 1 -cbase 2023-04-12 -rbase 2023-04-16
+Sod -t "Composite/Sod/PseudoUG/2d/Paramesh/unsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
+Sod -t "Composite/Sod/PseudoUG/2d/Paramesh/sparkMT" -np 4 \
+	-e OMP_NUM_THREADS=2 -cbase 2023-01-18 -rbase 2023-01-19
+Sod -t "Composite/Sod/PseudoUG/2d/Paramesh/simpleUnsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
+Sod -t "Composite/Sod/AMR/2d/AMReX/simpleUnsplit" -np 1 -cbase 2023-01-18 -rbase 2023-01-19
+Sod -t "Composite/Sod/AMR/2d/AMReX/unsplit" -np 2 -cbase 2023-01-18 -rbase 2023-01-19
+Sod -t "Composite/Sod/AMR/2d/Paramesh/simpleUnsplit" -np 1  -cbase 2023-04-12 -rbase 2023-04-16
+Sod -t "Composite/Sod/AMR/2d/pm4Bittree/simpleUnsplit" -np 1  -cbase 2023-04-12 -rbase 2023-04-16
+Sod -t "Composite/Sod/AMR/2d/pm4AltMortonBittree/TBL/unsplit" -np 2 \
+	-e OMP_NUM_THREADS=2 -e OMP_STACKSIZE=16M -cbase 2023-04-12 -rbase 2023-04-16
+Sod -t "Composite/Sod/AMR/2d/pm4AltMortonBittree/unsplit" -np 2 \
+	-e OMP_NUM_THREADS=1 -cbase 2023-04-12 -rbase 2023-04-16
 
 #------------------------------------------------
 # Tests for - Sedov
 #------------------------------------------------
-# # Newly added test after relevant code fix - Klaus Weide 2024-03-05
-# Sedov -t "Comparison/Sedov/UG/Part/2d/unsplit" -np 4 -cbase 2024-03-05
+# Newly added test after relevant code fix - Klaus Weide 2024-03-05
+Sedov -t "Comparison/Sedov/UG/Part/2d/unsplit" -np 4 -cbase 2024-03-05
+
+Sedov -t "Comparison/Sedov/Part/2d/Paramesh" -np 4 -cbase 2023-01-18
+Sedov -t "Comparison/Sedov/UG/2d/unsplit" -np 4 -cbase 2023-01-18
+Sedov -t "Comparison/Sedov/UG/2d/spark" -np 4 -cbase 2023-01-18
+
+# Commenting out all Milhoja tests after discussion with Jared O'Neal
+# related to compatibility with AMReX SHA-1 f08b40b. He needs more time
+# to rebuild software stack for these tests and would prefer if they
+# were commented out for the time being 
+# - by Akash Dhruv on 2023-09-27
+#Sedov -t "Comparison/Sedov/PseudoUG/2d/Milhoja/simpleUnsplit" -np 4 -cbase 2023-01-18
+#Sedov -t "Comparison/Sedov/PseudoUG/3d/Milhoja/unsplit" -np 8 -cbase 2023-01-18
+
+Sedov -t "Composite/Sedov/PseudoUG/2d/Paramesh/simpleUnsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
+Sedov -t "Composite/Sedov/PseudoUG/2d/Paramesh/unsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
+Sedov -t "Composite/Sedov/PseudoUG/2d/AMReX/simpleUnsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
+Sedov -t "Composite/Sedov/PseudoUG/2d/AMReX/unsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
+Sedov -t "Composite/Sedov/PseudoUG/2d/AMReX/spark" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
+Sedov -t "Composite/Sedov/PseudoUG/3d/Paramesh/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
+Sedov -t "Composite/Sedov/PseudoUG/3d/AMReX/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
+Sedov -t "Composite/Sedov/PseudoUG/2dCyl/AMReX/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
+Sedov -t "Composite/Sedov/PseudoUG/2dCyl/Paramesh/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
+Sedov -t "Composite/Sedov/PseudoUG/2dCyl/Paramesh/spark" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
+Sedov -t "Composite/Sedov/AMR/2d/Paramesh/simpleUnsplit" -np 1 -cbase 2023-01-18 -rbase 2023-01-19
+Sedov -t "Composite/Sedov/AMR/2d/Paramesh/unsplit" -np 1 -cbase 2023-01-18 -rbase 2023-01-19
+
+# Updated benchmark after Spark code change - Klaus Weide 2023-11-24
+Sedov -t "Composite/Sedov/AMR/2dSph/Paramesh/spark" -np 4 -cbase 2023-11-22 -rbase 2023-11-23
+Sedov -t "Composite/Sedov/AMR/2d/AMReX/simpleUnsplit" -np 1 -cbase 2023-01-18 -rbase 2023-01-19
+Sedov -t "Composite/Sedov/AMR/2d/AMReX/unsplit" -np 2 -cbase 2023-01-18 -rbase 2023-01-19
+
+# Updated benchmark after Spark code update - Klaus Weide 2023-11-24
+Sedov -t "Composite/Sedov/AMR/2d/AMReX/spark" -np 4 -cbase 2023-11-23 -rbase 2023-11-23
+Sedov -t "Composite/Sedov/AMR/3d/Paramesh/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
+Sedov -t "Composite/Sedov/AMR/3d/pm4Bittree/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
+Sedov -t "Composite/Sedov/AMR/3d/AMReX/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
+Sedov -t "Composite/Sedov/AMR/3dSph/Paramesh/spark" -np 8 -cbase 2023-10-11 -rbase 2023-10-11_2
+
+Sedov -t "Composite/Sedov23/AMR/2dCyl/amrexLwf/spark/fcAllLev" -np 8 -cbase 2024-03-14 -rbase 2024-03-14
+Sedov -t "Composite/Sedov23/AMR/2dCyl/pm4Lwf/spark/fcAllLev" -np 8 -cbase 2024-03-14 -rbase 2024-03-14
+
+# Changed cbase and rbase to 2023-09-26 for this test to establish compatibility
+# with AMReX SHA-1 f08b40b - by Akash Dhruv on 2023-09-27
 #
-# Sedov -t "Comparison/Sedov/Part/2d/Paramesh" -np 4 -cbase 2023-01-18
-# Sedov -t "Comparison/Sedov/UG/2d/unsplit" -np 4 -cbase 2023-01-18
-# Sedov -t "Comparison/Sedov/UG/2d/spark" -np 4 -cbase 2023-01-18
-#
-# Sedov -t "Composite/Sedov/PseudoUG/2d/Paramesh/simpleUnsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
-# Sedov -t "Composite/Sedov/PseudoUG/2d/Paramesh/unsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
-# Sedov -t "Composite/Sedov/PseudoUG/2d/AMReX/simpleUnsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
-# Sedov -t "Composite/Sedov/PseudoUG/2d/AMReX/unsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
-# Sedov -t "Composite/Sedov/PseudoUG/2d/AMReX/spark" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
-# Sedov -t "Composite/Sedov/PseudoUG/3d/Paramesh/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
-# Sedov -t "Composite/Sedov/PseudoUG/3d/AMReX/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
-# Sedov -t "Composite/Sedov/PseudoUG/2dCyl/AMReX/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
-# Sedov -t "Composite/Sedov/PseudoUG/2dCyl/Paramesh/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
-# Sedov -t "Composite/Sedov/PseudoUG/2dCyl/Paramesh/spark" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
-# Sedov -t "Composite/Sedov/AMR/2d/Paramesh/simpleUnsplit" -np 1 -cbase 2023-01-18 -rbase 2023-01-19
-# Sedov -t "Composite/Sedov/AMR/2d/Paramesh/unsplit" -np 1 -cbase 2023-01-18 -rbase 2023-01-19
-#
-Sedov -t "Composite/Sedov/AMR/2dSph/Paramesh/spark" -np 4 -cbase 2024-09-16_2 -rbase 2024-09-16_2
-# Sedov -t "Composite/Sedov/AMR/2d/AMReX/simpleUnsplit" -np 1 -cbase 2023-01-18 -rbase 2023-01-19
-# Sedov -t "Composite/Sedov/AMR/2d/AMReX/unsplit" -np 2 -cbase 2023-01-18 -rbase 2023-01-19
-#
-# Sedov -t "Composite/Sedov/AMR/2d/AMReX/spark" -np 4 -cbase 2024-09-16_2 -rbase 2024-09-16_2
-# Sedov -t "Composite/Sedov/AMR/3d/Paramesh/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
-# Sedov -t "Composite/Sedov/AMR/3d/pm4Bittree/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
-# Sedov -t "Composite/Sedov/AMR/3d/AMReX/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
-Sedov -t "Composite/Sedov/AMR/3dSph/Paramesh/spark" -np 8 -cbase 2024-09-16_2 -rbase 2024-09-16_2
-#
-# Sedov -t "Composite/Sedov23/AMR/2dCyl/amrexLwf/spark/fcAllLev" -np 8 -cbase 2024-03-14 -rbase 2024-03-14
-# Sedov -t "Composite/Sedov23/AMR/2dCyl/pm4Lwf/spark/fcAllLev" -np 8 -cbase 2024-03-14 -rbase 2024-03-14
-#
-# # Changed cbase and rbase to 2023-09-26 for this test to establish compatibility
-# # with AMReX SHA-1 f08b40b - by Akash Dhruv on 2023-09-27
-# #
-# # Reverting cbase and rbase after bug fixes in AMReX tag 23.11 - by Akash Dhruv 2023-11-07
-# Sedov -t "Composite/Sedov/AMR/2dCyl/AMReX/unsplit" -np 8 -cbase 2024-09-16_2 -rbase 2024-09-16_2
-#
-# Sedov -t "Composite/Sedov/AMR/2dCyl/Paramesh/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
-# Sedov -t "Composite/Sedov/AMR/3d/AMReX/unsplitPIO" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
+# Reverting cbase and rbase after bug fixes in AMReX tag 23.11 - by Akash Dhruv 2023-11-07
+Sedov -t "Composite/Sedov/AMR/2dCyl/AMReX/unsplit" -np 8 -cbase 2023-04-12 -rbase 2023-04-16
+
+Sedov -t "Composite/Sedov/AMR/2dCyl/Paramesh/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
+Sedov -t "Composite/Sedov/AMR/3d/AMReX/unsplitPIO" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
 
 #------------------------------------------------
 # Tests for - DustCollapse
 #------------------------------------------------
-# DustCollapse -t "Comparison/DustCollapse/AMR/1dSph/AMReX" -np 2 -cbase 2023-04-12
+DustCollapse -t "Comparison/DustCollapse/AMR/1dSph/AMReX" -np 2 -cbase 2023-04-12
+
+# Updated benchmark after Spark code update - Klaus Weide 2023-11-24
+DustCollapse -t "Comparison/DustCollapse/AMR/1dSph/spark" -np 2 -cbase 2023-11-23
+
+# Changed cbase to 2023-09-26 for this test to estabilish compatibility
+# with AMReX SHA-1 f08b40b - by Akash Dhruv on 2023-09-27
 #
-# # Updated benchmark after Spark code update - Klaus Weide 2023-11-24
-# DustCollapse -t "Comparison/DustCollapse/AMR/1dSph/spark" -np 2 -cbase 2023-11-23
-#
-# # Changed cbase to 2023-09-26 for this test to estabilish compatibility
-# # with AMReX SHA-1 f08b40b - by Akash Dhruv on 2023-09-27
-# #
-# # Changed cbase to 2023-04-12 after bug fixes in AMReX 23.11 - by Akash Dhruv 2023-11-07
-# DustCollapse -t "Comparison/DustCollapse/AMR/2dCyl/AMReX" -np 4 -cbase 2023-04-12
-#
-# DustCollapse -t "Composite/DustCollapse/AMR/1dSph/pm4dev" -np 2 -cbase 2023-01-18 -rbase 2023-01-19
-# DustCollapse -t "Composite/DustCollapse/AMR/2dCyl/pm4AltMorton" -np 4 -cbase 2024-09-16_2 -rbase 2024-09-16_2
-# DustCollapse -t "Composite/DustCollapse/AMR/2dCyl/pm4AltMortonBittree" -np 4 -cbase 2024-09-16_2 -rbase 2024-09-16_2
-# DustCollapse -t "Composite/DustCollapse/AMR/3d/pm4dev" -np 8 -cbase 2024-09-16_2 -rbase 2024-09-16_2
-# DustCollapse -t "Composite/DustCollapse/PseudoUG/3d/pm4dev" -np 8 -cbase 2024-09-16_2 -rbase 2024-09-16_2
+# Changed cbase to 2023-04-12 after bug fixes in AMReX 23.11 - by Akash Dhruv 2023-11-07
+# Changed cbase to 2024-10-30 after making mpole solve use MPI_IAllReduce  - K. Weide
+DustCollapse -t "Comparison/DustCollapse/AMR/2dCyl/AMReX" -np 4 -cbase 2024-10-30
+
+DustCollapse -t "Composite/DustCollapse/AMR/1dSph/pm4dev" -np 2 -cbase 2023-01-18 -rbase 2023-01-19
+
+# Changed cbase to 2024-10-30 after making mpole solve use MPI_IAllReduce - K. Weide
+# Commented out, Austin Harris thinks we should not run this test like this - K. Weide 2024-11-01
+# Enabled again, changed comparison parfile to do fewer steps
+DustCollapse -t "Composite/DustCollapse/AMR/2dCyl/pm4AltMorton" -np 4 -cbase 2024-10-30
+
+# Changed cbase to 2024-10-30 after making mpole solve use MPI_IAllReduce - K. Weide
+# Commented out, Austin Harris thinks we should not run this test like this - K. Weide 2024-11-01
+# Enabled again, changed comparison parfile to do fewer steps
+DustCollapse -t "Composite/DustCollapse/AMR/2dCyl/pm4AltMortonBittree" -np 4 -cbase 2024-10-30
+
+# Changed cbase to 2024-10-30 after making mpole solve use MPI_IAllReduce  - K. Weide
+DustCollapse -t "Composite/DustCollapse/AMR/3d/pm4dev" -np 8 -cbase 2024-10-30 -rbase 2024-11-01
+#DustCollapse -t "Composite/DustCollapse/AMR/3d/AMReX" -np 4 -cbase 2023-01-27
+
+# Changed cbase to 2024-10-30 after making mpole solve use MPI_IAllReduce  - K. Weide
+DustCollapse -t "Composite/DustCollapse/PseudoUG/3d/pm4dev" -np 8 -cbase 2024-10-30 -rbase 2024-11-01
 
 #------------------------------------------------
 # Tests for - Cellular
 #------------------------------------------------
-Cellular -t "Composite/Cellular/AMR/2d/Paramesh/unsplit" -np 8 -cbase 2024-09-16_2 -rbase 2024-09-16_2
+#Cellular -t "Comparison/Cellular/AMR/2d/Paramesh/unsplit" -np 8
+Cellular -t "Composite/Cellular/AMR/2d/Paramesh/unsplit" -np 8 -cbase 2023-04-12 -rbase 2023-04-16
 
 #------------------------------------------------
 # Tests for - IsentropicVortex
 #------------------------------------------------
+#IsentropicVortex -t "Comparison/IsentropicVortex/PseudoUG/2d/AMReX/unsplit" -np 4
+#IsentropicVortex -t "Comparison/IsentropicVortex/PseudoUG/2d/AMReX/spark" -np 4
+
 # The following tests are misnamed. They are not configured to keep constants refinement.
 # The two AMReX tests do change refinement during the comparison run. - K. Weide 2023-11-17
-# IsentropicVortex -t "Composite/IsentropicVortex/PseudoUG/2d/AMReX/unsplit" -np 4 -cbase 2024-09-16_2 -rbase 2024-09-16_2
-# # Updated cbase, results changed by less than 1.e-12 after Spark updates - K. Weide 2024-07-01
-# IsentropicVortex -t "Composite/IsentropicVortex/PseudoUG/2d/AMReX/spark" -np 4 -cbase 2024-09-16_2 -rbase 2024-09-16_2
-# IsentropicVortex -t "Composite/IsentropicVortex/PseudoUG/2d/Paramesh/unsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
+IsentropicVortex -t "Composite/IsentropicVortex/PseudoUG/2d/AMReX/unsplit" -np 4 -cbase 2023-04-12 -rbase 2023-04-16
+# Updated cbase, results changed by less than 1.e-12 after Spark updates - K. Weide 2024-07-01
+IsentropicVortex -t "Composite/IsentropicVortex/PseudoUG/2d/AMReX/spark" -np 4 -cbase 2024-06-24 -rbase 2024-07-08_2
+IsentropicVortex -t "Composite/IsentropicVortex/PseudoUG/2d/Paramesh/unsplit" -np 4 -cbase 2023-01-18 -rbase 2023-01-19
+
+# Temporarily disabling tests with thornado until delep_Ov branch has
+# been merged and new tests established. See Flash-X PR #185.
+# Currently only applies to StreamingSineWave Comparison test
+# - by Austin Harris on 2023-10-20
+
+#------------------------------------------------
+# Tests for - StreamingSineWave
+#------------------------------------------------
+#StreamingSineWave -t "Comparison/StreamingSineWave/PseudoUG/3d/AMReX" -np 6 -cbase 2023-01-26
+#StreamingSineWave -t "Composite/StreamingSineWave/PseudoUG/3d/Paramesh" -np 6 -cbase 2023-01-27
+
+#------------------------------------------------
+# Tests for - CCSN_WL
+#------------------------------------------------
+#CCSN_WL -t "Comparison/CCSN/AMR/1dSph/Paramesh/WeakLib" -np 4
 
 #------------------------------------------------
 # Tests for - YahilLattimerCollapse
 #------------------------------------------------
-YahilLattimerCollapse -t "Comparison/Yahil/AMR/1dSph/Paramesh/spark" -np 4 -cbase 2023-10-25
-# YahilLattimerCollapse -t "Comparison/Yahil/AMR/2dCyl/Paramesh/spark" -np 4 -cbase 2023-04-12
-# YahilLattimerCollapse -t "Composite/Yahil/AMR/1dSph/Paramesh/unsplit" -np 4 -cbase 2024-09-16_2 -rbase 2024-09-16_2
+# Changed cbase to 2024-10-30 after making mpole solve use MPI_IAllReduce  - K. Weide
+YahilLattimerCollapse -t "Comparison/Yahil/AMR/1dSph/Paramesh/spark" -np 4 -cbase 2024-10-30
 
-YahilLattimerCollapse -t "Composite/Yahil/AMR/1dSph/Paramesh/spark" -np 4 -cbase 2023-10-25 -rbase 2024-09-16_2
-# YahilLattimerCollapse -t "Composite/Yahil/AMR/2dCyl/Paramesh/unsplit" -np 4 -cbase 2023-04-12 -rbase 2024-09-16_2
-#
-# YahilLattimerCollapse -t "Composite/Yahil/AMR/2dCyl/Paramesh/spark" -np 4 -cbase 2023-04-12 -rbase 2024-09-16_2
+# Changed cbase to 2024-10-30 after making mpole solve use MPI_IAllReduce  - K. Weide
+YahilLattimerCollapse -t "Comparison/Yahil/AMR/2dCyl/Paramesh/spark" -np 4 -cbase 2024-10-30
+
+# Changed cbase to 2024-10-30 after making mpole solve use MPI_IAllReduce  - K. Weide
+YahilLattimerCollapse -t "Composite/Yahil/AMR/1dSph/Paramesh/unsplit" -np 4 -cbase 2024-10-30 -rbase 2024-11-01
+
+# Updated benchmark after Spark code update - Klaus Weide 2023-11-24
+# Changed cbase to 2024-10-30 after making mpole solve use MPI_IAllReduce  - K. Weide
+YahilLattimerCollapse -t "Composite/Yahil/AMR/1dSph/Paramesh/spark" -np 4 -cbase 2024-10-30 -rbase 2024-11-01
+
+# Changed cbase to 2024-10-30 after making mpole solve use MPI_IAllReduce  - K. Weide
+YahilLattimerCollapse -t "Composite/Yahil/AMR/2dCyl/Paramesh/unsplit" -np 4 -cbase 2024-10-30 -rbase 2024-11-01
+
+# Updated benchmark after Spark code update - Klaus Weide 2023-11-24
+# Changed cbase to 2024-10-30 after making mpole solve use MPI_IAllReduce  - K. Weide
+YahilLattimerCollapse -t "Composite/Yahil/AMR/2dCyl/Paramesh/spark" -np 4 -cbase 2024-10-30 -rbase 2024-11-01
 
 #------------------------------------------------
 # Tests for - SNIa_DoubleDetonation
 #------------------------------------------------
 
-SNIa_DoubleDetonation -t "Composite/SNIaShellDet/AMR/2d/Paramesh" -np 8 -cbase 2024-09-16_2 -rbase 2024-09-16_2
+# Changed cbase to 2024-10-30 after making mpole solve use MPI_IAllReduce  - K. Weide
+SNIa_DoubleDetonation -t "Composite/SNIaShellDet/AMR/2d/Paramesh" -np 8 -cbase 2024-10-30 -rbase 2024-11-01
 
+SNIa_DoubleDetonation -t "Composite/SNIaShellDet/AMR/2d/pmSpark" -np 8 -cbase 2024-10-31 -rbase 2024-11-01
+
+# The new comparison baseline 2023-01-30 was confirmed manually to be sfocu-same as
+# /nfs/pub_html/gce/projects/FLASH5/TestResults/gce/2023-01-23/Comparison_SNIaDDT_AMR_2d_spark/testfaster_amr_unsplit_2d/snd_hdf5_chk_0001
+# on 2023-01-30 by K. Weide.
+# Updated benchmark after Spark code update - Klaus Weide 2023-11-22
+# Updated benchmark during PR #669 - Akash Dhruv
+# Changed cbase to 2024-10-30 after making mpole solve use MPI_IAllReduce  - K. Weide
 SNIa_DoubleDetonation -t "Comparison/SNIaDDT/AMR/2d/spark" -np 8 \
-	-e OMP_NUM_THREADS=1 -cbase 2023-12-11
+	-e OMP_NUM_THREADS=1 -cbase 2024-10-30
 
+# Updated benchmark during PR #669 - Akash Dhruv
+# Changed cbase and rbase to 2024-10-30 after making mpole solve use MPI_IAllReduce - K. Weide
 SNIa_DoubleDetonation -t "Composite/SNIaDDT/AMR/2d/Paramesh" -np 8 \
-	-e OMP_NUM_THREADS=1 -cbase 2024-09-16_2 -rbase 2024-09-16_2
+	-e OMP_NUM_THREADS=1 -cbase 2024-10-30 -rbase 2024-10-30
 
+# A variant of the previous one that should give the same results, see comments
+# in the tests.yaml file.
+#
+# The new comparison baseline 2023-01-30 was confirmed manually to be sfocu-same as
+# that of the Composite/SNIaDDT/AMR/2d/Paramesh test
+# on 2023-01-30 by K. Weide.
+# A new restart baseline 2023-01-30_2 was confirmed manually to be sfocu-same as
+# that of the Composite/SNIaDDT/AMR/2d/Paramesh test, and to be equal within
+# an sfocu tolerance of 1.e-10 to the result of the long run,
+# on 2023-01-30 by K. Weide.  However, the tarball 2023-01-30_2.tar.gz (in
+# /nfs/gce/projects/FLASH5/FlashXTestArchive/mainArchive/gce/) that stored
+# that flashx_hdf5_chk_0002 file is no more -- and and a copy of that result
+# does not exist cached in the proper local archive directory either -- since
+# apparently the results of the "2023-01-30_2" run were later overwritten with
+# results of a **different** run of the same name. Therefore, I have removed
+# `-rbase 2023-01-30_2` on 2023-02-21.
+# Then, a previously generated restart baseline 2023-01-31_2 was confirmed manually
+# to be sfocu-same as that of the Composite/SNIaDDT/AMR/2d/Paramesh test,
+# and to be equal within an sfocu tolerance of 2.61e-11 to the result of the long run.
+# The file flashx_hdf5_chk_0002 still exists in 2023-01-31_2.tar.gz, thus -rbase 2023-01-31_2
+# was added, again on 2023-02-21 by kweide.
+# Updated benchmark during PR #669 - Akash Dhruv
+# Changed cbase and rbase to 2024-10-30 after making mpole solve use MPI_IAllReduce - K. Weide
 SNIa_DoubleDetonation -t "Composite/SNIaDDT/AMR/2d/pm4AltMortonBittree" -np 8 \
-	-e OMP_NUM_THREADS=1 -cbase 2024-09-16_2 -rbase 2024-09-16_2
+	-e OMP_NUM_THREADS=1 -cbase 2024-10-30 -rbase 2024-10-30
 
 #------------------------------------------------
 # Tests for - HydroStatic
 #------------------------------------------------
-# HydroStatic -t "Composite/HydroStatic/AMR/2d/Paramesh" -np 6 -cbase 2024-09-16_2 -rbase 2024-09-16_2
+HydroStatic -t "Composite/HydroStatic/AMR/2d/Paramesh" -np 6 -cbase 2023-04-12 -rbase 2023-04-16
+
+#------------------------------------------------
+# Tests for - StreamingDopplerShift
+#------------------------------------------------
+#StreamingDopplerShift -t "Composite/DopplerShift_MI_16E_OrderV_1D" -np 4
+
+#------------------------------------------------
+# Tests for - Stir
+#------------------------------------------------
+
+Stir -t "Comparison/Stir/Default" -np 2 -cbase 2024-09-23
+Stir -t "Comparison/Stir/Spark" -np 2 -cbase 2024-09-23
 
 #------------------------------------------------
 # Tests for - Eos
 #------------------------------------------------
-# unitTest/Eos/Helmholtz -t "UnitTest/Eos/helmholtz/3d/pm4dev" -np 1
-# unitTest/Eos/Helmholtz -t "UnitTest/Eos/helmholtz/3d/AMReX" -np 1
-# unitTest/Eos/WeakLib -t "UnitTest/Eos/weaklib/3d/pm4dev" -np 1
+unitTest/Eos/Gamma -t "UnitTest/Eos/gamma/3d/pm4dev" -np 1
+unitTest/Eos/Helmholtz -t "UnitTest/Eos/helmholtz/3d/pm4dev" -np 1
+unitTest/Eos/Helmholtz -t "UnitTest/Eos/helmholtz/3d/AMReX" -np 1
+unitTest/Eos/WeakLib -t "UnitTest/Eos/weaklib/3d/pm4dev" -np 1
+unitTest/Eos/Helmholtz_Weaklib -t "UnitTest/Eos/helmholtz_weaklib/3d/pm4dev" -np 1
 
 #------------------------------------------------
 # Tests for - Grid
 #------------------------------------------------
-# unitTest/Grid/Amrex/TestInit -t "UnitTest/Grid/AMR/AMReX/2d/Init" -np 1
-# unitTest/Grid/Amrex/TestRefine -t "UnitTest/Grid/AMR/AMReX/2d/Refine" -np 1
-# unitTest/Grid/Amrex/TestFluxCorrection -t "UnitTest/Grid/AMR/AMReX/2d/FluxCorrection" -np 1
-# unitTest/Grid/Amrex/TestFluxCorrection2 -t "UnitTest/Grid/AMR/AMReX/2d/FluxCorrection2" -np 1
-# unitTest/Grid/Amrex/TestCyl2d -t "UnitTest/Grid/AMR/AMReX/2d/TestCyl" -np 1
-#
-# unitTest/Grid/DomainBBoxRadians -t "UnitTest/Grid/pm4/3dcyl/DomainBBoxRadians"
-# unitTest/Grid/DomainBBoxRadians -t "UnitTest/Grid/UG/3dcyl/DomainBBoxRadians"
-# unitTest/Grid/DomainBBoxRadians -t "UnitTest/Grid/AMReX/3dcyl/DomainBBoxRadians"
-#
-# unitTest/Grid/FaceAreas -t "UnitTest/Grid/UG/2dSph/FaceAreas"
-# unitTest/Grid/AnomalousRefine -t "UnitTest/GridAnomalousRefine/2d/Paramesh" -np 1
-# unitTest/Grid/AnomalousRefine -t "UnitTest/GridAnomalousRefine/2d/pm4AltMortonBittree" -np 1
-# unitTest/Grid/AnomalousRefine -t "UnitTest/GridAnomalousRefine/2d/AMReX" -np 3
+unitTest/Grid/Amrex/TestInit -t "UnitTest/Grid/AMR/AMReX/2d/Init" -np 1
+unitTest/Grid/Amrex/TestRefine -t "UnitTest/Grid/AMR/AMReX/2d/Refine" -np 1
+unitTest/Grid/Amrex/TestFluxCorrection -t "UnitTest/Grid/AMR/AMReX/2d/FluxCorrection" -np 1
+unitTest/Grid/Amrex/TestFluxCorrection2 -t "UnitTest/Grid/AMR/AMReX/2d/FluxCorrection2" -np 1
+unitTest/Grid/Amrex/TestCyl2d -t "UnitTest/Grid/AMR/AMReX/2d/TestCyl" -np 1
+#unitTest/Grid/Milhoja/TestInit -t "UnitTest/Grid/AMR/Milhoja/1D/TestInit" -np 1 ##-- FAILING! with new GCC env
+#unitTest/Grid/Milhoja/TestInit -t "UnitTest/Grid/AMR/Milhoja/2D/TestInit" -np 1 ##-- FAILING! with new GCC env
 
+# Commenting out all Milhoja tests after discussion with Jared O'Neal
+# related to compatibility with AMReX SHA-1 f08b40b. He needs more time
+# to rebuild software stack for these tests and would prefer if they
+# were commented out for the time being 
+# - by Akash Dhruv on 2023-09-27
+#unitTest/Grid/Milhoja/TestInit -t "UnitTest/Grid/AMR/Milhoja/3D/TestInit" -np 1
+
+
+#unitTest/Grid/Milhoja/TestFluxes -t "UnitTest/Grid/AMR/Milhoja/1D/TestFluxes" -np 1 ##-- FAILING! with new GCC env
+#unitTest/Grid/Milhoja/TestFluxes -t "UnitTest/Grid/AMR/Milhoja/2D/TestFluxes" -np 1 ##-- FAILING! with new GCC env
+#unitTest/Grid/Milhoja/TestFluxes -t "UnitTest/Grid/AMR/Milhoja/3D/TestFluxes" -np 1 ##-- FAILING! with new GCC env
+unitTest/Grid/DomainBBoxRadians -t "UnitTest/Grid/pm4/3dcyl/DomainBBoxRadians"
+unitTest/Grid/DomainBBoxRadians -t "UnitTest/Grid/UG/3dcyl/DomainBBoxRadians"
+unitTest/Grid/DomainBBoxRadians -t "UnitTest/Grid/AMReX/3dcyl/DomainBBoxRadians"
+
+# Commenting out all Milhoja tests after discussion with Jared O'Neal
+# related to compatibility with AMReX SHA-1 f08b40b. He needs more time
+# to rebuild software stack for these tests and would prefer if they
+# were commented out for the time being 
+# - by Akash Dhruv on 2023-09-27
+#unitTest/Grid/DomainBBoxRadians -t "UnitTest/Grid/Milhoja/3dcyl/DomainBBoxRadians"
+
+unitTest/Grid/FaceAreas -t "UnitTest/Grid/UG/2dSph/FaceAreas"
+unitTest/Grid/AnomalousRefine -t "UnitTest/GridAnomalousRefine/2d/Paramesh" -np 1
+unitTest/Grid/AnomalousRefine -t "UnitTest/GridAnomalousRefine/2d/pm4AltMortonBittree" -np 1
+unitTest/Grid/AnomalousRefine -t "UnitTest/GridAnomalousRefine/2d/AMReX" -np 3
 unitTest/Grid/Macros -t "UnitTest/Grid/AMR/3dCyl/Macros" -np 1
 unitTest/Grid/Macros -t "UnitTest/Grid/AMR/3dSph/Macros" -np 1
 
 #------------------------------------------------
 # Tests for - IO
 #------------------------------------------------
-# unitTest/IO -t "UnitTest/IO/hdf5/3d/pm4dev" -np 4
+unitTest/IO -t "UnitTest/IO/hdf5/3d/pm4dev" -np 4
 
 #------------------------------------------------
 # Tests for - Poisson solver
 #------------------------------------------------
-# unitTest/Poisson/Amrex -t "UnitTest/Multigrid/AMReX/3d" -np 1
+unitTest/Poisson/Amrex -t "UnitTest/Multigrid/AMReX/3d" -np 1
 
 # The following 3d and 2dCyl Poisson3 tests also exercise various
 # combinations of MPI parallelism, OpenMP threading (both
@@ -188,46 +310,45 @@ unitTest/Grid/Macros -t "UnitTest/Grid/AMR/3dSph/Macros" -np 1
 # proper OpenMP (CPU-)threading, i.e., for OMP_NUM_THREADS > 1, when an
 # instance of the AMReX library is used that was built with OpenMP support.
 
-# unitTest/Gravity/Poisson3 -t "UnitTest/Gravity/AMR/3d/TBL/Paramesh" -np 3 -e OMP_NUM_THREADS=3
-# unitTest/Gravity/Poisson3 -t "UnitTest/Gravity/AMR/3d/Paramesh" -np 3 -e OMP_NUM_THREADS=3
-# unitTest/Gravity/Poisson3 -t "UnitTest/Gravity/AMR/3d/TBL/AMReX" -np 3 -e OMP_NUM_THREADS=3
-# unitTest/Gravity/Poisson3 -t "UnitTest/Gravity/AMR/3d/AMReX" -np 3 -e OMP_NUM_THREADS=3
-#
-# unitTest/Gravity/Poisson3 -t "UnitTest/Gravity/AMR/2dCyl/TBL/Paramesh" -np 3 -e OMP_NUM_THREADS=3
-# unitTest/Gravity/Poisson3 -t "UnitTest/Gravity/AMR/2dCyl/Paramesh" -np 3 -e OMP_NUM_THREADS=3
-#
-# unitTest/Gravity/Poisson3 -t "UnitTest/Gravity/AMR/2dSph/Paramesh" -np 1
-#
-# unitTest/Gravity/Poisson3 -t "UnitTest/Gravity/AMR/3dSph/Paramesh" -np 1
+unitTest/Gravity/Poisson3 -t "UnitTest/Gravity/AMR/3d/TBL/Paramesh" -np 3 -e OMP_NUM_THREADS=3
+unitTest/Gravity/Poisson3 -t "UnitTest/Gravity/AMR/3d/Paramesh" -np 3 -e OMP_NUM_THREADS=3
+unitTest/Gravity/Poisson3 -t "UnitTest/Gravity/AMR/3d/TBL/AMReX" -np 3 -e OMP_NUM_THREADS=3
+unitTest/Gravity/Poisson3 -t "UnitTest/Gravity/AMR/3d/AMReX" -np 3 -e OMP_NUM_THREADS=3
+
+unitTest/Gravity/Poisson3 -t "UnitTest/Gravity/AMR/2dCyl/TBL/Paramesh" -np 3 -e OMP_NUM_THREADS=3
+unitTest/Gravity/Poisson3 -t "UnitTest/Gravity/AMR/2dCyl/Paramesh" -np 3 -e OMP_NUM_THREADS=3
+
+unitTest/Gravity/Poisson3 -t "UnitTest/Gravity/AMR/2dSph/Paramesh" -np 1
+
+unitTest/Gravity/Poisson3 -t "UnitTest/Gravity/AMR/3dSph/Paramesh" -np 1
 
 #------------------------------------------------
 # Tests for - constant Gravity
 #------------------------------------------------
-# unitTest/Gravity/PointMass -t "UnitTest/PointMassGravity/3d/Paramesh" -np 3
-# unitTest/Gravity/PointMass -t "UnitTest/PointMassGravity/3d/AMReX" -np 3
-# unitTest/Gravity/PointMass -t "UnitTest/PointMassGravity/2dCyl/Paramesh" -np 2
-# unitTest/Gravity/PointMass -t "UnitTest/PointMassGravity/2dCyl/AMReX" -np 2
+unitTest/Gravity/PointMass -t "UnitTest/PointMassGravity/3d/Paramesh" -np 3
+unitTest/Gravity/PointMass -t "UnitTest/PointMassGravity/3d/AMReX" -np 3
+unitTest/Gravity/PointMass -t "UnitTest/PointMassGravity/2dCyl/Paramesh" -np 2
+unitTest/Gravity/PointMass -t "UnitTest/PointMassGravity/2dCyl/AMReX" -np 2
 
 #------------------------------------------------
 # Tests for - incompFlow
 #------------------------------------------------
-# incompFlow/RisingBubble -t "UnitTest/RisingBubble/AMReX/2d" -np 2
-# incompFlow/LidDrivenCavity -t "UnitTest/LidDrivenCavity/AMReX/2d" -np 4
+incompFlow/RisingBubble -t "UnitTest/RisingBubble/AMReX/2d" -np 2
+incompFlow/LidDrivenCavity -t "UnitTest/LidDrivenCavity/AMReX/2d" -np 4
 
 # Added the following tests on 2023/11/10. Paramesh configuration tests
 # will be added when HYPRE is available in the testing environment - Akash Dhruv
-# incompFlow/ChannelFlow -t "UnitTest/incompFlow/ChanneFlow/2d/Periodic" -np 4
-# incompFlow/ChannelFlow -t "Comparison/incompFlow/ChanneFlow/AMReX/2d" -np 4 -cbase 2023-11-10
-# incompFlow/RisingBubble -t "Comparison/RisingBubble/AMReX/2d" -np 3 -cbase 2024-08-29
-# incompFlow/PoolBoiling -t "Comparison/incompFlow/PoolBoiling/2d/AMReX" -np 4 -cbase 2024-08-29
-# incompFlow/RisingBubble -t "Comparison/RisingBubble/AMReXGCFill/2d" -np 3 -cbase 2024-08-29
+incompFlow/ChannelFlow -t "UnitTest/incompFlow/ChanneFlow/2d/Periodic" -np 4
+incompFlow/ChannelFlow -t "Comparison/incompFlow/ChanneFlow/AMReX/2d" -np 4 -cbase 2023-11-10
+incompFlow/RisingBubble -t "Comparison/RisingBubble/AMReX/2d" -np 3 -cbase 2024-08-29
+incompFlow/PoolBoiling -t "Comparison/incompFlow/PoolBoiling/2d/AMReX" -np 4 -cbase 2024-08-29
+incompFlow/RisingBubble -t "Comparison/RisingBubble/AMReXGCFill/2d" -np 3 -cbase 2024-08-29
 
 #------------------------------------------------
 # Tests for - unitTest/MoL
 #------------------------------------------------
-# unitTest/MoL/MR -t "UnitTest/MoL/MR/GARK3" -np 1
-# unitTest/MoL/IMEX -t "UnitTest/MoL/IMEX/FBE" -np 1
-# unitTest/MoL/IMEX -t "UnitTest/MoL/IMEX/SSP2" -np 1
-# unitTest/MoL/IMEX -t "UnitTest/MoL/IMEX/SSP3" -np 1
-# unitTest/MoL/IMEX -t "UnitTest/MoL/IMEX/ARK" -np 1
-
+unitTest/MoL/MR -t "UnitTest/MoL/MR/GARK3" -np 1
+unitTest/MoL/IMEX -t "UnitTest/MoL/IMEX/FBE" -np 1
+unitTest/MoL/IMEX -t "UnitTest/MoL/IMEX/SSP2" -np 1
+unitTest/MoL/IMEX -t "UnitTest/MoL/IMEX/SSP3" -np 1
+unitTest/MoL/IMEX -t "UnitTest/MoL/IMEX/ARK" -np 1
