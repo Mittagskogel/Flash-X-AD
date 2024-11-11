@@ -52,6 +52,12 @@
 subroutine Burn_update (Uin, loGC, blkLimits, dt)
 
   use Eos_interface, ONLY: Eos_multiDim
+  use Burn_data, ONLY: bn_nuclearTempMin, &
+                       bn_nuclearTempMax, &
+                       bn_nuclearDensMin, &
+                       bn_nuclearDensMax, &
+                       bn_useShockBurn, &
+                       bn_nuclearNI56Max
 
   implicit none
 
@@ -62,24 +68,48 @@ subroutine Burn_update (Uin, loGC, blkLimits, dt)
   real, intent(IN) :: dt
 
   ! locals
+  logical :: okBurnTemp, okBurnDens, okBurnShock, okBurnNickel
   integer :: i, j, k
   real :: ek, enuc, ei
+  real :: tmp, rho
 
   do k = blkLimits(LOW,KAXIS), blkLimits(HIGH,KAXIS)
      do j = blkLimits(LOW,JAXIS), blkLimits(HIGH,JAXIS)
         do i = blkLimits(LOW,IAXIS), blkLimits(HIGH,IAXIS)
-           ek = 0.5e0*(Uin(VELX_VAR,i,j,k)**2 +  &
-                       Uin(VELY_VAR,i,j,k)**2 +  &
-                       Uin(VELZ_VAR,i,j,k)**2)
-           enuc = dt*Uin(ENUC_VAR,i,j,k)
-           ei = Uin(ENER_VAR,i,j,k) + enuc - ek
+           tmp  = Uin(TEMP_VAR,i,j,k)
+           rho  = Uin(DENS_VAR,i,j,k)
+
+           okBurnTemp = (tmp >= bn_nuclearTempMin .AND. tmp <= bn_nuclearTempMax)
+           okBurnDens = (rho >= bn_nuclearDensMin .AND. rho <= bn_nuclearDensMax)
+
+           okBurnShock = .true.
+#ifdef SHOK_VAR
+           okBurnShock = (Uin(SHOK_VAR,i,j,k) <= 0.0 .OR. (Uin(SHOK_VAR,i,j,k) > 0.0 .AND. bn_useShockBurn))
+#endif
+           if (okBurnTemp .AND. okBurnDens .AND. okBurnShock) then
+
+              if (NI56_SPEC /= NONEXISTENT) then
+                 okBurnNickel = (Uin(NI56_SPEC,i,j,k) <  bn_nuclearNI56Max)
+              else    ! nickel is not even a species in this simulation, so we'll always burn
+                 okBurnNickel = .TRUE.
+              endif
+
+              if (okBurnNickel) then
+                 ek = 0.5e0*(Uin(VELX_VAR,i,j,k)**2 +  &
+                             Uin(VELY_VAR,i,j,k)**2 +  &
+                             Uin(VELZ_VAR,i,j,k)**2)
+                 enuc = dt*Uin(ENUC_VAR,i,j,k)
+                 ei = Uin(ENER_VAR,i,j,k) + enuc - ek
 #ifdef EINT_VAR
-           Uin(EINT_VAR,i,j,k) = ei
+                 Uin(EINT_VAR,i,j,k) = ei
 #endif
-           Uin(ENER_VAR,i,j,k) = ei + ek
+                 Uin(ENER_VAR,i,j,k) = ei + ek
 #ifdef EELE_VAR
-           Uin(EELE_VAR,i,j,k) = Uin(EELE_VAR,i,j,k) + enuc
+                 Uin(EELE_VAR,i,j,k) = Uin(EELE_VAR,i,j,k) + enuc
 #endif
+              end if
+           end if
+
         end do
      end do
   end do
