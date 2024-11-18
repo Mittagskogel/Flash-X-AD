@@ -1,4 +1,4 @@
-!!****if* source/physics/Gravity/GravityMain/Poisson/Gravity_potential
+!!****if* source/physics/Gravity/GravityMain/Poisson/Gravity_finishPotential
 !! NOTICE
 !!  Copyright 2022 UChicago Argonne, LLC and contributors
 !!
@@ -11,13 +11,13 @@
 !!  See the License for the specific language governing permissions and
 !!  limitations under the License.
 !!
-!! NAME 
+!! NAME
 !!
-!!     Gravity_potential
+!!     Gravity_finishPotential
 !!
 !! SYNOPSIS
 !!
-!!  call Gravity_potential(   optional,integer(IN) :: potentialIndex)
+!!  call Gravity_finishPotential(   optional,integer(IN) :: potentialIndex)
 !!
 !! DESCRIPTION
 !!
@@ -25,6 +25,8 @@
 !!      blocks specified in the list, for the gravity implementations
 !!      (i.e., various Poisson implementations), which make use of it
 !!      in computing the gravitational acceleration.
+!!
+!!      The resulting potential can be considered as zone-averaged.
 !!
 !!      Supported boundary conditions are isolated (0) and
 !!      periodic (1).  The same boundary conditions are applied
@@ -44,7 +46,7 @@
 !!
 !! NOTES
 !!
-!!  Gravity_potential can operate in one of two modes:
+!!  Gravity_finishPotential can operate in one of two modes:
 !!  * automatic mode  - when called without the optional potentialIndex.
 !!    Such a call will usually be made once per time step, usually
 !!    from the main time advancement loop in Driver_evolveAll.
@@ -91,7 +93,7 @@
 
 !!REORDER(4): solnVec
 
-subroutine Gravity_potential( potentialIndex)
+subroutine Gravity_finishPotential( potentialIndex)
 
 
   use Gravity_data, ONLY : grav_poisfact, grav_temporal_extrp, grav_boundary, &
@@ -104,7 +106,7 @@ subroutine Gravity_potential( potentialIndex)
        GRID_PDE_BND_ISOLATED, GRID_PDE_BND_DIRICHLET, &
        Grid_getTileIterator, Grid_releaseTileIterator, &
        Grid_notifySolnDataUpdate, &
-       Grid_beginPoisson, Grid_finalizePoisson
+       Grid_finalizePoisson
   use Grid_tile,     ONLY : Grid_tile_t
   use Grid_iterator, ONLY : Grid_iterator_t
   
@@ -121,7 +123,7 @@ subroutine Gravity_potential( potentialIndex)
 
   real          :: redshift=0, oldRedshift=0
   real          :: scaleFactor, oldScaleFactor
-  real          :: invscale, rescale
+  real          :: invscale
   integer       :: bcTypes(6)
   real          :: bcValues(2,6) = 0.
   integer       :: density
@@ -143,129 +145,25 @@ subroutine Gravity_potential( potentialIndex)
 
 !!$  call Cosmology_getRedshift(redshift)
 !!$  call Cosmology_getOldRedshift(oldRedshift)
-!!$  
+!!$
   scaleFactor = 1./(1.+redshift)
   oldScaleFactor = 1./(1.+oldRedshift)
-  
+
   invscale = 1./scaleFactor**3
-
-! Rescaling factor to try and keep initial guess at potential close to
-! final solution (in cosmological simulations).  Source term in Poisson
-! equation has 1/a(t)^3 in it; and in linear theory (Omega=1, matter dom.)
-! the comoving density increases as a(t), so comoving peculiar potential
-! (which is what we are calculating here) should vary as 1/a(t)^2.  For
-! noncosmological simulations this has no effect, since oldscale = scale = 1.
-
-  rescale = (oldScaleFactor/scaleFactor)**2
 
 !=========================================================================
 
   if(.not.useGravity) return
-  
-  if(.not.updateGravity) return
 
-  call Timers_start("gravity Barrier")
-  call MPI_Barrier (grv_meshComm, ierr)
-  call Timers_stop("gravity Barrier")
+  if(.not.updateGravity) return
 
   call Timers_start("gravity")
 
-  bcTypes = grav_boundary
-  where (bcTypes == PERIODIC)
-     bcTypes = GRID_PDE_BND_PERIODIC
-  elsewhere (bcTypes == ISOLATED)
-     bcTypes = GRID_PDE_BND_ISOLATED
-  elsewhere (bcTypes == DIRICHLET)
-     bcTypes = GRID_PDE_BND_DIRICHLET
-  elsewhere (bcTypes == OUTFLOW)
-     bcTypes = GRID_PDE_BND_NEUMANN
-  end where
-  bcValues = 0.
- 
-  if (grav_temporal_extrp) then
-     
-     call Driver_abort("shouldn't be here right now")
-     !call extrp_initial_guess( igpot, igpol, igpot )
-     
-  else
-     ! DEV: Do not enable tiling unless you have figured out the correct
-     !      index space for setting solnVec in all locations below.
-     call Grid_getTileIterator(itor, LEAF, tiling=.FALSE.)
-
-     do while(itor%isValid())
-        call itor%currentTile(tileDesc)
-        call tileDesc%getDataPtr(solnVec, CENTER)
-#ifdef GPOL_VAR
-        if (saveLastPot) then
-           ! DEV: The previous implementation was computing the data on the GC as
-           !      well.  However, limited testing showed that it worked with just
-           !      setting the data on the interior.  We default to setting the GC
-           !      for now.  TBD if setting on the interior is the actual intent.
-           do       k = tileDesc%grownLimits(LOW, KAXIS), tileDesc%grownLimits(HIGH, KAXIS)
-              do    j = tileDesc%grownLimits(LOW, JAXIS), tileDesc%grownLimits(HIGH, JAXIS)
-                 do i = tileDesc%grownLimits(LOW, IAXIS), tileDesc%grownLimits(HIGH, IAXIS)
-                    solnVec(GPOL_VAR,i,j,k) = solnVec(GPOT_VAR,i,j,k)
-                 end do
-              end do
-           end do
-        end if
-#endif
-        ! DEV: The previous implementation was computing the data on the GC as
-        !      well.  However, limited testing showed that it worked with just
-        !      setting the data on the interior.  We default to setting the GC
-        !      for now.  TBD if setting on the interior is the actual intent.
-        do       k = tileDesc%grownLimits(LOW, KAXIS), tileDesc%grownLimits(HIGH, KAXIS)
-           do    j = tileDesc%grownLimits(LOW, JAXIS), tileDesc%grownLimits(HIGH, JAXIS)
-              do i = tileDesc%grownLimits(LOW, IAXIS), tileDesc%grownLimits(HIGH, IAXIS)
-                 solnVec(newPotVar,i,j,k) = solnVec(newPotVar,i,j,k) * rescale
-              end do
-           end do
-        end do
-
-
-        call tileDesc%releaseDataPtr(solnVec, CENTER)
-        call itor%next()
-     enddo
-     call Grid_releaseTileIterator(itor)
-#ifdef GPOL_VAR
-     if (saveLastPot) call Grid_notifySolnDataUpdate( (/GPOL_VAR/) )
-#endif
-
-  endif
-
-! Poisson is solved with the total density of PDEN_VAR + DENS_VAR 
-  density=DENS_VAR
-! This only gets called if there are active particles.
-#ifdef PDEN_VAR
-#ifdef MASS_PART_PROP
-  call Particles_updateGridVar(MASS_PART_PROP, PDEN_VAR)
-  if (.NOT. grav_unjunkPden) call Grid_notifySolnDataUpdate( (/PDEN_VAR/) )
-  density = PDEN_VAR
-#ifdef DENS_VAR
-
-  call Grid_getTileIterator(itor, LEAF, tiling=.FALSE.)
-  do while(itor%isValid())
-     call itor%currentTile(tileDesc)
-     call tileDesc%getDataPtr(solnVec, CENTER)
-     call Driver_abort("[Gravity_potential] Not tested either!")
-     ! If tiling is used here, we probably need to write this as an
-     ! explicit loop nest over the tile's indices
-     solnVec(density,:,:,:) = solnVec(density,:,:,:) + &
-          solnVec(DENS_VAR,:,:,:)
-     call tileDesc%releaseDataPtr(solnVec, CENTER)
-     call itor%next()
-  enddo
-  call Grid_releaseTileIterator(itor)
-#endif
-#endif
-#endif
-
   invscale=grav_poisfact*invscale
-  call Grid_beginPoisson (newPotVar, density, bcTypes, bcValues, &
-       invscale)
+  call Grid_notifySolnDataUpdate( (/newPotVar/) )
   call Grid_finalizePoisson (newPotVar, density, bcTypes, bcValues, &
        invscale)
-  call Grid_notifySolnDataUpdate( (/newPotVar/) )
+
 
 ! Un-junk PDEN if it exists and if requested.
 
@@ -273,7 +171,7 @@ subroutine Gravity_potential( potentialIndex)
   if (grav_unjunkPden) then
      density = PDEN_VAR
 #ifdef DENS_VAR           
-     call Driver_abort("[Gravity_potential] Not tested I guess!")
+     call Driver_abort("[Gravity_finishPotential] Not tested I guess!")
      ! I (JO) added this line to create the iterator.  I don't know if it is
      ! correct or if this code has ever been called.
      call Grid_getTileIterator(itor, LEAF, tiling=.FALSE.)
@@ -305,4 +203,4 @@ subroutine Gravity_potential( potentialIndex)
   call Timers_stop ("gravity")
   
   return
-end subroutine Gravity_potential
+end subroutine Gravity_finishPotential
