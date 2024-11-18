@@ -118,6 +118,8 @@ subroutine Burn (  dt  )
   integer, dimension(:), allocatable :: sumBurn_TS_batch
   integer, dimension(:), allocatable :: batch_lo, batch_hi
   integer, dimension(:), allocatable :: sumBurn_TS
+  real,    dimension(:), allocatable :: work_burn_batch
+  real,    dimension(:), allocatable :: work_burn
 
   integer, parameter :: shock_mode = 1
   real, parameter :: shock_thresh = 0.33
@@ -172,6 +174,7 @@ subroutine Burn (  dt  )
   allocate(batch_lo(blockCount))
   allocate(batch_hi(blockCount))
   allocate(sumBurn_TS(blockCount))
+  allocate(work_burn(blockCount))
 
   burnedZone = .FALSE.
 
@@ -318,6 +321,7 @@ subroutine Burn (  dt  )
   zone_batch(1:4,1:xnet_nzbatchmx,1:batchCount) => zone(:,:,:,:,:)
 
   allocate(sumBurn_TS_batch(batchCount))
+  allocate(work_burn_batch(batchCount))
 
   !$omp parallel do &
   !$omp schedule(runtime) &
@@ -325,7 +329,9 @@ subroutine Burn (  dt  )
   do m = 1, batchCount
      ! Do the actual burn
      call bn_burner(dt, tmp_batch(:,m), rho_batch(:,m), xIn_batch(:,:,m), &
-          xOut_batch(:,:,m), sdot_batch(:,m), burnedZone_batch(:,m), zone_batch(:,:,m), sumBurn_TS_batch(m))
+          xOut_batch(:,:,m), sdot_batch(:,m), burnedZone_batch(:,m), zone_batch(:,:,m), &
+          sumBurn_TS_batch(m))
+     work_burn_batch(m) = sumBurn_TS_batch(m)
   end do
   !$omp end parallel do
 
@@ -334,9 +340,12 @@ subroutine Burn (  dt  )
   do thisBlock = 1, blockCount
      sumBurn_TS(thisBlock) = sum( sumBurn_TS_batch(batch_lo(thisBlock):batch_hi(thisBlock)) ) &
                            / ( batch_hi(thisBlock) - batch_lo(thisBlock) + 1 )
+     !work_burn(thisBlock) = sum( work_burn_batch(batch_lo(thisBlock):batch_hi(thisBlock)) )
+     work_burn(thisBlock) = real(sumBurn_TS(thisBlock))
   end do
 
   deallocate(sumBurn_TS_batch)
+  deallocate(work_burn_batch)
 
   call Timers_stop("burn_middle")
 
@@ -409,7 +418,7 @@ subroutine Burn (  dt  )
      end do
      !$omp end parallel do
 
-     call Grid_setWork(tileDesc,real(sumBurn_TS(thisBlock)))
+     call Grid_setWork(tileDesc,work_burn(thisBlock))
      solnData(MTSB_VAR,:,:,:) = sumBurn_TS(thisBlock)
 
      ! we've altered the EI, let's equilabrate
@@ -439,6 +448,7 @@ subroutine Burn (  dt  )
   deallocate(batch_lo)
   deallocate(batch_hi)
   deallocate(sumBurn_TS)
+  deallocate(work_burn)
 
   call Timers_stop("burn")
 
