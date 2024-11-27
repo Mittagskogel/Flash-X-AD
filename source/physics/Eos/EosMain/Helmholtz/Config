@@ -56,9 +56,7 @@ VARIANTS Null
 
 USESETUPVARS Milhoja
 IF Milhoja
+  REQUIRES physics/Eos/EosMain/Helmholtz/GPU_interface
   VARIANTS GPU
-  REQUESTS physics/Eos/EosMain/Helmholtz/GPU_interface
-ELSE
-  REQUESTS physics/Eos/EosMain/Helmholtz/Null_interface
 ENDIF
 
