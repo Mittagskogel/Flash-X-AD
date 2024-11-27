@@ -35,7 +35,8 @@ subroutine Hydro_prepBlock(Uin, blkLimits, blkLimitsGC, deltas, &
                               hy_rk_initSolnScratch
    use Hydro_data, ONLY: hy_telescoping, &
                          hy_geometry, &
-                         hy_globalLBnd
+                         hy_globalLBnd, &
+                         hy_threadWithinBlock
 
    @M hy_DIR_TARGET_routine(vector)
 
