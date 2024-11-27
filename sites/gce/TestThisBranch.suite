@@ -63,17 +63,8 @@ Sedov -t "Composite/Sedov/AMR/3d/pm4Bittree/unsplit" -np 8 -cbase 2023-01-18 -rb
 Sedov -t "Composite/Sedov/AMR/3d/AMReX/unsplit" -np 8 -cbase 2023-01-18 -rbase 2023-01-19
 Sedov -t "Composite/Sedov/AMR/3dSph/Paramesh/spark" -np 8 -cbase 2024-09-16_2 -rbase 2024-09-16_2
 
-Sedov -t "Composite/Sedov23/AMR/2dCyl/amrexLwf/spark/fcAllLev" -np 8 -cbase 2024-03-13 -rbase 2024-09-16
-Sedov -t "Composite/Sedov23/AMR/2dCyl/amrexLwf/spark/fcPerLev" -np 8 -cbase 2024-09-16_2
-Sedov -t "Composite/Sedov23/AMR/2dCyl/amrexNolwf/spark/fcAllLev" -np 8 -cbase 2024-03-13 -rbase 2024-09-16
-Sedov -t "Composite/Sedov23/AMR/2dCyl/amrexNolwf/spark/fcPerLev" -np 8 -cbase 2024-09-16_2
-Sedov -t "Composite/Sedov23/AMR/2dCyl/amrexNolwf/spark/fcNone" -np 8 -cbase 2024-02-26_5 -rbase 2024-02-26_5
-
-Sedov -t "Composite/Sedov23/AMR/2dCyl/pm4Lwf/spark/fcAllLev" -np 8 -cbase 2024-02-26_5 -rbase 2024-02-26_5
-Sedov -t "Composite/Sedov23/AMR/2dCyl/pm4Nolwf/spark/fcAllLev" -np 8 -cbase 2024-03-03_2 -rbase 2024-09-16_2
-Sedov -t "Composite/Sedov23/AMR/2dCyl/pm4Nolwf/spark/fcNone" -np 8 -cbase 2024-02-26_5 -rbase 2024-02-26_5
-Sedov -t "Composite/Sedov23/AMR/2dCyl/pm4Nolwf/sparkNt/fcAllLev" -np 8 -cbase 2024-05-08 -rbase 2024-09-16
-Sedov -t "Composite/Sedov23/AMR/2dCyl/pm4Nolwf/sparkNt/fcNone" -np 8 -cbase 2023-11-29 -rbase 2024-09-16
+Sedov -t "Composite/Sedov23/AMR/2dCyl/amrexLwf/spark/fcAllLev" -np 8 -cbase 2024-03-14 -rbase 2024-03-14
+Sedov -t "Composite/Sedov23/AMR/2dCyl/pm4Lwf/spark/fcAllLev" -np 8 -cbase 2024-03-14 -rbase 2024-03-14
 
 # Changed cbase and rbase to 2023-09-26 for this test to establish compatibility
 # with AMReX SHA-1 f08b40b - by Akash Dhruv on 2023-09-27
