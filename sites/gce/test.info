@@ -1204,4 +1204,8 @@
       </AMR>
     </HydroStatic>
   </Composite>
+  <UnitTest>
+    <Eos>
+    </Eos>
+  </UnitTest>
 </gce>
