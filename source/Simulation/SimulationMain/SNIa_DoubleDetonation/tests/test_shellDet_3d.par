@@ -12,9 +12,9 @@
 #wall_clock_checkpoint			= 39600
 #wall_clock_time_limit			= 40000   # 12h, with some time for checkpoint and init
 
-# names of files
-basenm					= "snd_"
-log_file				= "snd.log"
+# names of files (use defaults for tests)
+#basenm					= "snd_"
+#log_file				= "snd.log"
 
 restart					= .false.
 
@@ -23,14 +23,14 @@ plotFileNumber				= 0
 particleFileNumber			= 0
 
 #output_directory			= "./chk"
-checkpointFileIntervalStep		= 25
+#checkpointFileIntervalStep		= 25
 #checkpointFileIntervalTime		= 1.0e-1
 
 #plotFileIntervalStep			= 0
-plotFileIntervalTime			= 5.0e-3
+#plotFileIntervalTime			= 5.0e-3
 
 #particleFileIntervalStep		= 0
-particleFileIntervalTime		= 5.0e-3
+#particleFileIntervalTime		= 5.0e-3
 
 #ignoreForcedPlot			= .true.
 #summaryOutputOnly			= .true.
@@ -39,7 +39,7 @@ particleFileIntervalTime		= 5.0e-3
 #writeStatSummary			= .true.
 
 #gr_sanitizeDataMode			= 0
-#gr_sanitizeVerbosity			= 0
+#gr_sanitizeVervosity			= 0
 
 # variables for plotting
 plot_var_1				= "dens"
@@ -147,9 +147,9 @@ refine_cutoff_3				= 0.6
 derefine_cutoff_3			= 0.3
 
 # base blocks
-nblockx					= 32
-nblocky					= 32
-nblockz					= 32
+nblockx					= 8
+nblocky					= 8
+nblockz					= 8
 
 # max and min levels of refinement
 lrefine_min				= 1
@@ -167,9 +167,9 @@ refFluffMargin				= 0.2
 refFluffLevel				= 1
 
 # maximum refinement level outside energy-generating regions
-refNogenEnucThresh			= 1.0e16
+refNogenEnucThresh			= 1.0e19
 refNogenMargin				= 0.5
-refNogenLevel				= 6
+refNogenLevel				= 4
 
 ## -------------------------------------------------------------
 ## mesh definition
@@ -180,12 +180,12 @@ geometry				= "cartesian"
 #geometry				= "cylindrical"
 #geometry				= "spherical"
 
-xmin					= -65536.e5
-xmax					=  65536.e5
-ymin					= -65536.e5
-ymax					=  65536.e5
-zmin					= -65536.e5
-zmax					=  65536.e5
+xmin					= -32768.e5
+xmax					=  32768.e5
+ymin					= -32768.e5
+ymax					=  32768.e5
+zmin					= -32768.e5
+zmax					=  32768.e5
 
 # boundary conditions for the whole star
 xl_boundary_type			= "outflow"
@@ -201,19 +201,19 @@ zr_boundary_type			= "outflow"
 
 # go for nend steps or tmax seconds, whichever comes first
 nend					= 100000
-tmax					= 3.0
+tmax					= 0.1
 
 cfl					= 0.5     # CFL factor
 dr_tstepSlowStartFactor			= 0.1     # Further restrict CFL by this factor for initial step
 dr_shortenLastStepBeforeTMax		= .true.  # Stop at tmax exactly
 dr_dtMinContinue			= 9.0e-11 # Abort if timestep gets smaller than this
 
-dtinit					= 1.0e-8  # Initial tstep
-dtmin					= 1.0e-10 # Min tstep size
-dtmax					= 8.0e-3  # Max tstep size
+dtinit					= 1.0e-6  # Initial tstep
+dtmin					= 1.0e-20 # Min tstep size
+dtmax					= 8.0e-4  # Max tstep size
 tstep_change_factor			= 1.2e-0  # Max tstep change per step
 
-enucDtFactor				= 10.0    # Factor to limit burning energy deposition
+enucDtFactor				= 1.0e30  # Factor to limit burning energy deposition
 
 ## -------------------------------------------------------------
 ## EOS
@@ -300,12 +300,12 @@ mpole_MaxRadialZones			= 1       # Number of distinct "zones" of radial bin spac
 enableMaskedGCFill			= .true.  # Flag to allow masks in Grid_fillGuardCells
 
 # floor values
-smlrho					= 1.0e-6
-smalle					= 1.0e+10
+smlrho					= 2.0e-4
+smalle					= 1.0e-100
 smallt					= 1.0e+6
 smallu					= 1.0e-10
 smallp					= 1.0e+15
-smallx					= 1.0e-30
+smallx					= 1.0e-100
 small					= 1.0e-100
 
 # load balancing
@@ -343,7 +343,7 @@ order					= 3       # Interpolation order (first/second/third/fifth order)
 slopeLimiter				= "vanLeer" # Slope limiters (minmod, mc, vanLeer, hybrid, limited)
 LimitedSlopeBeta			= 1.      # Slope parameter for the "limited" slope by Toro
 
-use_avisc				= .false.  # Use artificial viscosity (originally for PPM)
+use_avisc				= .true.   # Use artificial viscosity (originally for PPM)
 use_upwindTVD				= .false. # Use upwind biased TVD slope for PPM (need nguard=6)
 
 # riemann solver
