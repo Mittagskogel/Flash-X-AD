@@ -6,10 +6,11 @@ import sys
 
 from matplotlib import pyplot as plt
 
+_PAR_HEADER = "## Following RPs are auto-inserted by recipe.py"
 
-_FLASH_PAR_APPENDS = """
-
-## Runtime Orchestration
+_FLASH_PAR_APPENDS = f"""
+{_PAR_HEADER}
+# Runtime Orchestration
 or_nThreadTeams = 2
 or_nThreadsPerTeam = 4
 or_nBytesInCpuMemoryPool = 6442450944
@@ -19,6 +20,7 @@ or_nBytesInGpuMemoryPools = 6442450944
 
 or_nThreads_1 = 1
 or_nTilesPerPacket_1 = 320
+or_nTilesPerCpuTurn_1 = 10
 
 """
 
@@ -95,6 +97,12 @@ def load_recipe_v4():
 
 
 def append_orch_to_flash_par():
+
+    with open("flash.par", "r") as file:
+        for line in file:
+            if _PAR_HEADER in line:
+                return
+
     with open("flash.par", "a") as file:
         file.write(_FLASH_PAR_APPENDS)
 
