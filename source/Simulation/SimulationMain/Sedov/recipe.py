@@ -8,16 +8,31 @@ from matplotlib import pyplot as plt
 
 
 def load_recipe():
+    """
+    A sample recipe computes a simple Spark Hydro
+    with flux correction
+    """
 
+    # initialize recipe
     recipe = flashx.TimeStepRecipe()
 
     # assuming [ModuleName]_[Routine] format
     # JSON files will be populated by reading [ModuleName]_interface.F90
+    # and feeded to milhoja_pypkg
     hydro_begin = recipe.begin_orchestration(after=recipe.root)
     hydro_prepBlock = recipe.add_work("Hydro_prepBlock", after=hydro_begin, map_to="gpu")
     hydro_advance = recipe.add_work("Hydro_advance", after=hydro_prepBlock, map_to="gpu")
     hydro_end = recipe.end_orchestration(begin_node=hydro_begin, after=hydro_advance)
 
+    # Insert a code block after the orchestration (outside Milhoja)
+    # for the flux correction. Currently, the ORCHA doesn't support
+    # node-to-node communications during the orchestration; thus,
+    # the flux correction algorithm is inserted as a CG-Kit template.
+    #
+    # recipe.add_fluxCorrection is just a thin wrapper for recipe.add_tpl,
+    # which is a function that adds a node with a bare CG-Kit template.
+    # recipe.add_fluxCorrection provides a dedicated template for flux correction,
+    # which is maintained by FlashX_RecipeTools.
     fluxCorrection = recipe.add_fluxCorrection(after=hydro_end)
 
     return recipe
@@ -33,6 +48,7 @@ if __name__ == "__main__":
     # recipe
     recipe = load_recipe()
 
+    # compile & generate codes from recipe
     ir = recipe.compile()
     ir.generate_all_codes()
 
