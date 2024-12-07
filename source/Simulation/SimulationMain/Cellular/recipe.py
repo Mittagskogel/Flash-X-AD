@@ -42,6 +42,8 @@ def load_recipe_v1():
 
     fluxCorrection = recipe.add_fluxCorrection(after=hydro_end)
 
+    # adding a bare template for inserting
+    # "call Burn()" line. See cg-tpl.Burn.F90 file for details
     burn = recipe.add_tpl(tpl="cg-tpl.Burn.F90", after=fluxCorrection)
 
     return recipe
@@ -97,7 +99,9 @@ def load_recipe_v4():
 
 
 def append_orch_to_flash_par():
-
+    """
+    Append required runtime parameters for orchestration in flash.par
+    """
     with open("flash.par", "r") as file:
         for line in file:
             if _PAR_HEADER in line:
@@ -114,9 +118,10 @@ if __name__ == "__main__":
     logger.add(sys.stdout, level=0)
     logger.enable(flashx.__name__)
 
+    # choose a recipe
     load_recipe = load_recipe_v4
 
-    # recipe
+    # load a recipe
     recipe = load_recipe()
 
     ir = recipe.compile()
