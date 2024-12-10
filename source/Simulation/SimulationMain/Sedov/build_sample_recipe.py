@@ -10,6 +10,10 @@ EXAMPLE: An example setup command would be,
     ```sh
     ./setup Sedov -auto -2d +sparklwf +sqr16 +mh_push +pm4dev -parfile=extraParfiles/test_amr_milhoja_cudart_spark_2d.par
     ```
+    or,
+    ```sh
+    ./setup Sedov -auto -3d +sparklwf +cube16 +mh_push +pm4dev -parfile=extraParfiles/test_amr_milhoja_cudart_spark_3d.par
+    ```
 """
 
 import FlashX_RecipeTools as flashx
