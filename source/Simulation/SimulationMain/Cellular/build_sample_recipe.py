@@ -9,12 +9,10 @@ NOTE: This is a sample script that constructs, builds, and compiles
       for the nuclear burn unit, at this moment.
 
       This script is intended to be executed in the Flash-X object directory.
-      It also **append** some runtime parameters in `flash.par` file located
-      in the object directory, which are used by the Orchestration unit with Milhoja.
 
 EXAMPLE: An example setup command would be,
     ```sh
-    ./setup Cellular -auto -2d +a13 +sparklwf +sqr16 +mh_push +pm4dev -gridinterpolation=monotonic -parfile=tests/test_amr_2d_coldstart.par
+    ./setup Cellular -auto -2d +a13 +sparklwf +sqr16 +mh_push +pm4dev -gridinterpolation=monotonic -parfile=extraParfiles/test_amr_2d_coldstart_milhoja.par
     ```
 """
 
@@ -23,24 +21,6 @@ from loguru import logger
 import sys
 
 from matplotlib import pyplot as plt
-
-_PAR_HEADER = "## Following RPs are auto-inserted by recipe.py"
-
-_FLASH_PAR_APPENDS = f"""
-{_PAR_HEADER}
-# Runtime Orchestration
-or_nThreadTeams = 2
-or_nThreadsPerTeam = 4
-or_nBytesInCpuMemoryPool = 6442450944
-
-or_nStreams = 4
-or_nBytesInGpuMemoryPools = 6442450944
-
-or_nThreads_1 = 1
-or_nTilesPerPacket_1 = 320
-or_nTilesPerCpuTurn_1 = 10
-
-"""
 
 
 def load_recipe_v1():
@@ -116,19 +96,6 @@ def load_recipe_v4():
     return recipe
 
 
-def append_orch_to_flash_par():
-    """
-    Append required runtime parameters for orchestration in flash.par
-    """
-    with open("flash.par", "r") as file:
-        for line in file:
-            if _PAR_HEADER in line:
-                return
-
-    with open("flash.par", "a") as file:
-        file.write(_FLASH_PAR_APPENDS)
-
-
 if __name__ == "__main__":
 
     # enabling logger to stdout
@@ -144,8 +111,6 @@ if __name__ == "__main__":
 
     ir = recipe.compile()
     ir.generate_all_codes()
-
-    append_orch_to_flash_par()
 
     # print graphs to file
     fig = plt.figure(figsize=(16, 6))
