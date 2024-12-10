@@ -1,4 +1,16 @@
 #!/usr/bin/env python3
+"""
+NOTE: This is a sample script that constructs, builds, and compiles
+      a recipe for Sedov explosion problem using `Hydro` unit.
+      The sample recipes are organized in `load_recipe` functions.
+
+      This script is intended to be executed in the Flash-X object directory.
+
+EXAMPLE: An example setup command would be,
+    ```sh
+    ./setup Sedov -auto -2d +sparklwf +sqr16 +mh_push +pm4dev -parfile=extraParfiles/test_amr_milhoja_cudart_spark_2d.par
+    ```
+"""
 
 import FlashX_RecipeTools as flashx
 from loguru import logger

@@ -61,6 +61,6 @@ PARAMETER usePseudo1d     BOOLEAN FALSE
 PARAMETER noiseAmplitude  REAL    1.0e-2
 PARAMETER noiseDistance   REAL    5.0
 
-# This file is required only for "recipe.py",
+# This file is required only for "build_sample_recipe.py",
 # especially for the load_recipe_v1 function in there.
 DATAFILES cg-tpl.Burn.F90
