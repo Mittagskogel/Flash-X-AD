@@ -218,7 +218,7 @@ usePseudo1d				= .true.
 # Runtime Orchestration
 or_nThreadTeams = 3
 or_nThreadsPerTeam = 4
-or_nBytesInCpuMemoryPool = 524288000    # 500 MiB
+or_nBytesInCpuMemoryPool = 524288000    # 500 MiB - currently not implemented
 
 or_nStreams = 4
 or_nBytesInGpuMemoryPools = 524288000   # 500 MiB
