@@ -22,7 +22,7 @@
 
 subroutine Simulation_initBlock(solnData, tileDesc)
 
-  use Simulation_data
+  use Simulation_data, ONLY: sim_dens, sim_cs, sim_magz
   use Grid_tile, ONLY : Grid_tile_t
   use Driver_data, ONLY : dr_globalMe
   use Eos_interface, ONLY : Eos_multiDim
