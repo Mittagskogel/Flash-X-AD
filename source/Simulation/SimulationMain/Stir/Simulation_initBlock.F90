@@ -74,7 +74,7 @@ subroutine Simulation_initBlock(solnData, tileDesc)
    enddo ! k
 
   ! update temp, eint, ener, etc.. by calling EOS
-  call Eos_multiDim(MODE_DENS_PRES, tileDesc%limits, solnData)
+  call Eos_multiDim(MODE_DENS_PRES, tileDesc%limits, tileDesc%blkLimitsGC(LOW,:), solnData)
 
   if (Debug) print *, '[', dr_globalMe, '] Simulation_initBlock exiting.'
 
