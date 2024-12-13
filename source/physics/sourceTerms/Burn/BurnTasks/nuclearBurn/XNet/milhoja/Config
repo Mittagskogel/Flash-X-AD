@@ -1,7 +1,0 @@
-USESETUPVARS cpuonly
-IF cpuonly
-  REQUIRES ./cpuonly
-ENDIF
-
-REQUESTS ./cpu
-VARIANTS cpu

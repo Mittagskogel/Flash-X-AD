@@ -1,26 +1,26 @@
 #!/usr/bin/env python3
+"""
+NOTE: This is a sample script that constructs, builds, and compiles
+      a recipe for Cellular detonation problem using `Hydro` and
+      `nuclearBurn` units. The sample recipes are organized in
+      `load_recipe_v*` functions, with various possible hardware configurations.
+      Currently, it works only with `approx13` of `nuclearBurn` unit,
+      as that is the only *Milhoja-ready* implementation
+      for the nuclear burn unit, at this moment.
+
+      This script is intended to be executed in the Flash-X object directory.
+
+EXAMPLE: An example setup command would be,
+    ```sh
+    ./setup Cellular -auto -2d +a13 +sparklwf +sqr16 +mh_push +pm4dev -gridinterpolation=monotonic -parfile=extraParfiles/test_amr_2d_coldstart_milhoja.par
+    ```
+"""
 
 import FlashX_RecipeTools as flashx
 from loguru import logger
 import sys
 
 from matplotlib import pyplot as plt
-
-
-_FLASH_PAR_APPENDS = """
-
-## Runtime Orchestration
-or_nThreadTeams = 2
-or_nThreadsPerTeam = 4
-or_nBytesInCpuMemoryPool = 6442450944
-
-or_nStreams = 4
-or_nBytesInGpuMemoryPools = 6442450944
-
-or_nThreads_1 = 1
-or_nTilesPerPacket_1 = 320
-
-"""
 
 
 def load_recipe_v1():
@@ -40,6 +40,8 @@ def load_recipe_v1():
 
     fluxCorrection = recipe.add_fluxCorrection(after=hydro_end)
 
+    # adding a bare template for inserting
+    # "call Burn()" line in TimeAdvance.F90. See cg-tpl.Burn.F90 file for details
     burn = recipe.add_tpl(tpl="cg-tpl.Burn.F90", after=fluxCorrection)
 
     return recipe
@@ -94,11 +96,6 @@ def load_recipe_v4():
     return recipe
 
 
-def append_orch_to_flash_par():
-    with open("flash.par", "a") as file:
-        file.write(_FLASH_PAR_APPENDS)
-
-
 if __name__ == "__main__":
 
     # enabling logger to stdout
@@ -106,15 +103,14 @@ if __name__ == "__main__":
     logger.add(sys.stdout, level=0)
     logger.enable(flashx.__name__)
 
+    # choose a recipe
     load_recipe = load_recipe_v4
 
-    # recipe
+    # load a recipe
     recipe = load_recipe()
 
     ir = recipe.compile()
     ir.generate_all_codes()
-
-    append_orch_to_flash_par()
 
     # print graphs to file
     fig = plt.figure(figsize=(16, 6))

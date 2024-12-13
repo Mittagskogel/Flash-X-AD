@@ -151,13 +151,11 @@ nuSTS                   = 0.2
 
 ## Runtime Orchestration
 or_nThreadTeams = 2
-or_nThreadsPerTeam = 4
-or_nBytesInCpuMemoryPool = 6442450944
+or_nThreadsPerTeam = 2
+or_nBytesInCpuMemoryPool = 1073741824    # 1 GiB - currently not implemented
 
 or_nStreams = 4
-or_nBytesInGpuMemoryPools = 6442450944
+or_nBytesInGpuMemoryPools = 1073741824   # 1 GiB
 
-
-
-or_nThreads_1 = 4
-or_nTilesPerPacket_1 = 100
+or_nThreads_1 = 2
+or_nTilesPerPacket_1 = 40
