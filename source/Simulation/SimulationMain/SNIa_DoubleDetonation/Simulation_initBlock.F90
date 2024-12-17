@@ -330,7 +330,7 @@ subroutine Simulation_initBlock(solnData, tileDesc)
      end do
   end do
 
-  call Eos_multiDim(MODE_DENS_TEMP,tileLimits,solnData)
+  call Eos_multiDim(MODE_DENS_TEMP,tileLimits,tileDesc%blkLimitsGC(LOW,:),solnData)
 
   ! Giant traffic cone
   do k = tileLimits(LOW,KAXIS), tileLimits(HIGH,KAXIS)
