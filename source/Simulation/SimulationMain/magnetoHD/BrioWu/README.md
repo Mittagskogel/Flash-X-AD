@@ -3,10 +3,10 @@
 ## Setup
 
 ```bash
-./setup MHD/BrioWu -auto -1d +ug +nofbs +sparkGLM --parfile=extraParfiles/briowu_1d.par    # 1D along x-axis
-./setup MHD/BrioWu -auto -2d +ug +nofbs +sparkGLM --parfile=extraParfiles/briowu_2d_x.par  # 2D along x-axis
-./setup MHD/BrioWu -auto -2d +ug +nofbs +sparkGLM --parfile=extraParfiles/briowu_2d_y.par  # 2D along y-axis
-./setup MHD/BrioWu -auto -2d +ug +nofbs +sparkGLM --parfile=extraParfiles/briowu_2d_xy.par # 2D along x=y
+./setup magnetoHD/BrioWu -auto -1d +ug +nofbs +sparkGLM --parfile=extraParfiles/briowu_1d.par    # 1D along x-axis
+./setup magnetoHD/BrioWu -auto -2d +ug +nofbs +sparkGLM --parfile=extraParfiles/briowu_2d_x.par  # 2D along x-axis
+./setup magnetoHD/BrioWu -auto -2d +ug +nofbs +sparkGLM --parfile=extraParfiles/briowu_2d_y.par  # 2D along y-axis
+./setup magnetoHD/BrioWu -auto -2d +ug +nofbs +sparkGLM --parfile=extraParfiles/briowu_2d_xy.par # 2D along x=y
 ```
 
 ## Plotting

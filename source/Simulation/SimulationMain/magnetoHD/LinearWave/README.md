@@ -3,7 +3,7 @@
 ## Setup
 
 ```bash
-./setup MHD/BrioWu -auto -1d +ug +nofbs +sparkGLM --parfile=extraParfile/mode_resolution.par
+./setup magnetoHD/BrioWu -auto -1d +ug +nofbs +sparkGLM --parfile=extraParfile/mode_resolution.par
 ```
 
 where `mode` is one of `alfven`, `fast`, or `slow`, and `resolution` is a zero-padded integer, e.g., `00064`, matching the `iGridSize` parameter in the file.
