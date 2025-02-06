@@ -45,7 +45,7 @@ subroutine RadTrans( dt, pass )
 #include "Simulation.h"
 #include "constants.h"
 
-#ifdef NSPECIES > 0
+#if NSPECIES > 0
   use Burn_interface, ONLY : Burn_makeAbundanceYeConsistent
 #endif
   use Driver_interface, ONLY : Driver_abort
