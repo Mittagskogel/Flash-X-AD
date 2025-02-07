@@ -58,6 +58,8 @@ subroutine Hydro_prepBlock(Uin, blkLimits, blkLimitsGC, deltas, &
    real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(IN OUT) :: hy_starState, hy_tmpState
    real, dimension(loGC(1):, loGC(2):, loGC(3):), intent(IN OUT) :: hy_Vc
 
+   real :: divB
+
    integer :: i, j, k
 
    ! DivB will technically be lagged by 1 step, but we need ghost zones to
