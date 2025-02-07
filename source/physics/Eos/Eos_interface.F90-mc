@@ -46,6 +46,7 @@ Module Eos_interface
   
   interface
      subroutine Eos_multiDim(mode,range,lo,solnData)
+       implicit none
        integer, intent(in) :: mode
        integer, dimension(LOW:HIGH,MDIM), intent(in) :: range
        integer, intent(in) :: lo(MDIM)
@@ -57,6 +58,7 @@ Module Eos_interface
 
   interface 
      subroutine Eos_fillEosData(range,lo, solnData, vecB, vecE, eosData)
+       implicit none
        integer, dimension(LOW:HIGH,MDIM), intent(in) :: range
        integer, intent(in) :: vecB
        integer, intent(inout) :: vecE
@@ -70,6 +72,7 @@ Module Eos_interface
 
   interface 
      subroutine Eos_getFromEosData( vecB, vecE, eosData, range, lo, solnData)
+       implicit none
        integer, intent(in) :: vecB
        integer,intent(inout) :: vecE
        integer, dimension(LOW:HIGH,MDIM), intent(in) :: range
@@ -83,6 +86,7 @@ Module Eos_interface
 
   interface
      subroutine Eos(mode,  @M eos_args, massFrac, derivs)
+       implicit none
        integer, INTENT(in) :: mode
        real, INTENT(INOUT) :: @M eos_args
        real, optional, INTENT(in),dimension(NSPECIES)    :: massFrac
@@ -117,6 +121,7 @@ Module Eos_interface
   interface
      subroutine Eos_getParameters(eintSwitch,inputsAreUnchanged,inputTempIsGuess,constantGammaC,&
           inputMassFracNeeded,smalle,smallE1,smallE2,smallE3)
+       implicit none
        real,OPTIONAL,intent(OUT) :: eintSwitch
        logical,OPTIONAL,intent(OUT) :: inputsAreUnchanged
        logical,OPTIONAL,intent(OUT) :: inputTempIsGuess
