@@ -18,6 +18,7 @@
 !!
 !! This file defines the API of the Eos unit
 !!
+!!REORDER(4): solnData
 !!NOVARIANTS
 
 
@@ -48,9 +49,8 @@ Module Eos_interface
        integer, intent(in) :: mode
        integer, dimension(LOW:HIGH,MDIM), intent(in) :: range
        integer, intent(in) :: lo(MDIM)
-       real,dimension(1:,lo(1):,lo(2):,lo(3):),intent(inout) :: solnData(:,:,:,:)
-       !!real,dimension(:,:,:,:), pointer :: solnData
-     end subroutine 
+       real,dimension(1:,lo(1):,lo(2):,lo(3):),intent(inout) :: solnData
+     end subroutine Eos_multiDim
   end interface
 
   @M Eos_multiDim_GPU_interface
@@ -76,7 +76,6 @@ Module Eos_interface
        real, dimension(vecB:vecE,EOS_VARS),intent(in) :: eosData
        integer, dimension(MDIM) :: lo
        real,dimension(1:,lo(1):,lo(2):,lo(3):), intent(inout) :: solnData
-       !!real,dimension(:,:,:,:), pointer :: solnData
      end subroutine Eos_getFromEosData
   end interface
 
