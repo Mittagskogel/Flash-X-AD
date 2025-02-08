@@ -22,22 +22,24 @@
 !!
 
 ! solnData depends on the ordering on unk
+!!REORDER(4): solnData
 !!VARIANTS(GPU): Eos_multiDim, &
 !!               Eos_fillEosData, &
 !!               Eos_getFromEosData, &
 !!               Eos_vector, &
 !!               Driver_abort
-!!REORDER(4): solnData
 !!
 
 #include "Eos.h"
 #include "constants.h"
 #include "Simulation.h"
- 
+
 subroutine Eos_multiDim(mode,range,lo,solnData @M eos_scratchArgs)
 
   use Driver_interface, ONLY : Driver_abort
   use Eos_interface, ONLY : Eos_fillEosData, Eos_getFromEosData, Eos_vector
+
+  implicit none
 
   @M eos_DIR_routine(vector)
 
@@ -46,17 +48,15 @@ subroutine Eos_multiDim(mode,range,lo,solnData @M eos_scratchArgs)
   @M eos_DIR_routine_vector(Eos_vector)
   @M eos_DIR_routine_vector(Eos_getFromEosData)
 
-#include "FortranLangFeatures.fh"
-
   integer, intent(in) :: mode
   integer, dimension(2,MDIM), intent(in) :: range
   integer, intent(in) :: lo(MDIM)
   real,dimension(1:,lo(1):,lo(2):,lo(3):),intent(inout) :: solnData
-  !!real,dimension(:,:,:,:), pointer :: solnData		
+  @M eos_scratch_args_declare
+
   integer :: ierr
   integer :: i,j,k, vecLen
   integer :: ilo, ihi, jlo, jhi, klo, khi, base_n
-  @M eos_scratch_args_declare
 
   integer :: n,m
   real :: @M eos_args
