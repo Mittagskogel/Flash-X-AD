@@ -65,7 +65,7 @@ endif
 CDEFINES_HDF5=$(CFLAGS_HDF5) -DNO_HDF4
 CDEFINES=$(CDEFINES_HDF5) $(CDEFINES_NCMPI) $(CDEFINES_MPI)
 
-CFLAGS=$(CFLAGS_OPT) -DH5_USE_18_API
+CFLAGS=$(CFLAGS_OPT) -DH5_USE_18_API #-I/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/parallel-netcdf-1.12.3-czwvzzopazfjabu3lzeyhoxooxvsog4n/include/
 LIBS=$(LIB_HDF5) $(_LIB_NCMPI) $(_LIB_MPI) -lm
 LFLAGS=$(LFLAGS_OPT)
 
