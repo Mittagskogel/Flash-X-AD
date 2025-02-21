@@ -54,7 +54,7 @@ OPENMP = -fopenmp
 
 # Enzyme
 FFLAGS_OPT = -c -O2 -fdefault-real-8 -fdefault-double-8 \
-	-flto=full
+	 -flto=full
 
 # -fuse-ld=lld -fpass-plugin=$(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
 # -Xflang -load -Xflang $(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
@@ -104,6 +104,7 @@ CFLAGS_NCMPI = -I${NCMPI_PATH}/include
 #  _DEBUG, and _TEST cases.
 #----------------------------------------------------------------------------
 
+# LFLAGS_OPT = -g -o
 LFLAGS_OPT   = -g \
     -flto=full -fuse-ld=lld \
     -fpass-plugin=/scratch/fhrold/riken/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
@@ -112,7 +113,7 @@ LFLAGS_OPT   = -g \
     -Wl,--load-pass-plugin=/scratch/fhrold/riken/Enzyme/enzyme/build/Enzyme/LLDEnzyme-20.so \
     -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/mpfr-4.2.1-2aivvsalcuno6mvp2lyuta3glkp3o6v2/lib -lmpfr \
     -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/gmp-6.3.0-kyy5q7hr34p4dr2aftntqw2z6pmkc7ja/lib -lgmp \
-	mpfr.o -o
+    mpfr.o -o
 LFLAGS_DEBUG = -g -O0 -o
 LFLAGS_TEST  = -g -O0 -o
 

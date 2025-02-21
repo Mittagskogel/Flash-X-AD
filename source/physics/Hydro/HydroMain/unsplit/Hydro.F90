@@ -86,7 +86,8 @@ end module truncate_Hydro
 
 #define TRUNC_FROM 64
 #define TRUNC_TO_E 0
-#define TRUNC_TO_M 32
+#define TRUNC_TO_M 5
+#define LVL_OFFSET 2
 
 subroutine Hydro(simTime, dt, dtOld, sweeporder)
 
@@ -360,7 +361,7 @@ subroutine Hydro(simTime, dt, dtOld, sweeporder)
         else
            nullify(Uout)           ! Uout is not needed yet.
         end if
-        if (level <= maxLev-1) then
+        if (level <= maxLev-LVL_OFFSET) then
            call f__enzyme_truncate_op_func_hy_computeFluxes_fluxbuf( &
                 TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
                 tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :), &
@@ -373,7 +374,7 @@ subroutine Hydro(simTime, dt, dtOld, sweeporder)
 
         if (level .NE. maxLev) then
            Uout => Uin
-           if (level <= maxLev-1) then
+           if (level <= maxLev-LVL_OFFSET) then
               call f__enzyme_truncate_op_func_hy_updateSolution_fluxbuf( &
                    TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
                    tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :), &
@@ -425,7 +426,7 @@ subroutine Hydro(simTime, dt, dtOld, sweeporder)
 
         call tileDesc%deltas(del)
         Uin => Uout
-        if (level <= maxLev-1) then
+        if (level <= maxLev-LVL_OFFSET) then
            call f__enzyme_truncate_op_func_hy_updateSolution_fluxbuf( &
                 TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
                 tileDesc, fluxBufX,fluxBufY,fluxBufZ,fluxLo(tileDesc), &
