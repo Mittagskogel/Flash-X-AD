@@ -3,22 +3,48 @@
 set -e
 set -x
 
-infix=ref2
+offsets=(0 1 2)
+mantissas=($(seq 4 32))
+
+# Make directory for automatic experiment runner
+rundir=autorun
+mkdir -p $rundir
+
+jobs=()
 
 # for m in 23 20 16 12 10 5
-for m in 5
+for offset in ${offsets[@]}
 do
-    id=${infix}_${m}bit
+    for mantissa in ${mantissas[@]}
+    do
+        id=ref${offset}_${mantissa}bit
+        objdir=${rundir}/object_${id}
 
-    sed -i 's/#define TRUNC_TO_M.*/#define TRUNC_TO_M '${m}'/' Hydro.F90
+        jobs+=(${objdir})
 
-    make -j > make_${id}.makelog 2>&1
-    mv flashx flashx_${id}
+        # Setup the problem directory
+        mkdir -p ${objdir}
+        ./setup Sod -auto -2d +uhd +pm4dev +nolwf -objdir=${objdir} > setup.log 2>&1
+        mv setup.log ${objdir}/setup.log
+        cp source/Simulation/SimulationMain/Sod/tests/test_amr_unsplit_2d.par ${objdir}/
 
-    mpirun -n 1 flashx_${id} -par_file test_amr_unsplit_2d.par > sod_raw_${id}.log 2>&1
+        # Update preprocessor variables in Hydro
+        sed -i 's/#define TRUNC_TO_M.*/#define TRUNC_TO_M '${mantissa}'/' ${objdir}/Hydro.F90
+        sed -i 's/#define LVL_OFFSET.*/#define LVL_OFFSET '${offset}'/' ${objdir}/Hydro.F90
 
-    mv flashx_hdf5_chk_0001 flashx_hdf5_chk_0001_${id}
-    mv sod.log sod_${id}.log
+        # Add mpfr.o
+        cp /scratch/fhrold/riken/Enzyme/enzyme/include/enzyme/fprt/mpfr.h ${objdir}/mpfr.cpp
+        clang++ -c ${objdir}/mpfr.cpp $(pkg-config --cflags mpfr gmp) \
+            -I/scratch/fhrold/riken/Enzyme/enzyme/include/enzyme/fprt/ \
+            -o ${objdir}/mpfr.o
 
-    sfocu flashx_hdf5_chk_0001_${id} flashx_hdf5_chk_0001_reference
+        # Make
+        make -j -C ${objdir} > ${objdir}/make.log 2>&1
+        # make -j > make.log 2>&1
+        # mpirun -n 1 flashx -par_file test_amr_unsplit_2d.par > sod_raw.log 2>&1
+    done
 done
+
+parallel cd {} "&&" \
+    mpirun --bind-to none -n 1 flashx -par_file test_amr_unsplit_2d.par ">" sod_raw.log "2>&1" \
+    ::: ${jobs[@]}
