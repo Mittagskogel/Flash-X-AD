@@ -84,10 +84,11 @@ module truncate_Hydro
   end subroutine f__enzyme_truncate_op_func_hy_updateSolution_fluxbuf
 end module truncate_Hydro
 
+#define ENABLE_TRUNC
 #define TRUNC_FROM 64
 #define TRUNC_TO_E 0
-#define TRUNC_TO_M 5
-#define LVL_OFFSET 2
+#define TRUNC_TO_M 32
+#define LVL_OFFSET 0
 
 subroutine Hydro(simTime, dt, dtOld, sweeporder)
 
@@ -303,6 +304,8 @@ subroutine Hydro(simTime, dt, dtOld, sweeporder)
 
 #ifdef USE_NOFLUXCORR_SHORTCUT
   if (.NOT. hy_fluxCorrect) then
+     ! write(*,*) "----We are using the first variant. hy_fluxCorrect =", hy_fluxCorrect,
+     ! & "hy_fluxCorrectPerLevel =", hy_fluxCorrectPerLevel
      ! ***** FIRST VARIANT: OPTIMIZED (somewhat) FOR hy_fluxCorrect==.FALSE. *****
 
      ! The use of the Uin => Uout optimization trick means that this variant
@@ -321,8 +324,21 @@ subroutine Hydro(simTime, dt, dtOld, sweeporder)
         call tileDesc%getDataPtr(fluxBufZ, FLUXZ)
 #endif
         Uout => Uin             ! hy_computeFluxes will ALSO update the solution through the Uout pointer!
+#ifdef ENABLE_TRUNC
+        level = tileDesc%level
+        if (level <= maxLev-LVL_OFFSET) then
+           call f__enzyme_truncate_op_func_hy_computefluxes_fluxbuf( &
+                TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
+                tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :), &
+                Uin, Uout, del, simTime, dt, dtOld, sweepDummy)
+        else
+           call hy_computeFluxes(tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :), &
+                                 Uin, Uout, del, simTime, dt, dtOld, sweepDummy)
+        end if
+#else
         call hy_computeFluxes(tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :), &
                                       Uin, Uout, del, simTime, dt, dtOld, sweepDummy)
+#endif !ENABLE_TRUNC
 #ifndef FIXEDBLOCKSIZE
         call tileDesc%releaseDataPtr(fluxBufX, FLUXX)
         call tileDesc%releaseDataPtr(fluxBufY, FLUXY)
@@ -361,19 +377,25 @@ subroutine Hydro(simTime, dt, dtOld, sweeporder)
         else
            nullify(Uout)           ! Uout is not needed yet.
         end if
+#ifdef ENABLE_TRUNC
         if (level <= maxLev-LVL_OFFSET) then
-           call f__enzyme_truncate_op_func_hy_computeFluxes_fluxbuf( &
+           call f__enzyme_truncate_op_func_hy_computefluxes_fluxbuf( &
                 TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
                 tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :), &
                 Uin, Uout, del, simTime, dt, dtOld, sweepDummy)
         else
            call hy_computeFluxes(tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :), &
                 Uin, Uout, del, simTime, dt, dtOld, sweepDummy)
-        endif
+        end if
+#else
+        call hy_computeFluxes(tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :), &
+             Uin, Uout, del, simTime, dt, dtOld, sweepDummy)
+#endif !ENABLE_TRUNC
         call Grid_putFluxData(tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :))
 
         if (level .NE. maxLev) then
            Uout => Uin
+#ifdef ENABLE_TRUNC
            if (level <= maxLev-LVL_OFFSET) then
               call f__enzyme_truncate_op_func_hy_updateSolution_fluxbuf( &
                    TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
@@ -383,7 +405,12 @@ subroutine Hydro(simTime, dt, dtOld, sweeporder)
               call hy_updateSolution (tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :), &
                    Uin, Uout, &
                    del, simTime, dt, dtOld, sweepDummy, UPDATE_INTERIOR)
-           endif
+           end if
+#else
+           call hy_updateSolution (tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :), &
+                Uin, Uout, &
+                del, simTime, dt, dtOld, sweepDummy, UPDATE_INTERIOR)
+#endif !ENABLE_TRUNC
         end if
 #ifndef FIXEDBLOCKSIZE
         call tileDesc%releaseDataPtr(fluxBufX, FLUXX)
@@ -426,6 +453,7 @@ subroutine Hydro(simTime, dt, dtOld, sweeporder)
 
         call tileDesc%deltas(del)
         Uin => Uout
+#ifdef ENABLE_TRUNC
         if (level <= maxLev-LVL_OFFSET) then
            call f__enzyme_truncate_op_func_hy_updateSolution_fluxbuf( &
                 TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
@@ -436,6 +464,11 @@ subroutine Hydro(simTime, dt, dtOld, sweeporder)
                 Uin, Uout, &
                 del, simTime, dt, dtOld, sweepDummy, UPDATE_BOUND)
         endif
+#else
+        call hy_updateSolution (tileDesc, fluxBufX,fluxBufY,fluxBufZ,fluxLo(tileDesc), &
+             Uin, Uout, &
+             del, simTime, dt, dtOld, sweepDummy, UPDATE_BOUND)
+#endif !ENABLE_TRUNC
 #ifndef FIXEDBLOCKSIZE
         call tileDesc%releaseDataPtr(fluxBufX, FLUXX)
         call tileDesc%releaseDataPtr(fluxBufY, FLUXY)
@@ -449,6 +482,8 @@ subroutine Hydro(simTime, dt, dtOld, sweeporder)
      call Timers_stop("update solution")
      call Grid_releaseTileIterator(itor)
   else
+     ! write(*,*) "----We are using the third variant. hy_fluxCorrect =", hy_fluxCorrect,
+     ! & "hy_fluxCorrectPerLevel =", hy_fluxCorrectPerLevel
      ! ***** THIRD VARIANT: FOR hy_fluxCorrectPerLevel==.TRUE. *****
      do level= maxLev,1,-1
 #ifdef DEBUG_DRIVER
@@ -483,17 +518,43 @@ subroutine Hydro(simTime, dt, dtOld, sweeporder)
                ! Otherwise, no need to store solutions yet
               nullify(Uout)
            end if
+#ifdef ENABLE_TRUNC
+           if (level <= maxLev-LVL_OFFSET) then
+              call f__enzyme_truncate_op_func_hy_computeFluxes_fluxbuf( &
+                   TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
+                   tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :), &
+                   Uin, Uout, del, simTime, dt, dtOld, sweepDummy)
+           else
+              call hy_computeFluxes     (tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :), &
+                                         Uin, Uout, &
+                                         del, simTime, dt, dtOld, sweepDummy)
+           end if
+#else
            call hy_computeFluxes     (tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :), &
                                       Uin, Uout, &
                                       del, simTime, dt, dtOld, sweepDummy)
+#endif !ENABLE_TRUNC
            if (level .NE. maxLev) then
               if (hy_fluxCorrect) then
                  call Grid_correctFluxData(tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :))
               end if
               Uout => Uin
+#ifdef ENABLE_TRUNC
+              if (level <= maxLev-LVL_OFFSET) then
+                 call f__enzyme_truncate_op_func_hy_updateSolution_fluxbuf( &
+                      TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
+                      tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :), &
+                      Uin, Uout, del, simTime, dt, dtOld, sweepDummy)
+              else
+                 call hy_updateSolution (tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :), &
+                                         Uin, Uout, &
+                                         del, simTime, dt, dtOld, sweepDummy)
+              end if
+#else
               call hy_updateSolution (tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :), &
                                       Uin, Uout, &
                                       del, simTime, dt, dtOld, sweepDummy)
+#endif !ENABLE_TRUNC
            end if
            if (hy_fluxCorrect .AND. (level > 1)) then
               call Grid_putFluxData  (tileDesc, fluxBufX,fluxBufY,fluxBufZ,tileDesc%limits(LOW, :))
