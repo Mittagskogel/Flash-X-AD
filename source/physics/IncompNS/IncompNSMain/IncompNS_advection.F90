@@ -27,6 +27,7 @@ subroutine IncompNS_advection(tileDesc)
    use Driver_interface, ONLY: Driver_getNstep, Driver_abort
    use Stencils_interface, ONLY: Stencils_advectWeno2d, Stencils_advectWeno3d, &
                                  Stencils_advectCentral2d, Stencils_advectCentral3d
+   use RuntimeParameters_interface, ONLY: RuntimeParameters_get
    use IncompNS_data
 
 !------------------------------------------------------------------------------------------
@@ -43,6 +44,7 @@ subroutine IncompNS_advection(tileDesc)
 #endif
    real del(MDIM)
    integer :: NStep
+   integer :: lrefine_max
 
 !------------------------------------------------------------------------------------------
 #if NDIM < MDIM
@@ -52,6 +54,7 @@ subroutine IncompNS_advection(tileDesc)
 #endif
    !
    call Timers_start("IncompNS_advection")
+   call RuntimeParameters_get('lrefine_max', lrefine_max)
 
    if (ins_advSchm /= 2 .and. ins_advSchm /= 105) then
       call Driver_abort("[IncompNS_advection] ins_intSchm should be 2 or 105 for variable density configuration")
