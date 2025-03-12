@@ -20,6 +20,33 @@
 #include "constants.h"
 #include "IncompNS.h"
 
+module truncate_advection
+  implicit none
+  public :: f__enzyme_truncate_op_func_Stencils_advectWeno2d
+contains
+
+  subroutine f__enzyme_truncate_op_func_Stencils_advectWeno2d(from, to_e, to_m, &
+       rhs,phi,u,v,dx,dy,ix1,ix2,jy1,jy2,center,facex,facey)
+    implicit none
+
+    integer, intent(in) :: from, to_e, to_m
+
+    real, dimension(:,:,:), intent(inout):: rhs
+    real, dimension(:,:,:), intent(in) :: phi,u,v
+    real, intent(in) :: dx,dy
+    integer, intent(in) :: ix1,ix2,jy1,jy2
+    integer, intent(in) :: center,facex,facey
+
+    call Stencils_advectWeno2d(rhs,phi,u,v,dx,dy,ix1,ix2,jy1,jy2,center,facex,facey)
+  end subroutine f__enzyme_truncate_op_func_Stencils_advectWeno2d
+end module truncate_advection
+
+#define ENABLE_TRUNC_ADVECTION
+#define TRUNC_FROM 64
+#define TRUNC_TO_E 0
+#define TRUNC_TO_M 16
+#define LVL_OFFSET 1
+
 subroutine IncompNS_advection(tileDesc)
 
    use Grid_tile, ONLY: Grid_tile_t
@@ -29,6 +56,11 @@ subroutine IncompNS_advection(tileDesc)
                                  Stencils_advectCentral2d, Stencils_advectCentral3d
    use RuntimeParameters_interface, ONLY: RuntimeParameters_get
    use IncompNS_data
+
+   ! use Grid_interface, ONLY: Grid_getMaxRefinement
+
+   !Enzyme truncate function definitions
+   use truncate_advection
 
 !------------------------------------------------------------------------------------------
    implicit none
@@ -54,6 +86,7 @@ subroutine IncompNS_advection(tileDesc)
 #endif
    !
    call Timers_start("IncompNS_advection")
+   ! call Grid_getMaxRefinement(lrefine_max, mode=1)
    call RuntimeParameters_get('lrefine_max', lrefine_max)
 
    if (ins_advSchm /= 2 .and. ins_advSchm /= 105) then
@@ -166,6 +199,52 @@ subroutine IncompNS_advection(tileDesc)
                                  center=0, facex=0, facey=0, facez=1)
 #elif NDIM ==2
       ! compute RHS of momentum equation
+#ifdef ENABLE_TRUNC_ADVECTION
+      if (tileDesc%level <= maxLev-LVL_OFFSET) then
+         call f__enzyme_truncate_op_func_Stencils_advectWeno2d( &
+              TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
+              facexData(HVN0_FACE_VAR, :, :, :), &
+              facexData(VELC_FACE_VAR, :, :, :), &
+              facexData(VELC_FACE_VAR, :, :, :), &
+              faceyData(VELC_FACE_VAR, :, :, :), &
+              del(DIR_X), &
+              del(DIR_Y), &
+              GRID_ILO, GRID_IHI + 1, &
+              GRID_JLO, GRID_JHI, &
+              center=0, facex=1, facey=0)
+         call f__enzyme_truncate_op_func_Stencils_advectWeno2d( &
+              TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
+              faceyData(HVN0_FACE_VAR, :, :, :), &
+              faceyData(VELC_FACE_VAR, :, :, :), &
+              facexData(VELC_FACE_VAR, :, :, :), &
+              faceyData(VELC_FACE_VAR, :, :, :), &
+              del(DIR_X), &
+              del(DIR_Y), &
+              GRID_ILO, GRID_IHI, &
+              GRID_JLO, GRID_JHI + 1, &
+              center=0, facex=0, facey=1)
+      else
+         call Stencils_advectWeno2d(facexData( :, :, :,HVN0_FACE_VAR), &
+              facexData(VELC_FACE_VAR, :, :, :), &
+              facexData(VELC_FACE_VAR, :, :, :), &
+              faceyData(VELC_FACE_VAR, :, :, :), &
+              del(DIR_X), &
+              del(DIR_Y), &
+              GRID_ILO, GRID_IHI + 1, &
+              GRID_JLO, GRID_JHI, &
+              center=0, facex=1, facey=0)
+
+         call Stencils_advectWeno2d(faceyData( :, :, :,HVN0_FACE_VAR), &
+              faceyData(VELC_FACE_VAR, :, :, :), &
+              facexData(VELC_FACE_VAR, :, :, :), &
+              faceyData(VELC_FACE_VAR, :, :, :), &
+              del(DIR_X), &
+              del(DIR_Y), &
+              GRID_ILO, GRID_IHI, &
+              GRID_JLO, GRID_JHI + 1, &
+              center=0, facex=0, facey=1)
+      end if
+#else
       call Stencils_advectWeno2d(facexData(HVN0_FACE_VAR, :, :, :), &
                                  facexData(VELC_FACE_VAR, :, :, :), &
                                  facexData(VELC_FACE_VAR, :, :, :), &
@@ -185,6 +264,7 @@ subroutine IncompNS_advection(tileDesc)
                                  GRID_ILO, GRID_IHI, &
                                  GRID_JLO, GRID_JHI + 1, &
                                  center=0, facex=0, facey=1)
+#endif ! ENABLE_TRUNC_ADVECTION
 #endif
    end if
 
