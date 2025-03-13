@@ -6,7 +6,7 @@
 MPI_PATH   = /scratch/fhrold/riken/openmpi-5.0.6-install
 # MPI_PATH = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/openmpi-5.0.5-4uhs65omq2kdbjjzu6p4xhwxwigwrq6h
 HDF4_PATH  =
-HDF5_PATH  = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/hdf5-1.14.3-enj3ujb6vbbkkhhmosnbto2hdgftge63
+HDF5_PATH  = /scratch/fhrold/riken/hdf5-1.14.6-install
 HYPRE_PATH = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen3/gcc-11.4.1/hypre-2.31.0-2kjgx3lkjitpajwkru2chzxkk4smqurn
 
 # Enzyme
@@ -19,6 +19,8 @@ PAPI_FLAGS =
 
 NCMPI_PATH = /usr/local/netcdf
 MPE_PATH   =
+
+MA28_PATH = /scratch/fhrold/riken/ma28-install
 
 #----------------------------------------------------------------------------
 # Compiler and linker commands
@@ -54,7 +56,10 @@ OPENMP = -fopenmp
 
 # Enzyme
 FFLAGS_OPT = -c -O2 -fdefault-real-8 -fdefault-double-8 \
-	 -flto=full
+-flto=full
+# -fpass-plugin=/scratch/fhrold/riken/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
+# -Xflang -load -Xflang /scratch/fhrold/riken/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
+# -Rpass=enzyme -mllvm -enzyme-truncate-all="64to11-51"
 
 # -fuse-ld=lld -fpass-plugin=$(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
 # -Xflang -load -Xflang $(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
@@ -113,6 +118,7 @@ LFLAGS_OPT   = -g \
     -Wl,--load-pass-plugin=/scratch/fhrold/riken/Enzyme/enzyme/build/Enzyme/LLDEnzyme-20.so \
     -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/mpfr-4.2.1-2aivvsalcuno6mvp2lyuta3glkp3o6v2/lib -lmpfr \
     -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/gmp-6.3.0-kyy5q7hr34p4dr2aftntqw2z6pmkc7ja/lib -lgmp \
+    -lstdc++ \
     mpfr.o -o
 LFLAGS_DEBUG = -g -O0 -o
 LFLAGS_TEST  = -g -O0 -o
@@ -144,6 +150,10 @@ LIB_NCMPI = -L ${NCMPI_PATH}/lib -lpnetcdf
 LIB_MPE   =
 
 LIB_HYPRE = -L${HYPRE_PATH}/lib -lHYPRE
+
+LIB_MA28 = -L ${MA28_PATH}/lib -lma28
+
+LIB_STDCXX =
 
 # Uncomment the following line to use electic fence memory debugger.
 # export EF_ALLOW_MALLOC_0=1

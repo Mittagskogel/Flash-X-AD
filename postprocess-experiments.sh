@@ -4,11 +4,15 @@ set -e
 set -x
 
 offsets=(0 1 2 3 4) #(0 1 2 3 4 5 6)
-mantissas=($(seq 4 32))
+mantissas=($(seq 4 52))
 
 rundir=autorun
 
-reference=sedov_reference
+# reference=sod_reference
+# reference=sedov_reference
+# reference=cellular_reference
+# reference=poolboiling_reference
+reference=risingbubble_reference
 
 for offset in ${offsets[@]}
 do
@@ -20,8 +24,13 @@ do
         id=ref${offset}_${mantissa}bit
         objdir=${rundir}/object_${id}
 
-        sfocu ${objdir}/flashx_hdf5_chk_0001 \
-            ${reference}/flashx_hdf5_chk_0001 >> \
+        # sfocu ${objdir}/flashx_hdf5_chk_0001 \
+        #     ${reference}/flashx_hdf5_chk_0001 | \
+        #     grep -v "Couldn't read" >> \
+        #     ${rundir}/sfocu_ref${offset}.out || true
+        sfocu ${objdir}/INS_Rising_Bubble_hdf5_chk_0001 \
+            ${reference}/INS_Rising_Bubble_hdf5_chk_0001 | \
+            grep -v "Couldn't read" >> \
             ${rundir}/sfocu_ref${offset}.out || true
     done
 done
