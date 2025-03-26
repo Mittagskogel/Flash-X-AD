@@ -3,8 +3,8 @@
 set -e
 set -x
 
-offsets=(0 1 2 3 4)
-mantissas=($(seq 33 52))
+offsets=(0 1 2)
+mantissas=($(seq 4 4 52))
 
 # setup_cmd="Sod -auto -2d +uhd +pm4dev +nolwf"
 # parfile="source/Simulation/SimulationMain/Sod/tests/test_amr_unsplit_2d.par"
@@ -15,10 +15,10 @@ mantissas=($(seq 33 52))
 # setup_cmd="incompFlow/PoolBoiling -auto -maxblocks=400 -2d -nxb=8 -nyb=8 +amrex +nolwf +serialIO +incomp -tomlfile=/scratch/fhrold/riken/Flash-X-Development/simulation/PoolBoiling/flash.toml --with-unitmods"
 # parfile="flash.par"
 setup_cmd="incompFlow/RisingBubble -auto -maxblocks=400 -2d -nxb=8 -nyb=8 +amrex +nolwf +serialIO +incomp"
-parfile="../Flash-X-Development/simulation/RisingBubble/flash.par"
+parfile="../Flash-X-Development/simulation/RisingBubble/Re350-restart/flash.par"
 
 # Make directory for automatic experiment runner
-rundir=autorun
+rundir=autorun.risingbubble.advection.re350.restart
 mkdir -p $rundir
 
 jobs=()
@@ -42,6 +42,10 @@ clang++ -c ${premake}/mpfr.cpp $(pkg-config --cflags mpfr gmp) \
     -I/scratch/fhrold/riken/Enzyme/enzyme/include/enzyme/fprt/ \
     -o ${premake}/mpfr.o
 
+# Link the restart file
+ln -s /scratch/fhrold/riken/Flash-X-Prec/restart/INS_Rising_Bubble_hdf5_chk_0003 \
+        ${premake}/INS_Rising_Bubble_hdf5_chk_0003
+
 for offset in ${offsets[@]}
 do
     for mantissa in ${mantissas[@]}
@@ -63,8 +67,12 @@ do
         # sed -i 's/#define LVL_OFFSET.*/#define LVL_OFFSET '${offset}'/' ${objdir}/Hydro.F90
         # sed -i 's/#define TRUNC_TO_M.*/#define TRUNC_TO_M '${mantissa}'/' ${objdir}/TimeAdvance.F90
 
+        sed -i 's/\!#define ENABLE_TRUNC_ADVECTION/#define ENABLE_TRUNC_ADVECTION/' ${objdir}/IncompNS_advection.F90
         sed -i 's/#define TRUNC_TO_M.*/#define TRUNC_TO_M '${mantissa}'/' ${objdir}/IncompNS_advection.F90
         sed -i 's/#define LVL_OFFSET.*/#define LVL_OFFSET '${offset}'/' ${objdir}/IncompNS_advection.F90
+        # sed -i 's/\!#define ENABLE_TRUNC_DIFFUSION/#define ENABLE_TRUNC_DIFFUSION/' ${objdir}/IncompNS_diffusion.F90
+        # sed -i 's/#define TRUNC_TO_M.*/#define TRUNC_TO_M '${mantissa}'/' ${objdir}/IncompNS_diffusion.F90
+        # sed -i 's/#define LVL_OFFSET.*/#define LVL_OFFSET '${offset}'/' ${objdir}/IncompNS_diffusion.F90
 
         # Add mpfr.o
         # cp /scratch/fhrold/riken/Enzyme/enzyme/include/enzyme/fprt/mpfr.h ${objdir}/mpfr.cpp
@@ -81,7 +89,7 @@ done
 parallel make -C {} ">" {}/make.log "2>&1" ::: ${jobs[@]}
 
 # Run jobs in parallel
-parfile=$(basename ${parfile})
-parallel cd {} "&&" \
-    mpirun --bind-to none -n 1 flashx -par_file ${parfile} ">" run_raw.log "2>&1" \
-    ::: ${jobs[@]}
+# parfile=$(basename ${parfile})
+# parallel -j 4 --progress cd {} "&&" \
+#     mpirun --bind-to none -n 32 flashx -par_file ${parfile} ">" run_raw.log "2>&1" \
+#     ::: ${jobs[@]}
