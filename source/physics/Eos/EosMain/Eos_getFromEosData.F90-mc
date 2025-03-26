@@ -77,10 +77,6 @@ subroutine Eos_getFromEosData(vecB, vecE, eosData,range, lo, solnData)
                  ((j - jlo) * (ihi - ilo + 1)) + &
                  (i - ilo) + 1
              @M eos_unpack(eosData,n)
-             ! print *, "---- size(solnData)=", size(solnData, 1), size(solnData, 2), &
-             !      size(solnData, 3), size(solnData, 4), size(solnData)
-             ! print *, eint_map, ener_map, entr_map, game_map, i, j, k
-             ! print *, eint_map + i * size(solnData, 3) + j * size(solnData, 2) + k * size(solnData, 1)
              @M eos_postprocess
             !! consolidate the data at the point into eosData
    @M loop_end_3d

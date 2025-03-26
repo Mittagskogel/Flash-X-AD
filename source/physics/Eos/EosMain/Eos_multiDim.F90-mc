@@ -143,8 +143,7 @@ subroutine Eos_multiDim(mode,range,lo,solnData @M eos_scratchArgs)
   ! The length of the data being operated upon is determined from the range input array.
 
   @M eos_scratch_alloc
-
-  ! print *, "---- Eos_fillEosData"
+  
   call Eos_fillEosData(range, lo, solnData,1, vecLen, eosData)
   base_n = 0
   !! for readability
@@ -162,14 +161,11 @@ subroutine Eos_multiDim(mode,range,lo,solnData @M eos_scratchArgs)
                  ((j - jlo) * (ihi - ilo + 1)) + &
                  (i - ilo) + 1
              massFrac(1:NSPECIES,n) = solnData(SPECIES_BEGIN:SPECIES_END,i,j,k)
-  @M loop_end_3d
+  @M loop_end_3d   
   if (eos_truncate) then
-     ! print *, "TRUNCATING!"
      call truncate_2d(eosData)
   endif
-  ! print *, "---- Eos_vector"
   call Eos_vector(mode,vecLen,eosData, massFrac)
-  ! print *, "---- Eos_getFromEosData"
   call Eos_getFromEosData(1, vecLen, eosData, range, lo, solnData)
   
   @M eos_scratch_dealloc

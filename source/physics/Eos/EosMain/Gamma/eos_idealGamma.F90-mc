@@ -94,8 +94,7 @@ subroutine eos_idealGamma(mode, @M eos_args, massFrac, derivs)
   
   ! density, temperature taken as input
   if (mode == MODE_DENS_TEMP) then
-     ! print *, "---- mode == MODE_DENS_TEMP"
-
+     
      pres = eos_gasConstant*dens * &
           temp / abar
      eint = ggprod * temp &
@@ -106,8 +105,7 @@ subroutine eos_idealGamma(mode, @M eos_args, massFrac, derivs)
      
      ! density, internal energy taken as input
   elseif (mode == MODE_DENS_EI) then
-     ! print *, "---- mode == MODE_DENS_EI"
-
+     
      ggprodinv = 1. / ggprod
      gam1inv   = 1. / eos_gammam1
      pres = dens * &
@@ -116,12 +114,11 @@ subroutine eos_idealGamma(mode, @M eos_args, massFrac, derivs)
           abar
      entr = (pres/dens +  &
           &  eint)/temp
-
+     
      
      ! density, pressure taken as input
   elseif (mode == MODE_DENS_PRES) then
-     ! print *, "---- mode == MODE_DENS_PRES"
-
+     
      ggprodinv = 1. / ggprod
      gam1inv   = 1. / eos_gammam1
      eint = pres * eos_gammam1 / &
