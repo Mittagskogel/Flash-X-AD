@@ -24,6 +24,196 @@
 !!Reorder(4): hy_rope,hy_flux,hy_uPlus,hy_uMinus
 !!NOVARIANTS
 
+#define ENABLE_TRUNC_HYDRO
+#define TRUNC_FROM 64
+#define TRUNC_TO_E 0
+#define TRUNC_TO_M 24
+
+module truncate_Hydro
+  implicit none
+  interface
+     function f__enzyme_truncate_mem_value(x, from, to_e, to_m) result(p_x) bind(c)
+       use, intrinsic :: iso_c_binding, only: c_double, c_int
+       implicit none
+
+       ! double precision, intent(in) :: x
+       ! integer, intent(in) :: from, to
+       real(c_double), intent(in), value :: x
+       integer(c_int), intent(in), value :: from, to_e, to_m
+       double precision :: p_x
+     end function f__enzyme_truncate_mem_value
+  end interface
+
+  interface
+     function f__enzyme_expand_mem_value(x, from, to_e, to_m) result(p_x) bind(c)
+       use, intrinsic :: iso_c_binding, only: c_double, c_int
+       implicit none
+
+       ! double precision, intent(in) :: x
+       ! integer, intent(in) :: from, to
+       real(c_double), intent(in), value :: x
+       integer(c_int), intent(in), value :: from, to_e, to_m
+       double precision :: p_x
+     end function f__enzyme_expand_mem_value
+  end interface
+
+  public :: truncate_0d, truncate_1d, truncate_2d, truncate_3d, truncate_4d
+  public :: f__enzyme_truncate_mem_func_hydro_advance
+  contains
+    subroutine truncate_1d(x)
+      real, intent(inout) :: x(:)
+
+      integer :: i, n
+      n = size(x)
+
+      do i=1,n
+         x(i) = f__enzyme_truncate_mem_value(x(i), TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M)
+      end do
+    end subroutine truncate_1d
+
+    subroutine truncate_0d(x)
+      real, intent(inout) :: x
+      real :: tmp(1)
+
+      tmp(1) = x
+      call truncate_1d(tmp)
+      x = tmp(1)
+    end subroutine truncate_0d
+
+    subroutine truncate_2d(x)
+      real, intent(inout) :: x(:, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call truncate_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2)])
+    end subroutine truncate_2d
+
+    subroutine truncate_3d(x)
+      real, intent(inout) :: x(:, :, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call truncate_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3)])
+    end subroutine truncate_3d
+
+    subroutine truncate_4d(x)
+      real, intent(inout) :: x(:, :, :, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call truncate_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3), size(x, 4)])
+    end subroutine truncate_4d
+
+    subroutine expand_1d(x)
+      real, intent(inout) :: x(:)
+
+      integer :: i, n
+      n = size(x)
+
+      do i=1,n
+         x(i) = f__enzyme_expand_mem_value(x(i), TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M)
+      end do
+    end subroutine expand_1d
+
+    subroutine expand_0d(x)
+      real, intent(inout) :: x
+      real :: tmp(1)
+
+      tmp(1) = x
+      call expand_1d(tmp)
+      x = tmp(1)
+    end subroutine expand_0d
+
+    subroutine expand_2d(x)
+      real, intent(inout) :: x(:, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call expand_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2)])
+    end subroutine expand_2d
+
+    subroutine expand_3d(x)
+      real, intent(inout) :: x(:, :, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call expand_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3)])
+    end subroutine expand_3d
+
+    subroutine expand_4d(x)
+      real, intent(inout) :: x(:, :, :, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call expand_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3), size(x, 4)])
+    end subroutine expand_4d
+
+    subroutine f__enzyme_truncate_mem_func_hydro_advance(from, to_e, to_m, &
+         stage_in, Uin, dt, dtOld, &
+         hy_starState, hy_tmpState, &
+         hy_flx, hy_fly, hy_flz, &
+         hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
+         hy_grav, hy_flat3d, &
+         hy_rope, hy_flux, hy_uPlus, hy_uMinus, &
+         deltas, &
+         blkLimits, blkLimitsGC, &
+         lo, loGC, &
+         hy_xCenter, hy_yCenter, hy_zCenter, &
+         hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
+         hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
+
+#include "Simulation.h"
+#include "constants.h"
+#include "Spark.h"
+
+      implicit none
+
+      integer, intent(in) :: from, to_e, to_m
+
+      integer, intent(IN) :: stage_in, lo(3), loGC(3)
+      real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(IN OUT) :: Uin
+      real, intent(IN) :: dt, dtold
+      real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(IN OUT) :: hy_starState
+      real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(OUT) :: hy_flx, hy_fly, hy_flz
+      real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(IN) :: hy_tmpState
+      real, dimension(1:, lo(1):, lo(2):, lo(3):), intent(OUT) :: hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ
+      real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(OUT) :: hy_rope, hy_flux, hy_uPlus, hy_uMinus
+      real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(OUT) :: hy_grav
+      real, dimension(loGC(1):, loGC(2):, loGC(3):), intent(OUT) :: hy_flat3d
+
+      integer, dimension(LOW:HIGH, MDIM), intent(IN) :: blkLimits, blkLimitsGC
+
+      real, dimension(MDIM), intent(IN)  :: deltas
+      real, dimension(loGC(1):), intent(IN) :: hy_xCenter
+      real, dimension(loGC(2):), intent(IN) :: hy_yCenter
+      real, dimension(loGC(3):), intent(IN) :: hy_zCenter
+      real, dimension(loGC(1):), intent(IN) :: hy_xLeft, hy_xRight
+      real, dimension(loGC(2):), intent(IN) :: hy_yLeft, hy_yRight
+      real, dimension(loGC(1):, loGC(2):, loGC(3):), intent(IN) :: hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol
+
+      call Hydro_advance(stage_in, Uin, dt, dtOld, &
+           hy_starState, hy_tmpState, &
+           hy_flx, hy_fly, hy_flz, &
+           hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
+           hy_grav, hy_flat3d, &
+           hy_rope, hy_flux, hy_uPlus, hy_uMinus, &
+           deltas, &
+           blkLimits, blkLimitsGC, &
+           lo, loGC, &
+           hy_xCenter, hy_yCenter, hy_zCenter, &
+           hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
+           hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
+    end subroutine f__enzyme_truncate_mem_func_hydro_advance
+end module truncate_Hydro
+
+
+
 #ifdef DEBUG_ALL
 #define DEBUG_HYDRO
 #define DEBUG_HYDRO_OFFLOADING
@@ -76,6 +266,13 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
                               hy_rk_getFlatteningLimiter, &
                               hy_rk_saveFluxBuf
 
+  ! Enzyme truncate Hydro functions
+  use truncate_Hydro
+  ! Enzyme truncate Eos module
+  use Eos_data, ONLY : eos_gasConstant, eos_gamma, &
+       eos_singleSpeciesA, eos_singleSpeciesZ, eos_truncate
+  use eos_idealGammaData, ONLY: eos_gammam1
+
 #include "Simulation.h"
 #include "constants.h"
 #include "Spark.h"
@@ -109,6 +306,9 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
 
   integer, parameter :: last_stage = MAXSTAGE
   logical :: offload = .false.
+
+  ! Enzyme trunc mem variables
+  real :: trunc_dt, trunc_dtOld
 
   if (.NOT. hy_useHydro) return
 
@@ -198,6 +398,134 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
            @M hy_DIR_TARGET_update_from([hy_tmpState])
         end if
 
+        ! Enzyme: Truncate for mem mode
+#ifdef ENABLE_TRUNC_HYDRO
+        ! Truncate function arguments
+        trunc_dt = dt
+        trunc_dtOld = dtOld
+        call truncate_0d(trunc_dt)
+        call truncate_0d(trunc_dtOld)
+        call truncate_4d(Uin)
+        call truncate_4d(hy_starState)
+        call truncate_4d(hy_flx)
+        call truncate_4d(hy_fly)
+        call truncate_4d(hy_flz)
+        call truncate_4d(hy_tmpState)
+        call truncate_4d(hy_fluxBufx)
+        call truncate_4d(hy_fluxBufy)
+        call truncate_4d(hy_fluxBufz)
+        call truncate_4d(hy_rope)
+        call truncate_4d(hy_flux)
+        call truncate_4d(hy_uPlus)
+        call truncate_4d(hy_uMinus)
+        call truncate_4d(hy_grav)
+        call truncate_3d(hy_flat3d)
+        call truncate_1d(deltas)
+        call truncate_1d(hy_xCenter)
+        call truncate_1d(hy_yCenter)
+        call truncate_1d(hy_zCenter)
+        call truncate_1d(hy_xLeft)
+        call truncate_1d(hy_xRight)
+        call truncate_1d(hy_yLeft)
+        call truncate_1d(hy_yRight)
+        call truncate_3d(hy_fareaX)
+        call truncate_3d(hy_fareaY)
+        call truncate_3d(hy_fareaZ)
+        call truncate_3d(hy_cvol)
+
+        ! Truncate Hydro_data fields
+        call truncate_0d(hy_cvisc)
+        call truncate_0d(hy_C_hyp)
+        call truncate_0d(hy_tiny)
+        call truncate_0d(hy_smalldens)
+        call truncate_0d(hy_smallpres)
+        call truncate_0d(hy_smallX)
+        call truncate_0d(hy_limRad)
+        call truncate_0d(hy_mp5ZeroTol)
+        call truncate_2d(hy_coeffArray)
+        call truncate_0d(hy_smallE)
+        call truncate_0d(hy_alphaGLM)
+        call truncate_1d(hy_weights)
+
+        ! Truncate Eos_data fields
+        call truncate_0d(eos_gasConstant)
+        call truncate_0d(eos_gamma)
+        call truncate_0d(eos_singleSpeciesA)
+        call truncate_0d(eos_singleSpeciesZ)
+
+        ! Truncate eos_idealGammaData fields
+        call truncate_0d(eos_gammam1)
+
+        eos_truncate = .true.
+        call f__enzyme_truncate_mem_func_hydro_advance(TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
+             stage, Uin, trunc_dt, trunc_dtOld, &
+             hy_starState, hy_tmpState, &
+             hy_flx, hy_fly, hy_flz, &
+             hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
+             hy_grav, hy_flat3d, &
+             hy_rope, hy_flux, hy_uPlus, hy_uMinus, &
+             deltas, &
+             blkLimits, blkLimitsGC, &
+             lo, loGC, &
+             hy_xCenter, hy_yCenter, hy_zCenter, &
+             hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
+             hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
+        eos_truncate = .false.
+
+        ! Expand function arguments
+        ! call expand_0d(trunc_dt)
+        ! call expand_0d(trunc_dtOld)
+        call expand_4d(Uin)
+        call expand_4d(hy_starState)
+        call expand_4d(hy_flx)
+        call expand_4d(hy_fly)
+        call expand_4d(hy_flz)
+        call expand_4d(hy_tmpState)
+        call expand_4d(hy_fluxBufx)
+        call expand_4d(hy_fluxBufy)
+        call expand_4d(hy_fluxBufz)
+        call expand_4d(hy_rope)
+        call expand_4d(hy_flux)
+        call expand_4d(hy_uPlus)
+        call expand_4d(hy_uMinus)
+        call expand_4d(hy_grav)
+        call expand_3d(hy_flat3d)
+        call expand_1d(deltas)
+        call expand_1d(hy_xCenter)
+        call expand_1d(hy_yCenter)
+        call expand_1d(hy_zCenter)
+        call expand_1d(hy_xLeft)
+        call expand_1d(hy_xRight)
+        call expand_1d(hy_yLeft)
+        call expand_1d(hy_yRight)
+        call expand_3d(hy_fareaX)
+        call expand_3d(hy_fareaY)
+        call expand_3d(hy_fareaZ)
+        call expand_3d(hy_cvol)
+
+        ! Expand Hydro_data fields
+        call expand_0d(hy_cvisc)
+        call expand_0d(hy_C_hyp)
+        call expand_0d(hy_tiny)
+        call expand_0d(hy_smalldens)
+        call expand_0d(hy_smallpres)
+        call expand_0d(hy_smallX)
+        call expand_0d(hy_limRad)
+        call expand_0d(hy_mp5ZeroTol)
+        call expand_2d(hy_coeffArray)
+        call expand_0d(hy_smallE)
+        call expand_0d(hy_alphaGLM)
+        call expand_1d(hy_weights)
+
+        ! Expand Eos_data fields
+        call expand_0d(eos_gasConstant)
+        call expand_0d(eos_gamma)
+        call expand_0d(eos_singleSpeciesA)
+        call expand_0d(eos_singleSpeciesZ)
+
+        ! Expand eos_idealGammaData fields
+        call expand_0d(eos_gammam1)
+#else
         call Hydro_advance(stage, Uin, dt, dtOld, &
              hy_starState, hy_tmpState, &
              hy_flx, hy_fly, hy_flz, &
@@ -210,6 +538,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
              hy_xCenter, hy_yCenter, hy_zCenter, &
              hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
              hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
+#endif
 
         call Timers_stop("computations")
 

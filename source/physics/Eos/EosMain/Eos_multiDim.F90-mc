@@ -33,11 +33,79 @@
 #include "Eos.h"
 #include "constants.h"
 #include "Simulation.h"
+
+#define TRUNC_FROM 64
+#define TRUNC_TO_E 0
+#define TRUNC_TO_M 32
+
+module truncate_Eos_multiDim
+  implicit none
+  interface
+     function f__enzyme_truncate_mem_value(x, from, to_e, to_m) result(p_x) bind(c)
+       use, intrinsic :: iso_c_binding, only: c_double, c_int
+       implicit none
+
+       ! double precision, intent(in) :: x
+       ! integer, intent(in) :: from, to
+       real(c_double), intent(in), value :: x
+       integer(c_int), intent(in), value :: from, to_e, to_m
+       double precision :: p_x
+     end function f__enzyme_truncate_mem_value
+  end interface
+
+  interface
+     function f__enzyme_expand_mem_value(x, from, to_e, to_m) result(p_x) bind(c)
+       use, intrinsic :: iso_c_binding, only: c_double, c_int
+       implicit none
+
+       ! double precision, intent(in) :: x
+       ! integer, intent(in) :: from, to
+       real(c_double), intent(in), value :: x
+       integer(c_int), intent(in), value :: from, to_e, to_m
+       double precision :: p_x
+     end function f__enzyme_expand_mem_value
+  end interface
+
+  public :: truncate_0d, truncate_1d, truncate_2d
+contains
+  subroutine truncate_1d(x)
+    real, intent(inout) :: x(:)
+
+    integer :: i, n
+    n = size(x)
+
+    do i=1,n
+       x(i) = f__enzyme_truncate_mem_value(x(i), TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M)
+    end do
+  end subroutine truncate_1d
+
+  subroutine truncate_0d(x)
+    real, intent(inout) :: x
+    real :: tmp(1)
+
+    tmp(1) = x
+    call truncate_1d(tmp)
+    x = tmp(1)
+  end subroutine truncate_0d
+
+  subroutine truncate_2d(x)
+    real, intent(inout) :: x(:, :)
+    real :: tmp(size(x))
+
+    tmp = reshape(x, [size(x)])
+    call truncate_1d(tmp)
+    x = reshape(tmp, [size(x, 1), size(x, 2)])
+  end subroutine truncate_2d
+end module truncate_Eos_multiDim
  
 subroutine Eos_multiDim(mode,range,lo,solnData @M eos_scratchArgs)
 
   use Driver_interface, ONLY : Driver_abort
   use Eos_interface, ONLY : Eos_fillEosData, Eos_getFromEosData, Eos_vector
+
+  ! Enzyme truncate Eos functions
+  use truncate_Eos_multiDim
+  use Eos_data, only: eos_truncate
 
   @M eos_DIR_routine(vector)
 
@@ -75,7 +143,8 @@ subroutine Eos_multiDim(mode,range,lo,solnData @M eos_scratchArgs)
   ! The length of the data being operated upon is determined from the range input array.
 
   @M eos_scratch_alloc
-  
+
+  ! print *, "---- Eos_fillEosData"
   call Eos_fillEosData(range, lo, solnData,1, vecLen, eosData)
   base_n = 0
   !! for readability
@@ -93,8 +162,14 @@ subroutine Eos_multiDim(mode,range,lo,solnData @M eos_scratchArgs)
                  ((j - jlo) * (ihi - ilo + 1)) + &
                  (i - ilo) + 1
              massFrac(1:NSPECIES,n) = solnData(SPECIES_BEGIN:SPECIES_END,i,j,k)
-  @M loop_end_3d   
+  @M loop_end_3d
+  if (eos_truncate) then
+     ! print *, "TRUNCATING!"
+     call truncate_2d(eosData)
+  endif
+  ! print *, "---- Eos_vector"
   call Eos_vector(mode,vecLen,eosData, massFrac)
+  ! print *, "---- Eos_getFromEosData"
   call Eos_getFromEosData(1, vecLen, eosData, range, lo, solnData)
   
   @M eos_scratch_dealloc
