@@ -28,6 +28,137 @@
 !!Reorder(4): Uin,hy_starState,hy_tmpState
 !!Reorder(4): hy_fl[xyz],hy_fluxBuf[XYZ]
 !!Reorder(4): hy_rope,hy_flux,hy_uPlus,hy_uMinus
+
+#define ENABLE_TRUNC_HYDRO
+#define TRUNC_FROM 64
+#define TRUNC_TO_E 0
+#define TRUNC_TO_M 24
+
+module truncate_Hydro_advance
+  implicit none
+  interface
+     function f__enzyme_truncate_mem_value(x, from, to_e, to_m) result(p_x) bind(c)
+       use, intrinsic :: iso_c_binding, only: c_double, c_int
+       implicit none
+
+       ! double precision, intent(in) :: x
+       ! integer, intent(in) :: from, to
+       real(c_double), intent(in), value :: x
+       integer(c_int), intent(in), value :: from, to_e, to_m
+       double precision :: p_x
+     end function f__enzyme_truncate_mem_value
+  end interface
+
+  interface
+     function f__enzyme_expand_mem_value(x, from, to_e, to_m) result(p_x) bind(c)
+       use, intrinsic :: iso_c_binding, only: c_double, c_int
+       implicit none
+
+       ! double precision, intent(in) :: x
+       ! integer, intent(in) :: from, to
+       real(c_double), intent(in), value :: x
+       integer(c_int), intent(in), value :: from, to_e, to_m
+       double precision :: p_x
+     end function f__enzyme_expand_mem_value
+  end interface
+
+  public :: truncate_0d, truncate_1d, truncate_2d, truncate_3d, truncate_4d
+  contains
+    subroutine truncate_1d(x)
+      real, intent(inout) :: x(:)
+
+      integer :: i, n
+      n = size(x)
+
+      do i=1,n
+         x(i) = f__enzyme_truncate_mem_value(x(i), TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M)
+      end do
+    end subroutine truncate_1d
+
+    subroutine truncate_0d(x)
+      real, intent(inout) :: x
+      real :: tmp(1)
+
+      tmp(1) = x
+      call truncate_1d(tmp)
+      x = tmp(1)
+    end subroutine truncate_0d
+
+    subroutine truncate_2d(x)
+      real, intent(inout) :: x(:, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call truncate_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2)])
+    end subroutine truncate_2d
+
+    subroutine truncate_3d(x)
+      real, intent(inout) :: x(:, :, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call truncate_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3)])
+    end subroutine truncate_3d
+
+    subroutine truncate_4d(x)
+      real, intent(inout) :: x(:, :, :, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call truncate_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3), size(x, 4)])
+    end subroutine truncate_4d
+
+    subroutine expand_1d(x)
+      real, intent(inout) :: x(:)
+
+      integer :: i, n
+      n = size(x)
+
+      do i=1,n
+         x(i) = f__enzyme_expand_mem_value(x(i), TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M)
+      end do
+    end subroutine expand_1d
+
+    subroutine expand_0d(x)
+      real, intent(inout) :: x
+      real :: tmp(1)
+
+      tmp(1) = x
+      call expand_1d(tmp)
+      x = tmp(1)
+    end subroutine expand_0d
+
+    subroutine expand_2d(x)
+      real, intent(inout) :: x(:, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call expand_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2)])
+    end subroutine expand_2d
+
+    subroutine expand_3d(x)
+      real, intent(inout) :: x(:, :, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call expand_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3)])
+    end subroutine expand_3d
+
+    subroutine expand_4d(x)
+      real, intent(inout) :: x(:, :, :, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call expand_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3), size(x, 4)])
+    end subroutine expand_4d
+end module truncate_Hydro_advance
+
 subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
                          hy_starState, hy_tmpState, &
                          hy_flx, hy_fly, hy_flz, &
@@ -55,6 +186,8 @@ subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
    use Eos_interface, ONLY : Eos_multiDim
    use Burn_interface, ONLY : Burn_update
 
+   ! Enzyme
+   use truncate_Hydro_advance
 
    @M hy_DIR_TARGET_routine(vector)
 
@@ -133,7 +266,9 @@ subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
 #endif
 
       @M hy_DIR_update_starState_to_host
+      call expand_4d(hy_starState)
       call Eos_multiDim(MODE_DENS_EI, limits(LOW:HIGH,1:MDIM,stage), loGC, hy_starState @M hy_eos_args)
+      call truncate_4d(hy_starState)
       @M hy_DIR_update_starState_to_device
 
    @M hy_end_stages_t

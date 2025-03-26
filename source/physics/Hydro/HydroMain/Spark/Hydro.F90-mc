@@ -57,6 +57,26 @@ module truncate_Hydro
      end function f__enzyme_expand_mem_value
   end interface
 
+  interface
+     function enzyme_fprt_gc_mark_seen(x) bind(c) result(p_x)
+       use, intrinsic :: iso_c_binding, only: c_double
+       implicit none
+
+       real(c_double), intent(in), value :: x
+       double precision :: p_x
+     end function enzyme_fprt_gc_mark_seen
+  end interface
+
+  interface
+     subroutine enzyme_fprt_gc_dump_status() bind(c)
+     end subroutine enzyme_fprt_gc_dump_status
+  end interface
+
+  interface
+     subroutine enzyme_fprt_gc_doit() bind(c)
+     end subroutine enzyme_fprt_gc_doit
+  end interface
+
   public :: truncate_0d, truncate_1d, truncate_2d, truncate_3d, truncate_4d
   public :: f__enzyme_truncate_mem_func_hydro_advance
   contains
@@ -153,6 +173,53 @@ module truncate_Hydro
       call expand_1d(tmp)
       x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3), size(x, 4)])
     end subroutine expand_4d
+
+    subroutine mark_seen_1d(x)
+      real, intent(inout) :: x(:)
+
+      integer :: i, n
+      n = size(x)
+
+      do i=1,n
+         x(i) = enzyme_fprt_gc_mark_seen(x(i))
+      end do
+    end subroutine mark_seen_1d
+
+    subroutine mark_seen_0d(x)
+      real, intent(inout) :: x
+      real :: tmp(1)
+
+      tmp(1) = x
+      call mark_seen_1d(tmp)
+      x = tmp(1)
+    end subroutine mark_seen_0d
+
+    subroutine mark_seen_2d(x)
+      real, intent(inout) :: x(:, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call mark_seen_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2)])
+    end subroutine mark_seen_2d
+
+    subroutine mark_seen_3d(x)
+      real, intent(inout) :: x(:, :, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call mark_seen_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3)])
+    end subroutine mark_seen_3d
+
+    subroutine mark_seen_4d(x)
+      real, intent(inout) :: x(:, :, :, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call mark_seen_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3), size(x, 4)])
+    end subroutine mark_seen_4d
 
     subroutine f__enzyme_truncate_mem_func_hydro_advance(from, to_e, to_m, &
          stage_in, Uin, dt, dtOld, &
@@ -447,14 +514,14 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         call truncate_0d(hy_alphaGLM)
         call truncate_1d(hy_weights)
 
-        ! Truncate Eos_data fields
-        call truncate_0d(eos_gasConstant)
-        call truncate_0d(eos_gamma)
-        call truncate_0d(eos_singleSpeciesA)
-        call truncate_0d(eos_singleSpeciesZ)
+        ! ! Truncate Eos_data fields
+        ! call truncate_0d(eos_gasConstant)
+        ! call truncate_0d(eos_gamma)
+        ! call truncate_0d(eos_singleSpeciesA)
+        ! call truncate_0d(eos_singleSpeciesZ)
 
-        ! Truncate eos_idealGammaData fields
-        call truncate_0d(eos_gammam1)
+        ! ! Truncate eos_idealGammaData fields
+        ! call truncate_0d(eos_gammam1)
 
         eos_truncate = .true.
         call f__enzyme_truncate_mem_func_hydro_advance(TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
@@ -471,6 +538,52 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
              hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
              hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
         eos_truncate = .false.
+
+        ! call enzyme_fprt_gc_dump_status()
+
+        ! call mark_seen_0d(trunc_dt)
+        ! call mark_seen_0d(trunc_dtOld)
+        ! call mark_seen_4d(Uin)
+        ! call mark_seen_4d(hy_starState)
+        ! call mark_seen_4d(hy_flx)
+        ! call mark_seen_4d(hy_fly)
+        ! call mark_seen_4d(hy_flz)
+        ! call mark_seen_4d(hy_tmpState)
+        ! call mark_seen_4d(hy_fluxBufx)
+        ! call mark_seen_4d(hy_fluxBufy)
+        ! call mark_seen_4d(hy_fluxBufz)
+        ! call mark_seen_4d(hy_rope)
+        ! call mark_seen_4d(hy_flux)
+        ! call mark_seen_4d(hy_uPlus)
+        ! call mark_seen_4d(hy_uMinus)
+        ! call mark_seen_4d(hy_grav)
+        ! call mark_seen_3d(hy_flat3d)
+        ! call mark_seen_1d(deltas)
+        ! call mark_seen_1d(hy_xCenter)
+        ! call mark_seen_1d(hy_yCenter)
+        ! call mark_seen_1d(hy_zCenter)
+        ! call mark_seen_1d(hy_xLeft)
+        ! call mark_seen_1d(hy_xRight)
+        ! call mark_seen_1d(hy_yLeft)
+        ! call mark_seen_1d(hy_yRight)
+        ! call mark_seen_3d(hy_fareaX)
+        ! call mark_seen_3d(hy_fareaY)
+        ! call mark_seen_3d(hy_fareaZ)
+        ! call mark_seen_3d(hy_cvol)
+
+        ! ! Mark_Seen Hydro_data fields
+        ! call mark_seen_0d(hy_cvisc)
+        ! call mark_seen_0d(hy_C_hyp)
+        ! call mark_seen_0d(hy_tiny)
+        ! call mark_seen_0d(hy_smalldens)
+        ! call mark_seen_0d(hy_smallpres)
+        ! call mark_seen_0d(hy_smallX)
+        ! call mark_seen_0d(hy_limRad)
+        ! call mark_seen_0d(hy_mp5ZeroTol)
+        ! call mark_seen_2d(hy_coeffArray)
+        ! call mark_seen_0d(hy_smallE)
+        ! call mark_seen_0d(hy_alphaGLM)
+        ! call mark_seen_1d(hy_weights)
 
         ! Expand function arguments
         ! call expand_0d(trunc_dt)
@@ -517,14 +630,17 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         call expand_0d(hy_alphaGLM)
         call expand_1d(hy_weights)
 
-        ! Expand Eos_data fields
-        call expand_0d(eos_gasConstant)
-        call expand_0d(eos_gamma)
-        call expand_0d(eos_singleSpeciesA)
-        call expand_0d(eos_singleSpeciesZ)
+        ! ! Expand Eos_data fields
+        ! call expand_0d(eos_gasConstant)
+        ! call expand_0d(eos_gamma)
+        ! call expand_0d(eos_singleSpeciesA)
+        ! call expand_0d(eos_singleSpeciesZ)
 
-        ! Expand eos_idealGammaData fields
-        call expand_0d(eos_gammam1)
+        ! ! Expand eos_idealGammaData fields
+        ! call expand_0d(eos_gammam1)
+
+        call enzyme_fprt_gc_doit()
+        ! call enzyme_fprt_gc_dump_status()
 #else
         call Hydro_advance(stage, Uin, dt, dtOld, &
              hy_starState, hy_tmpState, &
