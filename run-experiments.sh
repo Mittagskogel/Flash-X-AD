@@ -15,10 +15,11 @@ mantissas=($(seq 4 4 52))
 # setup_cmd="incompFlow/PoolBoiling -auto -maxblocks=400 -2d -nxb=8 -nyb=8 +amrex +nolwf +serialIO +incomp -tomlfile=/scratch/fhrold/riken/Flash-X-Development/simulation/PoolBoiling/flash.toml --with-unitmods"
 # parfile="flash.par"
 setup_cmd="incompFlow/RisingBubble -auto -maxblocks=400 -2d -nxb=8 -nyb=8 +amrex +nolwf +serialIO +incomp"
-parfile="../Flash-X-Development/simulation/RisingBubble/Re350-restart/flash.par"
+parfile="../Flash-X-Development/simulation/RisingBubble/Re3500/flash.par"
 
 # Make directory for automatic experiment runner
-rundir=autorun.risingbubble.advection.re350.restart
+rundir=autorun.risingbubble.advection.re3500.new
+# rundir=autorun.sedov.new
 mkdir -p $rundir
 
 jobs=()
@@ -43,8 +44,8 @@ clang++ -c ${premake}/mpfr.cpp $(pkg-config --cflags mpfr gmp) \
     -o ${premake}/mpfr.o
 
 # Link the restart file
-ln -s /scratch/fhrold/riken/Flash-X-Prec/restart/INS_Rising_Bubble_hdf5_chk_0003 \
-        ${premake}/INS_Rising_Bubble_hdf5_chk_0003
+# ln -s /scratch/fhrold/riken/Flash-X-Prec/restart/INS_Rising_Bubble_hdf5_chk_0003 \
+#         ${premake}/INS_Rising_Bubble_hdf5_chk_0003
 
 for offset in ${offsets[@]}
 do
@@ -63,6 +64,7 @@ do
         cp -ra ${premake}/* ${objdir}/
 
         # Update preprocessor variables in Hydro
+        # sed -i 's/\!#define ENABLE_TRUNC_HYDRO/#define ENABLE_TRUNC_HYDRO/' ${objdir}/Hydro.F90
         # sed -i 's/#define TRUNC_TO_M.*/#define TRUNC_TO_M '${mantissa}'/' ${objdir}/Hydro.F90
         # sed -i 's/#define LVL_OFFSET.*/#define LVL_OFFSET '${offset}'/' ${objdir}/Hydro.F90
         # sed -i 's/#define TRUNC_TO_M.*/#define TRUNC_TO_M '${mantissa}'/' ${objdir}/TimeAdvance.F90

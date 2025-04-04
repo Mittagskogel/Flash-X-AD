@@ -6,11 +6,13 @@
 MPI_PATH   = /scratch/fhrold/riken/openmpi-5.0.6-install
 # MPI_PATH = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/openmpi-5.0.5-4uhs65omq2kdbjjzu6p4xhwxwigwrq6h
 HDF4_PATH  =
-HDF5_PATH  = /scratch/fhrold/riken/hdf5-1.14.6-install
-HYPRE_PATH = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen3/gcc-11.4.1/hypre-2.31.0-2kjgx3lkjitpajwkru2chzxkk4smqurn
+#HDF5_PATH  = /scratch/fhrold/riken/hdf5-1.14.6-install
+HDF5_PATH  = /scratch/fhrold/riken/hdf5-1.14.6-debug-install
+#HYPRE_PATH = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen3/gcc-11.4.1/hypre-2.31.0-2kjgx3lkjitpajwkru2chzxkk4smqurn
+HYPRE_PATH = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen3/gcc-11.4.1/hypre-2.31.0-qk4jyhleqkrmi33iut5tciesurwpcfv7
 
 # Enzyme
-ENZYME_BUILD_DIR=/scratch/fhrold/riken/lulesh-test/Enzyme/enzyme/build
+ENZYME_BUILD_DIR=/scratch/fhrold/riken/Enzyme/enzyme/build
 
 ZLIB_PATH  =
 
@@ -55,8 +57,9 @@ PP      = -D
 OPENMP = -fopenmp
 
 # Enzyme
-FFLAGS_OPT = -c -O2 -fdefault-real-8 -fdefault-double-8 \
--flto=full -DENZYME_FPRT_ENABLE_GARBAGE_COLLECTION
+FFLAGS_OPT = -c -g -O2 -fdefault-real-8 -fdefault-double-8 \
+    -flto=full -DENZYME_FPRT_ENABLE_GARBAGE_COLLECTION \
+    -DENZYME_FPRT_ENABLE_SHADOW_RESIDUALS
 # -fpass-plugin=/scratch/fhrold/riken/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
 # -Xflang -load -Xflang /scratch/fhrold/riken/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
 # -Rpass=enzyme -mllvm -enzyme-truncate-all="64to11-51"
@@ -79,7 +82,7 @@ FFLAGS_DEBUG = -g -c -O0 -fdefault-real-8 -fdefault-double-8 \
 
 FFLAGS_TEST = -g -c -O0 -fdefault-real-8 -fdefault-double-8
 
-FFLAGS_HYPRE = -I${HYPRE_PATH}/include
+FFLAGS_HYPRE = -g -I${HYPRE_PATH}/include
 
 
 F90FLAGS =
@@ -96,11 +99,11 @@ CFLAGS_DEBUG = -g -c -O0 \
 
 CFLAGS_TEST = -g -O0 -c
 
-CFLAGS_HYPRE = -I${HYPRE_PATH}/include
+CFLAGS_HYPRE = -g -I${HYPRE_PATH}/include
 
 # if we are using HDF5, we need to specify the path to the include files
-CFLAGS_HDF5 = -I${HDF5_PATH}/include -DH5_USE_18_API
-CFLAGS_NCMPI = -I${NCMPI_PATH}/include
+CFLAGS_HDF5 = -g -I${HDF5_PATH}/include -DH5_USE_18_API
+CFLAGS_NCMPI = -g -I${NCMPI_PATH}/include
 
 #----------------------------------------------------------------------------
 # Linker flags
@@ -112,16 +115,17 @@ CFLAGS_NCMPI = -I${NCMPI_PATH}/include
 # LFLAGS_OPT = -g -o
 LFLAGS_OPT   = -g \
     -flto=full -fuse-ld=lld \
-    -fpass-plugin=/scratch/fhrold/riken/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
-    -Xflang -load -Xflang /scratch/fhrold/riken/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
+    -fpass-plugin=$(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
+    -Xflang -load -Xflang $(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
     -Rpass=enzyme \
-    -Wl,--load-pass-plugin=/scratch/fhrold/riken/Enzyme/enzyme/build/Enzyme/LLDEnzyme-20.so \
+    -Wl,--load-pass-plugin=$(ENZYME_BUILD_DIR)/Enzyme/LLDEnzyme-20.so \
     -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/mpfr-4.2.1-2aivvsalcuno6mvp2lyuta3glkp3o6v2/lib -lmpfr \
     -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/gmp-6.3.0-kyy5q7hr34p4dr2aftntqw2z6pmkc7ja/lib -lgmp \
     -lstdc++ \
     mpfr.o \
     -DENZYME_FPRT_ENABLE_GARBAGE_COLLECTION \
-    -L/scratch/fhrold/riken/Enzyme/enzyme/build/Enzyme/Runtimes/FPRT/ -lEnzyme-FPRT-GC-20 \
+    -DENZYME_FPRT_ENABLE_SHADOW_RESIDUALS \
+    -L$(ENZYME_BUILD_DIR)/Enzyme/Runtimes/FPRT/ -lEnzyme-FPRT-GC-20 \
     -lEnzyme-FPRT-Count-20 \
     -Wl,--allow-multiple-definition \
     -o
