@@ -9,5 +9,5 @@ Hydro += Hydro_data.o \
 	hy_rk_shockDetect.o \
 	hy_rk_getFlatteningLimiter.o \
 	hy_rk_renormAbundance.o \
-	hy_rk_saveFluxBuf.o 
+	hy_rk_saveFluxBuf.o hy_recon.o
 

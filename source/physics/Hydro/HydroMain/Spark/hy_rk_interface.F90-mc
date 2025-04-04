@@ -29,6 +29,15 @@ module hy_rk_interface
 #include "Spark.h"
 
   interface
+     subroutine hy_recon(scr_rope, scr_uPlus, scr_uMinus, flat3d, loGC, is, js, ks, i,j,k,v)
+       integer, intent(IN) :: i,j,k,v, is, js, ks
+       integer, intent(IN) :: loGC(3)
+       real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(INOUT) :: &
+            scr_rope,scr_uPlus, scr_uMinus
+       real, dimension(loGC(1):, loGC(2):, loGC(3):), intent(IN) :: flat3d
+     end subroutine hy_recon
+  end interface
+  interface
      subroutine hy_rk_initSolnScratch(stage, Uin, starState, tmpState, &
                                       blkLimits, blkLimitsGC, lo, loGC)
        implicit none
