@@ -1,0 +1,149 @@
+!> @copyright Copyright 2023 UChicago Argonne, LLC and contributors
+!!
+!! @licenseblock
+!!   Licensed under the Apache License, Version 2.0 (the "License");
+!!   you may not use this file except in compliance with the License.
+!!
+!!   Unless required by applicable law or agreed to in writing, software
+!!   distributed under the License is distributed on an "AS IS" BASIS,
+!!   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+!!   See the License for the specific language governing permissions and
+!!   limitations under the License.
+!! @endlicenseblock
+!!
+!! @file
+
+!> @ingroup HydroSpark
+!!
+!! @brief Computes interfacial fluxes through reconstruction and solving Riemann
+!!
+!! @details
+!! The reconstruction method and Riemann Solver are implemented as macros,
+!! so one can implement new reconstruction/Riemann solver by redefining
+!! corresponding macros.
+!!
+!! @note
+!! The index limits are determined by the input paramters @p limits and @p stage
+!!
+!! @param stage           Current RK stage
+!! @param starState       Input solution data
+!! @param flat3d          Flattening limiter
+!! @param fl[x,y,z]       Output fluxes in [X,Y,Z] direction
+!! @param limits          Index limits for each RK stages for updating solution
+!! @param deltas          dx, dy, dz
+!! @param scr_rope        Scratch space for saving input solution data
+!! @param scr_flux        Scratch space for saving output flux data
+!! @param scr_uPlus       Scratch space for saving Riemann state at plus (+) side
+!! @param scr_uMinus      Scratch space for saving Riemann state at minus (-) side
+!! @param loGC            Lower indices including guard cells
+!<
+
+!!VARIANTS(GPU): hy_recon
+!!Reorder(4):scr_rope,scr_uPlus,scr_uMinus
+
+
+subroutine hy_recon(scr_rope, scr_uPlus, scr_uMinus, flat3d, loGC, is, js, ks, i,j,k,v)
+  implicit none
+  integer, intent(IN) :: i,j,k,v, is, js, ks
+  integer, intent(IN) :: loGC(3)
+  real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(INOUT) :: &
+       scr_rope,scr_uPlus, scr_uMinus
+  real, dimension(loGC(1):, loGC(2):, loGC(3):), intent(IN) :: flat3d
+
+  integer :: s, ii, jj, kk
+  
+  real :: invSumAlpha, abs_betadiff
+  real, dimension(5) :: stencil
+  real, dimension(3) :: W5p, W5m, betaWeno, Alpha5, omega
+  real :: mags, betaSum
+  !! Set WENO5 coefficients once and for all
+  !u_{1,i+1/2}= 2/6*u_{i-2} -7/6*u_{i-1} +11/6*u_{i}
+  real, dimension(3) :: coeff1p1 = (/ 2./6., -7./6., 11./6./)
+  !u_{2,i+1/2}=-1/6*u_{i-2} +5/6*u_{i-1} + 2/6*u_{i}
+  real, dimension(3) :: coeff1p2 = (/-1./6.,  5./6.,  2./6./)
+  !u_{3,i+1/2}= 2/6*u_{i-2} +5/6*u_{i-1} - 1/6*u_{i}
+  real, dimension(3) :: coeff1p3 = (/ 2./6.,  5./6., -1./6./)
+  ! linear weights for i+1/2, (gamma1,gamma2,gamma3)
+  real, dimension(3) :: linWp   = (/0.1, 0.6, 0.3/)
+  !u_{1,i-1/2}=-1/6*u_{i-2} +5/6*u_{i-1} + 2/6*u_{i}
+  real, dimension(3) :: coeff1m1 = (/-1./6.,  5./6.,  2./6./)
+  !u_{2,i-1/2}= 2/6*u_{i-2} +5/6*u_{i-1} - 1/6*u_{i}
+  real, dimension(3) :: coeff1m2 = (/ 2./6.,  5./6., -1./6./)
+  !u_{3,i-1/2}=11/6*u_{i-2} -7/6*u_{i-1} + 2/6*u_{i}
+  real, dimension(3) :: coeff1m3 = (/ 11./6.,-7./6.,  2./6./)
+  ! linear weights for i-1/2, (gamma1,gamma2,gamma3)
+  real, dimension(3) :: linWm   = (/0.3, 0.6, 0.1/)
+  
+  real, parameter :: epsilon = 1.e-36
+  real, parameter :: n13o12 = 13./12.
+  
+  integer, parameter :: cntr = 3   ! five-point stencil, center idx == 3
+  
+  s = 1
+  do kk = k-2*ks, k+2*ks
+     do jj = j-2*js, j+2*js
+        do ii = i-2*is, i+2*is
+           stencil(s) = scr_rope(v, ii, jj, kk)
+           s = s + 1
+        enddo
+     enddo
+  enddo
+  
+  W5p(1) = dot_product(coeff1p1(1:3), stencil(cntr-2:cntr+0))
+  W5p(2) = dot_product(coeff1p2(1:3), stencil(cntr-1:cntr+1))
+  W5p(3) = dot_product(coeff1p3(1:3), stencil(cntr-0:cntr+2))
+  !!
+  !! Calculate smoothness indicators at i+1/2
+  betaWeno(1) = n13o12*( stencil(cntr-2) - 2.*stencil(cntr-1) + stencil(cntr) )**2 &
+       + 0.25*( stencil(cntr-2) - 4.*stencil(cntr-1) + 3.*stencil(cntr) )**2
+  betaWeno(2) = n13o12*( stencil(cntr-1) - 2.*stencil(cntr) + stencil(cntr+1) )**2 &
+       + 0.25*( stencil(cntr-1) - stencil(cntr+1) )**2
+  betaWeno(3) = n13o12*( stencil(cntr) - 2.*stencil(cntr+1) + stencil(cntr+2) )**2 &
+       + 0.25*( 3.*stencil(cntr) - 4.*stencil(cntr+1) + stencil(cntr+2) )**2
+  !!
+  !! Use problem-adaptive epsilong as in Tchekovskoy7, A3
+  ! This does not seem to work with the WENO-Z indicators of Borges+08
+  ! mags(v) = scr_rope(@M ind_m(2))**2 + scr_rope(@M ind_m(1))**2 + scr_rope(@M ind_p(0))**2 &
+  !      + scr_rope(@M ind_p(1))**2 + scr_rope(@M ind_p(2))**2
+  ! betaWeno(1) = betaWeno(1) + epsilon*mags(v) + TINY(1.0)
+  ! betaWeno(2) = betaWeno(2) + epsilon*mags(v) + TINY(1.0)
+  ! betaWeno(3) = betaWeno(3) + epsilon*mags(v) + TINY(1.0)
+  !!
+  !! This is WENO-Zv this is very similar to weno5 with wenoExp=1
+  abs_betadiff = abs(betaWeno(1) - betaWeno(3))
+  Alpha5(1:3) = linWp(1:3)*(1. + abs_betadiff/(betaWeno(1:3) + epsilon))
+  !!
+  !! Normalize nonlinear weights at i+1/2
+  invSumAlpha = 1./sum(Alpha5(1:3))
+  omega(1:3) = invSumAlpha*Alpha5(1:3)
+  !!
+  !! Compute interface value at i+1/2
+  scr_uPlus(v,i,j,k)  = dot_product(omega(1:3), W5p(1:3))
+  !! Apply flattening
+  scr_uPlus(v ,i,j,k) = flat3d(i,j,k)*scr_uPlus(v ,i,j,k) + (1.-flat3d(i,j,k))*stencil(cntr)
+  !!
+  !! Now move on to i-1/2
+  !!  
+  !! Calculate interface values at i-1/2
+  W5m(1) = dot_product(coeff1m1(1:3), stencil(cntr-2:cntr+0))
+  W5m(2) = dot_product(coeff1m2(1:3), stencil(cntr-1:cntr+1))
+  W5m(3) = dot_product(coeff1m3(1:3), stencil(cntr-0:cntr+2))
+  !! This is WENO-Z
+  Alpha5(1:3) = linWm(1:3)*(1. + abs_betadiff/(betaWeno(1:3) + epsilon))
+  !!
+  !! Normalize nonlinear weights at i-1/2
+  invSumAlpha = 1./sum(Alpha5(1:3))
+  omega(1:3) = invSumAlpha*Alpha5(1:3)
+  !!
+  !! Compute interface value at i-1/2
+  scr_uMinus(v,i,j,k) = dot_product(omega(1:3), W5m(1:3))
+  !! Apply flattening
+  scr_uMinus(v ,i,j,k) = flat3d(i,j,k)*scr_uMinus(v ,i,j,k) + (1.-flat3d(i,j,k))*stencil(cntr)
+  !! Check for monotonicity
+  if ( (scr_uPlus(v,i,j,k)-stencil(cntr))*(stencil(cntr)-scr_uMinus(v,i,j,k)) <= 0. ) then
+     scr_uPlus(v,i,j,k)  = stencil(cntr)
+     scr_uMinus(v,i,j,k) = stencil(cntr)
+  end if
+end subroutine hy_recon
+
+
