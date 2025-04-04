@@ -31,6 +31,30 @@
 #include "Simulation.h"
 #include "constants.h"
 
+module truncate_Burn
+  use Burn_interface, ONLY : Burn
+
+  implicit none
+  public :: f__enzyme_truncate_op_func_Burn
+contains
+
+  subroutine f__enzyme_truncate_op_func_Burn(from, to_e, to_m, dt)
+    implicit none
+
+    integer, intent(in) :: from, to_e, to_m
+
+    real, intent(in) :: dt
+
+    call Burn(dt)
+  end subroutine f__enzyme_truncate_op_func_Burn
+
+end module truncate_Burn
+
+!#define ENABLE_TRUNC_BURN
+#define TRUNC_FROM 64
+#define TRUNC_TO_E 0
+#define TRUNC_TO_M 16
+
 subroutine TimeAdvance(dt, dtold, time)
 
    use Hydro_interface, ONLY: Hydro, Hydro_gravPotIsAlreadyUpdated
@@ -43,6 +67,10 @@ subroutine TimeAdvance(dt, dtold, time)
    use Timers_interface, ONLY: Timers_start, Timers_stop
    use Stir_interface, ONLY : Stir
    use TimeAdvance_data, ONLY : ta_useAsyncGrav
+
+   !Enzyme truncate function definitions
+   use truncate_Burn
+
    implicit none
 
    real, intent(IN) :: dt, dtold, time
@@ -70,7 +98,11 @@ subroutine TimeAdvance(dt, dtold, time)
 
    ! 4. Add source terms:
    call Timers_start("sourceTerms")
+#ifdef ENABLE_TRUNC_BURN
+   call f__enzyme_truncate_op_func_Burn(TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, dt)
+#else
    call Burn(dt)
+#endif
    call Deleptonize(.false., dt, time)
    call Stir(dt)
    call Timers_stop("sourceTerms")
