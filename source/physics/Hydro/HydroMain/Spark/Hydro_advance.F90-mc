@@ -62,7 +62,17 @@ module truncate_Hydro_advance
      end function f__enzyme_expand_mem_value
   end interface
 
+  interface
+     function f__enzyme_reset_shadow_trace() result(count) bind(c)
+       use, intrinsic :: iso_c_binding, only: c_long_long
+       implicit none
+
+       integer(c_long_long) :: count
+     end function f__enzyme_reset_shadow_trace
+  end interface
+
   public :: truncate_0d, truncate_1d, truncate_2d, truncate_3d, truncate_4d
+  public :: f__enzyme_trunc_mem_ignore_Eos_multidim
   contains
     subroutine truncate_1d(x)
       real, intent(inout) :: x(:)
@@ -157,7 +167,25 @@ module truncate_Hydro_advance
       call expand_1d(tmp)
       x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3), size(x, 4)])
     end subroutine expand_4d
-end module truncate_Hydro_advance
+
+    subroutine f__enzyme_trunc_mem_ignore_Eos_multidim(mode,range,lo,solnData @M eos_scratchArgs)
+#include "Eos.h"
+#include "constants.h"
+#include "Simulation.h"
+
+      use Eos_interface, ONLY : Eos_multiDim
+
+      implicit none
+
+      integer, intent(in) :: mode
+      integer, dimension(2,MDIM), intent(in) :: range
+      integer, intent(in) :: lo(MDIM)
+      real,dimension(1:,lo(1):,lo(2):,lo(3):),intent(inout) :: solnData
+      @M eos_scratch_args_declare
+
+      call Eos_multiDim(mode,range,lo,solnData @M eos_scratchArgs)
+    end subroutine f__enzyme_trunc_mem_ignore_Eos_multidim
+  end module truncate_Hydro_advance
 
 subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
                          hy_starState, hy_tmpState, &
@@ -238,16 +266,21 @@ subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
    @M hy_stages_t
       ! calculate gravitational acceleration based on current value of GPOT_VAR
       ! This is stored in scratch variable hy_grav
+      ! print *, "stage", stage
+      ! print *, f_enzyme_reset_shadow_trace(), "errors at beginning of Hydro_advance."
       call hy_rk_getGraveAccel(hy_starState, hy_grav, &
                                hy_xCenter, hy_yCenter, deltas, &
                                blkLimitsGC, loGC)
+      ! print *, f_enzyme_reset_shadow_trace(), "errors in hy_rk_getGraveaccel"
 
       call hy_rk_getFlatteningLimiter(stage, hy_starState, hy_flat3d, limits, loGC)
+      ! print *, f_enzyme_reset_shadow_trace(), "errors in hy_rk_getFlatteningLimiter"
 
       call hy_rk_getFaceFlux(stage, hy_starState, hy_flat3d, hy_flx, hy_fly, hy_flz, &
                              limits, deltas, &
                              hy_rope, hy_flux, hy_uPlus, hy_uMinus, &
                              loGC)
+      ! print *, f_enzyme_reset_shadow_trace(), "errors in hy_rk_getFaceFlux"
       ! Now update solution based on conservative fluxes
       ! See select_RK_scheme() for explicit outline of C1, C2, & C3
       ! U* = C1 * U0 + C2 * U* + C3 * dt*L(U*)
@@ -256,19 +289,29 @@ subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
                             deltas, hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol, hy_xCenter, &
                             hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
                             dt, dtOld, limits, lo, loGC)
+      ! print *, f_enzyme_reset_shadow_trace(), "errors in hy_rk_updateSoln"
       call hy_rk_saveFluxBuf(stage, hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
                              hy_flx, hy_fly, hy_flz, &
                              hy_fareaX, hy_fareaY, hy_fareaZ, &
                              blkLimits, lo, loGC)
+      ! print *, f_enzyme_reset_shadow_trace(), "errors in hy_rk_saveFluxBuf"
 #if NSPECIES>0
       !Properly normalize species after the update
       call hy_rk_renormAbundance(blkLimitsGC, hy_starState, loGC)
 #endif
 
       @M hy_DIR_update_starState_to_host
+#ifdef ENABLE_TRUNC_HYDRO
       call expand_4d(hy_starState)
       call Eos_multiDim(MODE_DENS_EI, limits(LOW:HIGH,1:MDIM,stage), loGC, hy_starState @M hy_eos_args)
+      ! call f__enzyme_trunc_ignore_Eos_multiDim(MODE_DENS_EI, limits(LOW:HIGH,1:MDIM,stage), &
+      !      loGC, hy_starState @M hy_eos_args);
+      ! call f__enzyme_trunc_mem_ignore_Eos_multiDim(MODE_DENS_EI, limits(LOW:HIGH,1:MDIM,stage), &
+      !      loGC, hy_starState @M hy_eos_args);
       call truncate_4d(hy_starState)
+#else
+      call Eos_multiDim(MODE_DENS_EI, limits(LOW:HIGH,1:MDIM,stage), loGC, hy_starState @M hy_eos_args)
+#endif
       @M hy_DIR_update_starState_to_device
 
    @M hy_end_stages_t

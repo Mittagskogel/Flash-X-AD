@@ -42,6 +42,18 @@
 !!Reorder(4):starState,fl[xyz]
 !!Reorder(4):scr_rope,scr_flux,scr_uPlus,scr_uMinus
 
+module truncate_helpers
+  implicit none
+  interface
+     function f_enzyme_reset_shadow_trace() result(count) bind(c)
+       use, intrinsic :: iso_c_binding, only: c_long_long
+       implicit none
+
+       integer(c_long_long) :: count
+     end function f_enzyme_reset_shadow_trace
+  end interface
+end module truncate_helpers
+
 subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
                               limits, deltas, &
                               scr_rope, scr_flux, scr_uPlus, scr_uMinus, &
@@ -57,6 +69,9 @@ subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
                          smallx => hy_smallX, &
                          limRad => hy_limRad, &
                          mp5ZeroTol => hy_mp5ZeroTol
+
+  ! Enzyme
+  use truncate_helpers
 
   implicit none
 
@@ -86,6 +101,9 @@ subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
   @M hy_riemann_declare
 
   logical :: offload = .false.
+
+  ! Enzyme
+  integer :: err_tmp
 
 #ifdef OMP_OL
   offload = .true.
@@ -174,6 +192,7 @@ subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
      do k = limits(LOW,KAXIS,stage), limits(HIGH,KAXIS,stage)+1*ks
      do j = limits(LOW,JAXIS,stage), limits(HIGH,JAXIS,stage)+1*js
      do i = limits(LOW,IAXIS,stage), limits(HIGH,IAXIS,stage)+1*is
+        ! err_tmp = f_enzyme_reset_shadow_trace()
         VL = scr_uPlus(1:HY_NUM_VARS,i-is,j-js,k-ks)
         VR = scr_uMinus(1:HY_NUM_VARS,i,j,k)
         inShock = .false.
@@ -182,6 +201,9 @@ subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
 #endif
         @M hy_riemann
         scr_flux(1:HY_NUM_FLUX,i,j,k) = Fstar(1:HY_NUM_FLUX)
+        ! print *, err_tmp, "errors after reset,", &
+        !      "inShock =", inShock, "and", &
+        !      f_enzyme_reset_shadow_trace(), "errors in hy_rk_getFaceFlux.F90"
      enddo
      enddo
      enddo

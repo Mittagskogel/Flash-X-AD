@@ -52,8 +52,8 @@ checkpointFileNumber = 0
 plotfileIntervalTime = 0
 plotfileIntervalStep = 0
 
-nend            = 10000
-tmax            = 0.05
+nend            = 1 #10000
+tmax            = 0.01
 
 run_comment     = "Sedov explosion"
 log_file        = "flashx.log"

@@ -34,9 +34,9 @@
 #include "constants.h"
 #include "Simulation.h"
 
-#define TRUNC_FROM 64
-#define TRUNC_TO_E 0
-#define TRUNC_TO_M 32
+! #define TRUNC_FROM 64
+! #define TRUNC_TO_E 0
+! #define TRUNC_TO_M 32
 
 ! module truncate_Eos_multiDim
 !   implicit none
@@ -97,7 +97,7 @@
 !     x = reshape(tmp, [size(x, 1), size(x, 2)])
 !   end subroutine truncate_2d
 ! end module truncate_Eos_multiDim
- 
+
 subroutine Eos_multiDim(mode,range,lo,solnData @M eos_scratchArgs)
 
   use Driver_interface, ONLY : Driver_abort

@@ -77,6 +77,20 @@ module truncate_Hydro
      end subroutine enzyme_fprt_gc_doit
   end interface
 
+  interface
+    subroutine enzyme_fprt_op_dump_status(num) bind(c)
+      use, intrinsic :: iso_c_binding, only: c_int
+      implicit none
+
+      integer(c_int), intent(in), value :: num
+    end subroutine enzyme_fprt_op_dump_status
+  end interface
+
+  interface
+     subroutine enzyme_fprt_op_clear() bind(c)
+     end subroutine enzyme_fprt_op_clear
+  end interface
+
   public :: truncate_0d, truncate_1d, truncate_2d, truncate_3d, truncate_4d
   public :: f__enzyme_truncate_mem_func_hydro_advance
   contains
@@ -523,6 +537,8 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         ! ! Truncate eos_idealGammaData fields
         ! call truncate_0d(eos_gammam1)
 
+        call enzyme_fprt_op_clear();
+
         eos_truncate = .true.
         call f__enzyme_truncate_mem_func_hydro_advance(TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
              stage, Uin, trunc_dt, trunc_dtOld, &
@@ -538,6 +554,8 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
              hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
              hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
         eos_truncate = .false.
+
+        call enzyme_fprt_op_dump_status(150);
 
         ! call enzyme_fprt_gc_dump_status()
 
