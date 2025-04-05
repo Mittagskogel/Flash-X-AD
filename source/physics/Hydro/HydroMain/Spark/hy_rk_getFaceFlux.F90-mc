@@ -57,7 +57,7 @@ subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
                          smallx => hy_smallX, &
                          limRad => hy_limRad, &
                          mp5ZeroTol => hy_mp5ZeroTol
-  use hy_rk_interface, ONLY : hy_recon
+  use hy_rk_interface, ONLY : hy_recon, hy_riemann
 
   implicit none
 
@@ -138,13 +138,13 @@ subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
      @M hy_DIR_private([stencil]) &
      @M hy_DIR_firstprivate([is, js, ks])
      do k = limits(LOW,KAXIS,stage)-1*ks, limits(HIGH,KAXIS,stage)+1*ks
-     do j = limits(LOW,JAXIS,stage)-1*js, limits(HIGH,JAXIS,stage)+1*js
-     do i = limits(LOW,IAXIS,stage)-1*is, limits(HIGH,IAXIS,stage)+1*is
-        do v=1,NRECON
-           call hy_recon(scr_rope, scr_uPlus, scr_uMinus, flat3d, loGC, is, js, ks, i,j,k,v)
+        do j = limits(LOW,JAXIS,stage)-1*js, limits(HIGH,JAXIS,stage)+1*js
+           do i = limits(LOW,IAXIS,stage)-1*is, limits(HIGH,IAXIS,stage)+1*is
+              do v=1,NRECON
+                 call hy_recon(scr_rope, scr_uPlus, scr_uMinus, flat3d, loGC, is, js, ks, i,j,k,v)
+              enddo
+           enddo
         enddo
-     enddo
-     enddo
      enddo
      ! call Timers_stop("recon")
 
@@ -181,7 +181,7 @@ subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
 #ifdef SHOK_VAR
         inShock = any(starState(SHOK_VAR,i-1*is:i,j-1*js:j,k-1*ks:k) /= 0.0)
 #endif
-        @M hy_riemann
+        call hy_riemann(dir,VL,VR,inShock,Fstar,speed)
         scr_flux(1:HY_NUM_FLUX,i,j,k) = Fstar(1:HY_NUM_FLUX)
      enddo
      enddo

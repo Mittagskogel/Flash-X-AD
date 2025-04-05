@@ -37,6 +37,17 @@ module hy_rk_interface
        real, dimension(loGC(1):, loGC(2):, loGC(3):), intent(IN) :: flat3d
      end subroutine hy_recon
   end interface
+
+  interface
+     subroutine hy_riemann(dir,VL,VR,inShock,Fstar,speed)
+       integer, intent(IN) :: dir
+       real, dimension(HY_NUM_VARS), intent(INOUT)  :: VL, VR
+       logical, intent(IN) :: inShock
+       real, dimension(HY_NUM_FLUX),    intent(OUT) :: Fstar
+       real,    intent(OUT) :: speed
+     end subroutine hy_riemann
+  end interface
+
   interface
      subroutine hy_rk_initSolnScratch(stage, Uin, starState, tmpState, &
                                       blkLimits, blkLimitsGC, lo, loGC)
