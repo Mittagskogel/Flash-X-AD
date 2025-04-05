@@ -44,6 +44,145 @@
 !!Reorder(4):fluxBuf[XYZ],Uin
 !!NOVARIANTS
 
+!#define DISABLE_TRUNC_EOS
+#define TRUNC_FROM 64
+#define TRUNC_TO_E 0
+#define TRUNC_TO_M 24
+
+module truncate_helpers
+  implicit none
+  interface
+     function f__enzyme_truncate_mem_value(x, from, to_e, to_m) result(p_x) bind(c)
+       use, intrinsic :: iso_c_binding, only: c_double, c_int
+       implicit none
+
+       ! double precision, intent(in) :: x
+       ! integer, intent(in) :: from, to
+       real(c_double), intent(in), value :: x
+       integer(c_int), intent(in), value :: from, to_e, to_m
+       double precision :: p_x
+     end function f__enzyme_truncate_mem_value
+  end interface
+
+  interface
+     function f__enzyme_expand_mem_value(x, from, to_e, to_m) result(p_x) bind(c)
+       use, intrinsic :: iso_c_binding, only: c_double, c_int
+       implicit none
+
+       ! double precision, intent(in) :: x
+       ! integer, intent(in) :: from, to
+       real(c_double), intent(in), value :: x
+       integer(c_int), intent(in), value :: from, to_e, to_m
+       double precision :: p_x
+     end function f__enzyme_expand_mem_value
+  end interface
+
+  interface
+     function f_enzyme_reset_shadow_trace() result(count) bind(c)
+       use, intrinsic :: iso_c_binding, only: c_long_long
+       implicit none
+
+       integer(c_long_long) :: count
+     end function f_enzyme_reset_shadow_trace
+  end interface
+
+  public :: truncate_0d, truncate_1d, truncate_2d, truncate_3d, truncate_4d
+  contains
+    subroutine truncate_1d(x)
+      real, intent(inout) :: x(:)
+
+      integer :: i, n
+      n = size(x)
+
+      do i=1,n
+         x(i) = f__enzyme_truncate_mem_value(x(i), TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M)
+      end do
+    end subroutine truncate_1d
+
+    subroutine truncate_0d(x)
+      real, intent(inout) :: x
+      real :: tmp(1)
+
+      tmp(1) = x
+      call truncate_1d(tmp)
+      x = tmp(1)
+    end subroutine truncate_0d
+
+    subroutine truncate_2d(x)
+      real, intent(inout) :: x(:, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call truncate_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2)])
+    end subroutine truncate_2d
+
+    subroutine truncate_3d(x)
+      real, intent(inout) :: x(:, :, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call truncate_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3)])
+    end subroutine truncate_3d
+
+    subroutine truncate_4d(x)
+      real, intent(inout) :: x(:, :, :, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call truncate_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3), size(x, 4)])
+    end subroutine truncate_4d
+
+    subroutine expand_1d(x)
+      real, intent(inout) :: x(:)
+
+      integer :: i, n
+      n = size(x)
+
+      do i=1,n
+         x(i) = f__enzyme_expand_mem_value(x(i), TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M)
+      end do
+    end subroutine expand_1d
+
+    subroutine expand_0d(x)
+      real, intent(inout) :: x
+      real :: tmp(1)
+
+      tmp(1) = x
+      call expand_1d(tmp)
+      x = tmp(1)
+    end subroutine expand_0d
+
+    subroutine expand_2d(x)
+      real, intent(inout) :: x(:, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call expand_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2)])
+    end subroutine expand_2d
+
+    subroutine expand_3d(x)
+      real, intent(inout) :: x(:, :, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call expand_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3)])
+    end subroutine expand_3d
+
+    subroutine expand_4d(x)
+      real, intent(inout) :: x(:, :, :, :)
+      real :: tmp(size(x))
+
+      tmp = reshape(x, [size(x)])
+      call expand_1d(tmp)
+      x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3), size(x, 4)])
+    end subroutine expand_4d
+end module truncate_helpers
+
 subroutine hy_rk_correctFluxes(Uin, blkLimits, &
                                fluxBufX, fluxBufY, fluxBufZ, &
                                deltas, fareaX, fareaY, fareaZ, cvol, xCenter, &
@@ -59,6 +198,8 @@ subroutine hy_rk_correctFluxes(Uin, blkLimits, &
   use Driver_interface, ONLY : Driver_abort
   use Eos_interface, ONLY : Eos_multiDim,Eos
 
+  ! Enzyme
+  use truncate_helpers
 
   implicit none
 
@@ -118,7 +259,13 @@ subroutine hy_rk_correctFluxes(Uin, blkLimits, &
   idxRange(LOW:HIGH,IAXIS) =   blkLimits(LOW,IAXIS)
   idxRange(LOW:HIGH,JAXIS) = [ blkLimits(LOW,JAXIS), blkLimits(HIGH,JAXIS) ]
   idxRange(LOW:HIGH,KAXIS) = [ blkLimits(LOW,KAXIS), blkLimits(HIGH,KAXIS) ]
+#ifdef DISABLE_TRUNC_EOS
+  call expand_4d(Uin)
   call Eos_multiDim(MODE_DENS_EI,idxRange,loGC,Uin)
+  call truncate_4d(Uin)
+#else
+  call Eos_multiDim(MODE_DENS_EI,idxRange,loGC,Uin)
+#endif
 
   ! HIGH side
   do k = blkLimits(LOW,KAXIS), blkLimits(HIGH,KAXIS)
@@ -147,7 +294,13 @@ subroutine hy_rk_correctFluxes(Uin, blkLimits, &
   idxRange(LOW:HIGH,IAXIS) =   blkLimits(HIGH,IAXIS)
   idxRange(LOW:HIGH,JAXIS) = [ blkLimits(LOW,JAXIS), blkLimits(HIGH,JAXIS) ]
   idxRange(LOW:HIGH,KAXIS) = [ blkLimits(LOW,KAXIS), blkLimits(HIGH,KAXIS) ]
+#ifdef DISABLE_TRUNC_EOS
+  call expand_4d(Uin)
   call Eos_multiDim(MODE_DENS_EI,idxRange,loGC,Uin)
+  call truncate_4d(Uin)
+#else
+  call Eos_multiDim(MODE_DENS_EI,idxRange,loGC,Uin)
+#endif
 
 
 #if NDIM>1
@@ -178,7 +331,13 @@ subroutine hy_rk_correctFluxes(Uin, blkLimits, &
   idxRange(LOW:HIGH,IAXIS) = [ blkLimits(LOW,IAXIS), blkLimits(HIGH,IAXIS) ]
   idxRange(LOW:HIGH,JAXIS) =   blkLimits(LOW,JAXIS)
   idxRange(LOW:HIGH,KAXIS) = [ blkLimits(LOW,KAXIS), blkLimits(HIGH,KAXIS) ]
+#ifdef DISABLE_TRUNC_EOS
+  call expand_4d(Uin)
   call Eos_multiDim(MODE_DENS_EI,idxRange,loGC,Uin)
+  call truncate_4d(Uin)
+#else
+  call Eos_multiDim(MODE_DENS_EI,idxRange,loGC,Uin)
+#endif
 
 
   ! HIGH side
@@ -206,7 +365,13 @@ subroutine hy_rk_correctFluxes(Uin, blkLimits, &
   idxRange(LOW:HIGH,IAXIS) = [ blkLimits(LOW,IAXIS), blkLimits(HIGH,IAXIS) ]
   idxRange(LOW:HIGH,JAXIS) =   blkLimits(HIGH,JAXIS)
   idxRange(LOW:HIGH,KAXIS) = [ blkLimits(LOW,KAXIS), blkLimits(HIGH,KAXIS) ]
+#ifdef DISABLE_TRUNC_EOS
+  call expand_4d(Uin)
   call Eos_multiDim(MODE_DENS_EI,idxRange,loGC,Uin)
+  call truncate_4d(Uin)
+#else
+  call Eos_multiDim(MODE_DENS_EI,idxRange,loGC,Uin)
+#endif
 
 #if NDIM==3
   ! Correct KAXIS sides
@@ -236,7 +401,13 @@ subroutine hy_rk_correctFluxes(Uin, blkLimits, &
   idxRange(LOW:HIGH,IAXIS) = [ blkLimits(LOW,IAXIS), blkLimits(HIGH,IAXIS) ]
   idxRange(LOW:HIGH,JAXIS) = [ blkLimits(LOW,JAXIS), blkLimits(HIGH,JAXIS) ]
   idxRange(LOW:HIGH,KAXIS) =   blkLimits(LOW,KAXIS)
+#ifdef DISABLE_TRUNC_EOS
+  call expand_4d(Uin)
   call Eos_multiDim(MODE_DENS_EI,idxRange,loGC,Uin)
+  call truncate_4d(Uin)
+#else
+  call Eos_multiDim(MODE_DENS_EI,idxRange,loGC,Uin)
+#endif
 
   ! HIGH side
   do j = blkLimits(LOW,JAXIS), blkLimits(HIGH,JAXIS)
@@ -263,7 +434,13 @@ subroutine hy_rk_correctFluxes(Uin, blkLimits, &
   idxRange(LOW:HIGH,IAXIS) = [ blkLimits(LOW,IAXIS), blkLimits(HIGH,IAXIS) ]
   idxRange(LOW:HIGH,JAXIS) = [ blkLimits(LOW,JAXIS), blkLimits(HIGH,JAXIS) ]
   idxRange(LOW:HIGH,KAXIS) =   blkLimits(HIGH,KAXIS)
+#ifdef DISABLE_TRUNC_EOS
+  call expand_4d(Uin)
   call Eos_multiDim(MODE_DENS_EI,idxRange,loGC,Uin)
+  call truncate_4d(Uin)
+#else
+  call Eos_multiDim(MODE_DENS_EI,idxRange,loGC,Uin)
+#endif
 
 #endif
 #endif

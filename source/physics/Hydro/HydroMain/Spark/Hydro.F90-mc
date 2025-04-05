@@ -25,6 +25,7 @@
 !!NOVARIANTS
 
 #define ENABLE_TRUNC_HYDRO
+!#define ENABLE_TRUNC_FLUXCORR
 #define TRUNC_FROM 64
 #define TRUNC_TO_E 0
 #define TRUNC_TO_M 24
@@ -93,6 +94,7 @@ module truncate_Hydro
 
   public :: truncate_0d, truncate_1d, truncate_2d, truncate_3d, truncate_4d
   public :: f__enzyme_truncate_mem_func_hydro_advance
+  public :: f__enzyme_truncate_mem_func_hy_rk_correctfluxes
   contains
     subroutine truncate_1d(x)
       real, intent(inout) :: x(:)
@@ -291,6 +293,47 @@ module truncate_Hydro
            hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
            hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
     end subroutine f__enzyme_truncate_mem_func_hydro_advance
+
+    subroutine f__enzyme_truncate_mem_func_hy_rk_correctfluxes(from, to_e, to_m, &
+         Uin, blkLimits, &
+         fluxBufX, fluxBufY, fluxBufZ, &
+         deltas, fareaX, fareaY, fareaZ, cvol, xCenter, &
+         xLeft, xRight, yLeft, yRight, &
+         geometry, &
+         smalle, smalld, &
+         dt, isFlux, &
+         lo, loGC)
+
+      implicit none
+
+#include "Simulation.h"
+#include "constants.h"
+#include "Spark.h"
+#include "Eos.h"
+
+      integer, intent(in) :: from, to_e, to_m
+
+      integer, intent(IN) :: geometry, lo(3), loGC(3)
+      real, pointer :: Uin(:, :, :, :)
+      real, dimension(1:, lo(1):, lo(2):, lo(3):), intent(IN) :: fluxBufX, fluxBufY, fluxBufZ
+      integer, dimension(LOW:HIGH, MDIM), intent(IN) :: blkLimits
+      real, dimension(loGC(1):, loGC(2):, loGC(3):), intent(IN) :: fareaX, fareaY, fareaZ, cvol
+      real, dimension(loGC(1):), intent(IN) :: xCenter, xLeft, xRight
+      real, dimension(loGC(2):), intent(IN) :: yLeft, yRight
+      real, dimension(MDIM), intent(IN)  :: deltas
+      real, intent(IN) :: smalle, smalld, dt
+
+      logical, intent(IN) :: isFlux
+
+      call hy_rk_correctFluxes(Uin, blkLimits, &
+                               fluxBufX, fluxBufY, fluxBufZ, &
+                               deltas, fareaX, fareaY, fareaZ, cvol, xCenter, &
+                               xLeft, xRight, yLeft, yRight, &
+                               geometry, &
+                               smalle, smalld, &
+                               dt, isFlux, &
+                               lo, loGC)
+    end subroutine f__enzyme_truncate_mem_func_hy_rk_correctfluxes
 end module truncate_Hydro
 
 
@@ -528,14 +571,14 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         call truncate_0d(hy_alphaGLM)
         call truncate_1d(hy_weights)
 
-        ! ! Truncate Eos_data fields
-        ! call truncate_0d(eos_gasConstant)
-        ! call truncate_0d(eos_gamma)
-        ! call truncate_0d(eos_singleSpeciesA)
-        ! call truncate_0d(eos_singleSpeciesZ)
+        ! Truncate Eos_data fields
+        call truncate_0d(eos_gasConstant)
+        call truncate_0d(eos_gamma)
+        call truncate_0d(eos_singleSpeciesA)
+        call truncate_0d(eos_singleSpeciesZ)
 
-        ! ! Truncate eos_idealGammaData fields
-        ! call truncate_0d(eos_gammam1)
+        ! Truncate eos_idealGammaData fields
+        call truncate_0d(eos_gammam1)
 
         call enzyme_fprt_op_clear();
 
@@ -555,7 +598,8 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
              hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
         eos_truncate = .false.
 
-        call enzyme_fprt_op_dump_status(150);
+        !print *, blkLimits
+        call enzyme_fprt_op_dump_status(12)
 
         ! call enzyme_fprt_gc_dump_status()
 
@@ -648,14 +692,14 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         call expand_0d(hy_alphaGLM)
         call expand_1d(hy_weights)
 
-        ! ! Expand Eos_data fields
-        ! call expand_0d(eos_gasConstant)
-        ! call expand_0d(eos_gamma)
-        ! call expand_0d(eos_singleSpeciesA)
-        ! call expand_0d(eos_singleSpeciesZ)
+        ! Expand Eos_data fields
+        call expand_0d(eos_gasConstant)
+        call expand_0d(eos_gamma)
+        call expand_0d(eos_singleSpeciesA)
+        call expand_0d(eos_singleSpeciesZ)
 
-        ! ! Expand eos_idealGammaData fields
-        ! call expand_0d(eos_gammam1)
+        ! Expand eos_idealGammaData fields
+        call expand_0d(eos_gammam1)
 
         call enzyme_fprt_gc_doit()
         ! call enzyme_fprt_gc_dump_status()
@@ -743,6 +787,80 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
               call Grid_getCellCoords(JAXIS, RIGHT_EDGE, level, loGC, hiGC, hy_yRight)
            end if
 
+#ifdef ENABLE_TRUNC_FLUXCORR
+           call truncate_4d(Uin)
+           call truncate_4d(hy_fluxBufX)
+           call truncate_4d(hy_fluxBufY)
+           call truncate_4d(hy_fluxBufZ)
+           call truncate_1d(deltas)
+           call truncate_3d(hy_fareaX)
+           call truncate_3d(hy_fareaY)
+           call truncate_3d(hy_fareaZ)
+           call truncate_3d(hy_cvol)
+           call truncate_1d(hy_xCenter)
+           call truncate_1d(hy_xLeft)
+           call truncate_1d(hy_xRight)
+           call truncate_1d(hy_yLeft)
+           call truncate_1d(hy_yRight)
+           call truncate_0d(hy_smallE)
+           call truncate_0d(hy_smalldens)
+           trunc_dt = dt
+           call truncate_0d(trunc_dt)
+
+           ! Truncate Eos_data fields
+           call truncate_0d(eos_gasConstant)
+           call truncate_0d(eos_gamma)
+           call truncate_0d(eos_singleSpeciesA)
+           call truncate_0d(eos_singleSpeciesZ)
+
+           ! Truncate eos_idealGammaData fields
+           call truncate_0d(eos_gammam1)
+
+           call enzyme_fprt_op_clear();
+
+           eos_truncate = .true.
+           print *, "---- f__enzyme_truncate_mem_func_hy_rk_correctfluxes"
+           call f__enzyme_truncate_mem_func_hy_rk_correctfluxes(TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
+                Uin, blkLimits, &
+                hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
+                deltas, hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol, hy_xCenter, &
+                hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
+                hy_geometry, &
+                hy_smallE, hy_smalldens, &
+                trunc_dt, .NOT. hy_telescoping, &
+                lo, loGC)
+           eos_truncate = .false.
+
+           call enzyme_fprt_op_dump_status(12)
+
+           call expand_4d(Uin)
+           call expand_4d(hy_fluxBufX)
+           call expand_4d(hy_fluxBufY)
+           call expand_4d(hy_fluxBufZ)
+           call expand_1d(deltas)
+           call expand_3d(hy_fareaX)
+           call expand_3d(hy_fareaY)
+           call expand_3d(hy_fareaZ)
+           call expand_3d(hy_cvol)
+           call expand_1d(hy_xCenter)
+           call expand_1d(hy_xLeft)
+           call expand_1d(hy_xRight)
+           call expand_1d(hy_yLeft)
+           call expand_1d(hy_yRight)
+           call expand_0d(hy_smallE)
+           call expand_0d(hy_smalldens)
+
+           ! Expand Eos_data fields
+           call expand_0d(eos_gasConstant)
+           call expand_0d(eos_gamma)
+           call expand_0d(eos_singleSpeciesA)
+           call expand_0d(eos_singleSpeciesZ)
+
+           ! Expand eos_idealGammaData fields
+           call expand_0d(eos_gammam1)
+
+           call enzyme_fprt_gc_doit()
+#else
            call hy_rk_correctFluxes(Uin, blkLimits, &
                                     hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
                                     deltas, hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol, hy_xCenter, &
@@ -751,6 +869,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
                                     hy_smallE, hy_smalldens, &
                                     dt, .NOT. hy_telescoping, &
                                     lo, loGC)
+#endif !ENABLE_TRUNC_FLUXCORR
            if (hy_geometry /= CARTESIAN) then
               @M hy_release_geom
            end if
