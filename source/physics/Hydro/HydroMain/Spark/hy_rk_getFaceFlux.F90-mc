@@ -43,6 +43,7 @@
 !!Reorder(4):scr_rope,scr_flux,scr_uPlus,scr_uMinus
 
 !#define DISABLE_TRUNC_RECON
+!#define DISABLE_TRUNC_RIEMANN
 #define TRUNC_FROM 64
 #define TRUNC_TO_E 0
 #define TRUNC_TO_M 24
@@ -297,8 +298,6 @@ subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
            enddo
         enddo
      enddo
-     enddo
-     enddo
      ! Truncate back from recon
 #ifdef DISABLE_TRUNC_RECON
      call truncate_4d(scr_rope)
@@ -341,7 +340,21 @@ subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
 #ifdef SHOK_VAR
         inShock = any(starState(SHOK_VAR,i-1*is:i,j-1*js:j,k-1*ks:k) /= 0.0)
 #endif
+#ifdef DISABLE_TRUNC_RIEMANN
+        call expand_1d(VL)
+        call expand_1d(VR)
+        ! call expand_1d(Fstar)
+        ! call expand_0d(speed)
+        call expand_0d(C_hyp)
+#endif
         call hy_riemann(dir,VL,VR,inShock,Fstar,speed)
+#ifdef DISABLE_TRUNC_RIEMANN
+        call truncate_1d(VL)
+        call truncate_1d(VR)
+        call truncate_1d(Fstar)
+        call truncate_0d(speed)
+        call truncate_0d(C_hyp)
+#endif
         scr_flux(1:HY_NUM_FLUX,i,j,k) = Fstar(1:HY_NUM_FLUX)
         ! print *, err_tmp, "errors after reset,", &
         !      "inShock =", inShock, "and", &

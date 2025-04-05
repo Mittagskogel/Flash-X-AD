@@ -25,6 +25,7 @@
 !!NOVARIANTS
 
 #define ENABLE_TRUNC_HYDRO
+#define DISABLE_TRUNC_EOS
 !#define ENABLE_TRUNC_FLUXCORR
 #define TRUNC_FROM 64
 #define TRUNC_TO_E 0
@@ -524,6 +525,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
 
         ! Enzyme: Truncate for mem mode
 #ifdef ENABLE_TRUNC_HYDRO
+        if (timeEndAdv .le. 1e-9) then
         ! Truncate function arguments
         trunc_dt = dt
         trunc_dtOld = dtOld
@@ -571,6 +573,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         call truncate_0d(hy_alphaGLM)
         call truncate_1d(hy_weights)
 
+#ifndef DISABLE_TRUNC_EOS
         ! Truncate Eos_data fields
         call truncate_0d(eos_gasConstant)
         call truncate_0d(eos_gamma)
@@ -579,6 +582,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
 
         ! Truncate eos_idealGammaData fields
         call truncate_0d(eos_gammam1)
+#endif
 
         call enzyme_fprt_op_clear();
 
@@ -692,6 +696,7 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         call expand_0d(hy_alphaGLM)
         call expand_1d(hy_weights)
 
+#ifndef DISABLE_TRUNC_EOS
         ! Expand Eos_data fields
         call expand_0d(eos_gasConstant)
         call expand_0d(eos_gamma)
@@ -700,9 +705,24 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
 
         ! Expand eos_idealGammaData fields
         call expand_0d(eos_gammam1)
+#endif
 
         call enzyme_fprt_gc_doit()
         ! call enzyme_fprt_gc_dump_status()
+        else
+        call Hydro_advance(stage, Uin, dt, dtOld, &
+             hy_starState, hy_tmpState, &
+             hy_flx, hy_fly, hy_flz, &
+             hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
+             hy_grav, hy_flat3d, &
+             hy_rope, hy_flux, hy_uPlus, hy_uMinus, &
+             deltas, &
+             blkLimits, blkLimitsGC, &
+             lo, loGC, &
+             hy_xCenter, hy_yCenter, hy_zCenter, &
+             hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
+             hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
+        end if
 #else
         call Hydro_advance(stage, Uin, dt, dtOld, &
              hy_starState, hy_tmpState, &

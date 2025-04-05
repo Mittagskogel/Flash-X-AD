@@ -29,7 +29,7 @@
 !!Reorder(4): hy_fl[xyz],hy_fluxBuf[XYZ]
 !!Reorder(4): hy_rope,hy_flux,hy_uPlus,hy_uMinus
 
-!#define DISABLE_TRUNC_EOS
+#define DISABLE_TRUNC_EOS
 !#define DISABLE_TRUNC_RECON
 #define TRUNC_FROM 64
 #define TRUNC_TO_E 0
@@ -198,6 +198,7 @@ subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
 
    ! Enzyme
    use truncate_Hydro_advance
+   use Eos_data, only: eos_truncate
 
    @M hy_DIR_TARGET_routine(vector)
 
@@ -290,9 +291,14 @@ subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
 
       @M hy_DIR_update_starState_to_host
 #ifdef DISABLE_TRUNC_EOS
-      call expand_4d(hy_starState)
-      call Eos_multiDim(MODE_DENS_EI, limits(LOW:HIGH,1:MDIM,stage), loGC, hy_starState @M hy_eos_args)
-      call truncate_4d(hy_starState)
+      if (eos_truncate) then
+         call expand_4d(hy_starState)
+         call Eos_multiDim(MODE_DENS_EI, limits(LOW:HIGH,1:MDIM,stage), loGC, hy_starState @M hy_eos_args)
+         call truncate_4d(hy_starState)
+      else
+         call Eos_multiDim(MODE_DENS_EI, limits(LOW:HIGH,1:MDIM,stage), loGC, hy_starState @M hy_eos_args)
+      end if
+
 #else
       call Eos_multiDim(MODE_DENS_EI, limits(LOW:HIGH,1:MDIM,stage), loGC, hy_starState @M hy_eos_args)
 #endif

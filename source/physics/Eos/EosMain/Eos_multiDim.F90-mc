@@ -34,10 +34,12 @@
 #include "constants.h"
 #include "Simulation.h"
 
+!#define ENABLE_TRUNC_EOS
 #define TRUNC_FROM 64
 #define TRUNC_TO_E 0
 #define TRUNC_TO_M 24
 
+#ifdef ENABLE_TRUNC_EOS
 module truncate_Eos_multiDim
   implicit none
   interface
@@ -97,6 +99,7 @@ contains
     x = reshape(tmp, [size(x, 1), size(x, 2)])
   end subroutine truncate_2d
 end module truncate_Eos_multiDim
+#endif
 
 subroutine Eos_multiDim(mode,range,lo,solnData @M eos_scratchArgs)
 
@@ -104,8 +107,10 @@ subroutine Eos_multiDim(mode,range,lo,solnData @M eos_scratchArgs)
   use Eos_interface, ONLY : Eos_fillEosData, Eos_getFromEosData, Eos_vector
 
   ! Enzyme truncate Eos functions
+#ifdef ENABLE_TRUNC_EOS
   use truncate_Eos_multiDim
   use Eos_data, only: eos_truncate
+#endif
 
   @M eos_DIR_routine(vector)
 
@@ -144,9 +149,7 @@ subroutine Eos_multiDim(mode,range,lo,solnData @M eos_scratchArgs)
 
   @M eos_scratch_alloc
   
-  print *, "---- Eos_fillEosData"
   call Eos_fillEosData(range, lo, solnData,1, vecLen, eosData)
-  print *, "---- Eos_fillEosData done"
   base_n = 0
   !! for readability
   ilo = range(LOW,  IAXIS)
@@ -164,13 +167,12 @@ subroutine Eos_multiDim(mode,range,lo,solnData @M eos_scratchArgs)
                  (i - ilo) + 1
              massFrac(1:NSPECIES,n) = solnData(SPECIES_BEGIN:SPECIES_END,i,j,k)
   @M loop_end_3d   
+#ifdef ENABLE_TRUNC_EOS
   if (eos_truncate) then
-     print *, "Eos_multidim in truncated section!"
      call truncate_2d(eosData)
   endif
-  print *, "---- Eos_vector"
+#endif
   call Eos_vector(mode,vecLen,eosData, massFrac)
-  print *, "---- Eos_getFromEosData"
   call Eos_getFromEosData(1, vecLen, eosData, range, lo, solnData)
 
   @M eos_scratch_dealloc
