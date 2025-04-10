@@ -41,10 +41,10 @@ contains
   end subroutine f__enzyme_truncate_op_func_Stencils_advectWeno2d
 end module truncate_advection
 
-#define ENABLE_TRUNC_ADVECTION
+!#define ENABLE_TRUNC_ADVECTION
 #define TRUNC_FROM 64
 #define TRUNC_TO_E 0
-#define TRUNC_TO_M 16
+#define TRUNC_TO_M 32
 #define LVL_OFFSET 1
 
 subroutine IncompNS_advection(tileDesc)
@@ -200,7 +200,7 @@ subroutine IncompNS_advection(tileDesc)
 #elif NDIM ==2
       ! compute RHS of momentum equation
 #ifdef ENABLE_TRUNC_ADVECTION
-      if (tileDesc%level <= maxLev-LVL_OFFSET) then
+      if (tileDesc%level <= lrefine_max-LVL_OFFSET) then
          call f__enzyme_truncate_op_func_Stencils_advectWeno2d( &
               TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
               facexData(HVN0_FACE_VAR, :, :, :), &
@@ -224,7 +224,7 @@ subroutine IncompNS_advection(tileDesc)
               GRID_JLO, GRID_JHI + 1, &
               center=0, facex=0, facey=1)
       else
-         call Stencils_advectWeno2d(facexData( :, :, :,HVN0_FACE_VAR), &
+         call Stencils_advectWeno2d(facexData(HVN0_FACE_VAR, :, :, :), &
               facexData(VELC_FACE_VAR, :, :, :), &
               facexData(VELC_FACE_VAR, :, :, :), &
               faceyData(VELC_FACE_VAR, :, :, :), &
@@ -234,7 +234,7 @@ subroutine IncompNS_advection(tileDesc)
               GRID_JLO, GRID_JHI, &
               center=0, facex=1, facey=0)
 
-         call Stencils_advectWeno2d(faceyData( :, :, :,HVN0_FACE_VAR), &
+         call Stencils_advectWeno2d(faceyData(HVN0_FACE_VAR, :, :, :), &
               faceyData(VELC_FACE_VAR, :, :, :), &
               facexData(VELC_FACE_VAR, :, :, :), &
               faceyData(VELC_FACE_VAR, :, :, :), &

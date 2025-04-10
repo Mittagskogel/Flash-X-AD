@@ -20,13 +20,44 @@
 #include "constants.h"
 #include "IncompNS.h"
 
+module truncate_diffusion
+  implicit none
+  public :: f__enzyme_truncate_op_func_ins_diffusion2d_vardens
+contains
+
+  subroutine f__enzyme_truncate_op_func_ins_diffusion2d_vardens(from, to_e, to_m, &
+       uni, vni, ru1, ix1, ix2, jy1, jy2, dx, dy, ru, rv, visc, rhox, rhoy)
+    implicit none
+
+    integer, intent(in) :: from, to_e, to_m
+
+    INTEGER, INTENT(IN):: ix1, ix2, jy1, jy2
+    REAL, INTENT(IN):: ru1, dx, dy
+    REAL, DIMENSION(:, :, :), INTENT(IN):: uni, vni, visc, rhox, rhoy
+    REAL, DIMENSION(:, :, :), INTENT(OUT):: ru, rv
+
+    call ins_diffusion2d_vardens(uni, vni, ru1, ix1, ix2, jy1, jy2, dx, dy, ru, rv, &
+         visc, rhox, rhoy)
+  end subroutine f__enzyme_truncate_op_func_ins_diffusion2d_vardens
+end module truncate_diffusion
+
+!#define ENABLE_TRUNC_DIFFUSION
+#define TRUNC_FROM 64
+#define TRUNC_TO_E 0
+#define TRUNC_TO_M 32
+#define LVL_OFFSET 1
+
 subroutine IncompNS_diffusion(tileDesc)
 
    use Grid_tile, ONLY: Grid_tile_t
    use ins_interface, ONLY: ins_diffusion2d_vardens, ins_diffusion3d_vardens
    use Timers_interface, ONLY: Timers_start, Timers_stop
    use Driver_interface, ONLY: Driver_getNStep
+   use RuntimeParameters_interface, ONLY: RuntimeParameters_get
    use IncompNS_data
+
+   !Enzyme truncate function definitions
+   use truncate_diffusion
 
 !------------------------------------------------------------------------------------------
    implicit none
@@ -42,6 +73,7 @@ subroutine IncompNS_diffusion(tileDesc)
 #endif
    real del(MDIM)
    integer :: NStep
+   integer :: lrefine_max
 
 !------------------------------------------------------------------------------------------
 #if NDIM < MDIM
@@ -51,6 +83,7 @@ subroutine IncompNS_diffusion(tileDesc)
 #endif
    !
    call Timers_start("IncompNS_diffusion")
+   call RuntimeParameters_get('lrefine_max', lrefine_max)
    !
    blkLimits = tileDesc%limits
    blkLimitsGC = tileDesc%blkLimitsGC
@@ -82,6 +115,35 @@ subroutine IncompNS_diffusion(tileDesc)
 
 #elif NDIM ==2
    ! compute RHS of momentum equation
+#ifdef ENABLE_TRUNC_DIFFUSION
+   if (tileDesc%level <= lrefine_max-LVL_OFFSET) then
+      call f__enzyme_truncate_op_func_ins_diffusion2d_vardens( &
+           TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
+           facexData(VELC_FACE_VAR, :, :, :), &
+           faceyData(VELC_FACE_VAR, :, :, :), &
+           ins_invReynolds, &
+           GRID_ILO, GRID_IHI, &
+           GRID_JLO, GRID_JHI, &
+           del(DIR_X), del(DIR_Y), &
+           facexData(HVN0_FACE_VAR, :, :, :), &
+           faceyData(HVN0_FACE_VAR, :, :, :), &
+           solnData(VISC_VAR, :, :, :), &
+           facexData(RHOF_FACE_VAR, :, :, :), &
+           faceyData(RHOF_FACE_VAR, :, :, :))
+   else
+      call ins_diffusion2d_vardens(facexData(VELC_FACE_VAR, :, :, :), &
+                                   faceyData(VELC_FACE_VAR, :, :, :), &
+                                   ins_invReynolds, &
+                                   GRID_ILO, GRID_IHI, &
+                                   GRID_JLO, GRID_JHI, &
+                                   del(DIR_X), del(DIR_Y), &
+                                   facexData(HVN0_FACE_VAR, :, :, :), &
+                                   faceyData(HVN0_FACE_VAR, :, :, :), &
+                                   solnData(VISC_VAR, :, :, :), &
+                                   facexData(RHOF_FACE_VAR, :, :, :), &
+                                   faceyData(RHOF_FACE_VAR, :, :, :))
+   end if
+#else
    call ins_diffusion2d_vardens(facexData(VELC_FACE_VAR, :, :, :), &
                                 faceyData(VELC_FACE_VAR, :, :, :), &
                                 ins_invReynolds, &
@@ -93,7 +155,7 @@ subroutine IncompNS_diffusion(tileDesc)
                                 solnData(VISC_VAR, :, :, :), &
                                 facexData(RHOF_FACE_VAR, :, :, :), &
                                 faceyData(RHOF_FACE_VAR, :, :, :))
-
+#endif ! ENABLE_TRUNC_DIFFUSION
 #endif
    ! Release pointers:
    call tileDesc%releaseDataPtr(solnData, CENTER)
