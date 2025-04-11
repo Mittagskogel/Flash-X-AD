@@ -47,42 +47,6 @@ program Flashx
 
   implicit none
 
-  interface
-     function f_enzyme_get_trunc_flop_count() result(count) bind(C)
-       use, intrinsic :: iso_c_binding, only: c_long_long
-       implicit none
-
-       integer(c_long_long) :: count
-     end function
-  end interface
-
-  interface
-     function f_enzyme_get_double_flop_count() result(count) bind(C)
-       use, intrinsic :: iso_c_binding, only: c_long_long
-       implicit none
-
-       integer(c_long_long) :: count
-     end function
-  end interface
-
-  interface
-     function f_enzyme_get_float_flop_count() result(count) bind(C)
-       use, intrinsic :: iso_c_binding, only: c_long_long
-       implicit none
-
-       integer(c_long_long) :: count
-     end function
-  end interface
-
-  interface
-     function f_enzyme_get_half_flop_count() result(count) bind(C)
-       use, intrinsic :: iso_c_binding, only: c_long_long
-       implicit none
-
-       integer(c_long_long) :: count
-     end function
-  end interface
-
   call Driver_initParallel()
 
   call Driver_initAll()
@@ -90,10 +54,5 @@ program Flashx
   call Driver_evolveAll( )
 
   call Driver_finalizeAll ( )
-
-  write(*,*) "Number of truncated flops: ", f_enzyme_get_trunc_flop_count()
-  write(*,*) "Number of double flops: ", f_enzyme_get_double_flop_count()
-  write(*,*) "Number of float flops: ", f_enzyme_get_float_flop_count()
-  write(*,*) "Number of half flops: ", f_enzyme_get_half_flop_count()
 
 end program Flashx
