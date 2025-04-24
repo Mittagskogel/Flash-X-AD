@@ -3,23 +3,27 @@
 set -e
 set -x
 
-offsets=(0 1 2)
-mantissas=($(seq 4 4 52))
+offsets=(0 1 2 3)
+mantissas=($(seq 4 1 52))
 
 # setup_cmd="Sod -auto -2d +uhd +pm4dev +nolwf"
 # parfile="source/Simulation/SimulationMain/Sod/tests/test_amr_unsplit_2d.par"
-# setup_cmd="Sedov -auto -2d +uhd +pm4dev +nolwf"
-# parfile="source/Simulation/SimulationMain/Sedov/tests/test_amr_2d.par"
+setup_cmd="Sedov -auto -2d +uhd +pm4dev +nolwf"
+parfile="source/Simulation/SimulationMain/Sedov/tests/test_amr_2d.par"
+# setup_cmd="Sedov -auto -2d +sparkbase2d"
+# parfile="source/Simulation/SimulationMain/Sedov/tests/test_amr_spark_2d.par"
 # setup_cmd="Cellular -auto -2d +a13 +uhd +pm4dev"
 # parfile="source/Simulation/SimulationMain/Cellular/tests/test_amr_2d_coldstart.par"
-# setup_cmd="incompFlow/PoolBoiling -auto -maxblocks=400 -2d -nxb=8 -nyb=8 +amrex +nolwf +serialIO +incomp -tomlfile=/scratch/fhrold/riken/Flash-X-Development/simulation/PoolBoiling/flash.toml --with-unitmods"
+# setup_cmd="Cellular -auto -2d +a13 +uhd +pm4dev"
+# parfile="source/Simulation/SimulationMain/Cellular/tests/test_amr_2d_restart.par"
+# setup_cmd="incompFlow/PoolBoiling -auto -maxblocks=400 -2d -nxb=8 -nyb=8 +amrex +nolwf +serialIO +incomp -tomlfile=${BASE_PATH}/Flash-X-Development/simulation/PoolBoiling/flash.toml --with-unitmods"
 # parfile="flash.par"
-setup_cmd="incompFlow/RisingBubble -auto -maxblocks=400 -2d -nxb=8 -nyb=8 +amrex +nolwf +serialIO +incomp"
-parfile="../Flash-X-Development/simulation/RisingBubble/Re3500/flash.par"
+# setup_cmd="incompFlow/RisingBubble -auto -maxblocks=400 -2d -nxb=8 -nyb=8 +amrex +nolwf +serialIO +incomp"
+# parfile="../Flash-X-Development/simulation/RisingBubble/Re3500/flash.par"
 
-# Make directory for automatic experiment runner
-rundir=autorun.risingbubble.advection.re3500.new
-# rundir=autorun.sedov.new
+# Directory for automatic experiment runner
+# rundir=autorun.sod
+rundir=autorun.sedov
 mkdir -p $rundir
 
 jobs=()
@@ -34,18 +38,20 @@ make -j -C ${premake} > ${premake}/make.log 2>&1 || true
 
 # Rebuild Eos_multiDim without LTO.
 # cd ${premake}
-# /scratch/fhrold/riken/openmpi-5.0.6-install/bin/mpif90 -c -O2 -fdefault-real-8 -fdefault-double-8  -DMAXBLOCKS=1000 -DNXB=8 -DNYB=8 -DNZB=1 -DN_DIM=2 Eos_multiDim.F90 -o Eos_multiDim.o
+# ${BASE_PATH}/openmpi-5.0.6-install/bin/mpif90 -c -O2 -fdefault-real-8 -fdefault-double-8  -DMAXBLOCKS=1000 -DNXB=8 -DNYB=8 -DNZB=1 -DN_DIM=2 Eos_multiDim.F90 -o Eos_multiDim.o
 # cd -
 
 # Add mpfr.o to premake directory
-cp /scratch/fhrold/riken/Enzyme/enzyme/include/enzyme/fprt/mpfr.h ${premake}/mpfr.cpp
+cp ${BASE_PATH}/Enzyme/enzyme/include/enzyme/fprt/mpfr.h ${premake}/mpfr.cpp
 clang++ -c ${premake}/mpfr.cpp $(pkg-config --cflags mpfr gmp) \
-    -I/scratch/fhrold/riken/Enzyme/enzyme/include/enzyme/fprt/ \
+    -I${BASE_PATH}/Enzyme/enzyme/include/enzyme/fprt/ \
     -o ${premake}/mpfr.o
 
 # Link the restart file
-# ln -s /scratch/fhrold/riken/Flash-X-Prec/restart/INS_Rising_Bubble_hdf5_chk_0003 \
+# ln -s ${BASE_PATH}/Flash-X-Prec/restart/INS_Rising_Bubble_hdf5_chk_0003 \
 #         ${premake}/INS_Rising_Bubble_hdf5_chk_0003
+# ln -s ${BASE_PATH}/Flash-X/restart/flashx_hdf5_chk_0001 \
+#         ${premake}/flashx_hdf5_chk_0001
 
 for offset in ${offsets[@]}
 do
@@ -64,22 +70,23 @@ do
         cp -ra ${premake}/* ${objdir}/
 
         # Update preprocessor variables in Hydro
-        # sed -i 's/\!#define ENABLE_TRUNC_HYDRO/#define ENABLE_TRUNC_HYDRO/' ${objdir}/Hydro.F90
-        # sed -i 's/#define TRUNC_TO_M.*/#define TRUNC_TO_M '${mantissa}'/' ${objdir}/Hydro.F90
-        # sed -i 's/#define LVL_OFFSET.*/#define LVL_OFFSET '${offset}'/' ${objdir}/Hydro.F90
+        sed -i 's/\!#define ENABLE_TRUNC_HYDRO/#define ENABLE_TRUNC_HYDRO/' ${objdir}/Hydro.F90
+        sed -i 's/#define TRUNC_TO_M.*/#define TRUNC_TO_M '${mantissa}'/' ${objdir}/Hydro.F90
+        sed -i 's/#define LVL_OFFSET.*/#define LVL_OFFSET '${offset}'/' ${objdir}/Hydro.F90
+        # sed -i 's/\!#define ENABLE_TRUNC_BURN/#define ENABLE_TRUNC_BURN/' ${objdir}/TimeAdvance.F90
         # sed -i 's/#define TRUNC_TO_M.*/#define TRUNC_TO_M '${mantissa}'/' ${objdir}/TimeAdvance.F90
 
-        sed -i 's/\!#define ENABLE_TRUNC_ADVECTION/#define ENABLE_TRUNC_ADVECTION/' ${objdir}/IncompNS_advection.F90
-        sed -i 's/#define TRUNC_TO_M.*/#define TRUNC_TO_M '${mantissa}'/' ${objdir}/IncompNS_advection.F90
-        sed -i 's/#define LVL_OFFSET.*/#define LVL_OFFSET '${offset}'/' ${objdir}/IncompNS_advection.F90
+        # sed -i 's/\!#define ENABLE_TRUNC_ADVECTION/#define ENABLE_TRUNC_ADVECTION/' ${objdir}/IncompNS_advection.F90
+        # sed -i 's/#define TRUNC_TO_M.*/#define TRUNC_TO_M '${mantissa}'/' ${objdir}/IncompNS_advection.F90
+        # sed -i 's/#define LVL_OFFSET.*/#define LVL_OFFSET '${offset}'/' ${objdir}/IncompNS_advection.F90
         # sed -i 's/\!#define ENABLE_TRUNC_DIFFUSION/#define ENABLE_TRUNC_DIFFUSION/' ${objdir}/IncompNS_diffusion.F90
         # sed -i 's/#define TRUNC_TO_M.*/#define TRUNC_TO_M '${mantissa}'/' ${objdir}/IncompNS_diffusion.F90
         # sed -i 's/#define LVL_OFFSET.*/#define LVL_OFFSET '${offset}'/' ${objdir}/IncompNS_diffusion.F90
 
         # Add mpfr.o
-        # cp /scratch/fhrold/riken/Enzyme/enzyme/include/enzyme/fprt/mpfr.h ${objdir}/mpfr.cpp
+        # cp ${BASE_PATH}/Enzyme/enzyme/include/enzyme/fprt/mpfr.h ${objdir}/mpfr.cpp
         # clang++ -c ${objdir}/mpfr.cpp $(pkg-config --cflags mpfr gmp) \
-        #     -I/scratch/fhrold/riken/Enzyme/enzyme/include/enzyme/fprt/ \
+        #     -I${BASE_PATH}/Enzyme/enzyme/include/enzyme/fprt/ \
         #     -o ${objdir}/mpfr.o
 
         # Make

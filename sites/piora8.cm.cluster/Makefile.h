@@ -3,16 +3,16 @@
 # Set the HDF5/MPI library paths -- these need to be updated for your system
 #----------------------------------------------------------------------------
 
-MPI_PATH   = /scratch/fhrold/riken/openmpi-5.0.6-install
+MPI_PATH   = ${BASE_PATH}/openmpi-5.0.6-install
 # MPI_PATH = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/openmpi-5.0.5-4uhs65omq2kdbjjzu6p4xhwxwigwrq6h
 HDF4_PATH  =
-#HDF5_PATH  = /scratch/fhrold/riken/hdf5-1.14.6-install
-HDF5_PATH  = /scratch/fhrold/riken/hdf5-1.14.6-debug-install
+#HDF5_PATH  = ${BASE_PATH}/hdf5-1.14.6-install
+HDF5_PATH  = ${BASE_PATH}/hdf5-1.14.6-debug-install
 #HYPRE_PATH = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen3/gcc-11.4.1/hypre-2.31.0-2kjgx3lkjitpajwkru2chzxkk4smqurn
 HYPRE_PATH = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen3/gcc-11.4.1/hypre-2.31.0-qk4jyhleqkrmi33iut5tciesurwpcfv7
 
 # Enzyme
-ENZYME_BUILD_DIR=/scratch/fhrold/riken/Enzyme/enzyme/build
+ENZYME_BUILD_DIR=${BASE_PATH}/Enzyme/enzyme/build
 
 ZLIB_PATH  =
 
@@ -22,7 +22,7 @@ PAPI_FLAGS =
 NCMPI_PATH = /usr/local/netcdf
 MPE_PATH   =
 
-MA28_PATH = /scratch/fhrold/riken/ma28-install
+MA28_PATH = ${BASE_PATH}/ma28-install
 
 #----------------------------------------------------------------------------
 # Compiler and linker commands
@@ -60,8 +60,8 @@ OPENMP = -fopenmp
 FFLAGS_OPT = -c -O2 -fdefault-real-8 -fdefault-double-8 \
     -flto=full -DENZYME_FPRT_ENABLE_GARBAGE_COLLECTION \
     -DENZYME_FPRT_ENABLE_SHADOW_RESIDUALS
-# -fpass-plugin=/scratch/fhrold/riken/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
-# -Xflang -load -Xflang /scratch/fhrold/riken/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
+# -fpass-plugin=${BASE_PATH}/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
+# -Xflang -load -Xflang ${BASE_PATH}/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
 # -Rpass=enzyme -mllvm -enzyme-truncate-all="64to11-51"
 
 # -fuse-ld=lld -fpass-plugin=$(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
