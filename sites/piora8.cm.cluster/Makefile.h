@@ -91,7 +91,7 @@ F90FLAGS =
 #The macro _FORTIFY_SOURCE adds some lightweight checks for buffer
 #overflows at both compile time and run time (only active at -O1 or higher)
 #http://gcc.gnu.org/ml/gcc-patches/2004-09/msg02055.html
-CFLAGS_OPT = -g -c -O2 -D_FORTIFY_SOURCE=2
+CFLAGS_OPT = -c -O2 -D_FORTIFY_SOURCE=2
 
 CFLAGS_DEBUG = -g -c -O0 \
 -pedantic -Werror -ftree-vrp \
@@ -127,6 +127,9 @@ LFLAGS_OPT   =  \
      -DENZYME_FPRT_ENABLE_SHADOW_RESIDUALS \
      -L$(ENZYME_BUILD_DIR)/Enzyme/Runtimes/FPRT/ -lEnzyme-FPRT-GC-20 \
      -lEnzyme-FPRT-Count-20 \
+     -Wl,-mllvm -Wl,-load=${ENZYME_BUILD_DIR}/Enzyme/LLDEnzyme-20.so \
+     -Wl,-mllvm -Wl,-enzyme-truncate-count=0 \
+     -Wl,-mllvm -Wl,-enzyme-truncate-access-count=0 \
      -Wl,--allow-multiple-definition \
      -o
 LFLAGS_DEBUG = -g -O0 -o
