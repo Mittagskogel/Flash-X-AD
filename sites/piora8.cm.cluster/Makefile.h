@@ -4,11 +4,8 @@
 #----------------------------------------------------------------------------
 
 MPI_PATH   = ${BASE_PATH}/openmpi-5.0.6-install
-# MPI_PATH = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/openmpi-5.0.5-4uhs65omq2kdbjjzu6p4xhwxwigwrq6h
 HDF4_PATH  =
-#HDF5_PATH  = ${BASE_PATH}/hdf5-1.14.6-install
-HDF5_PATH  = ${BASE_PATH}/hdf5-1.14.6-debug-install
-#HYPRE_PATH = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen3/gcc-11.4.1/hypre-2.31.0-2kjgx3lkjitpajwkru2chzxkk4smqurn
+HDF5_PATH  = ${BASE_PATH}/hdf5-1.14.6-install
 HYPRE_PATH = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen3/gcc-11.4.1/hypre-2.31.0-qk4jyhleqkrmi33iut5tciesurwpcfv7
 
 # Enzyme
@@ -63,12 +60,6 @@ FFLAGS_OPT = -c -O2 -fdefault-real-8 -fdefault-double-8 \
 # -fpass-plugin=${BASE_PATH}/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
 # -Xflang -load -Xflang ${BASE_PATH}/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
 # -Rpass=enzyme -mllvm -enzyme-truncate-all="64to11-51"
-
-# -fuse-ld=lld -fpass-plugin=$(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
-# -Xflang -load -Xflang $(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
-# -fPIE -lmpfr -lm -Rpass=enzyme -mllvm -enzyme-truncate-all="64to2-2" \
-# -L$(ENZYME_BUILD_DIR)/Enzyme/Runtimes/FPRT/ \
-# -DENZYME_FPRT_ENABLE_GARBAGE_COLLECTION
 
 #I explictly add -O0 because I found that compiling source files without
 #an optimization flag generates the same object code as compiling source
