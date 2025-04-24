@@ -57,7 +57,7 @@ PP      = -D
 OPENMP = -fopenmp
 
 # Enzyme
-FFLAGS_OPT = -c -g -O2 -fdefault-real-8 -fdefault-double-8 \
+FFLAGS_OPT = -c -O2 -fdefault-real-8 -fdefault-double-8 \
     -flto=full -DENZYME_FPRT_ENABLE_GARBAGE_COLLECTION \
     -DENZYME_FPRT_ENABLE_SHADOW_RESIDUALS
 # -fpass-plugin=/scratch/fhrold/riken/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
@@ -82,7 +82,7 @@ FFLAGS_DEBUG = -g -c -O0 -fdefault-real-8 -fdefault-double-8 \
 
 FFLAGS_TEST = -g -c -O0 -fdefault-real-8 -fdefault-double-8
 
-FFLAGS_HYPRE = -g -I${HYPRE_PATH}/include
+FFLAGS_HYPRE = -I${HYPRE_PATH}/include
 
 
 F90FLAGS =
@@ -99,11 +99,11 @@ CFLAGS_DEBUG = -g -c -O0 \
 
 CFLAGS_TEST = -g -O0 -c
 
-CFLAGS_HYPRE = -g -I${HYPRE_PATH}/include
+CFLAGS_HYPRE = -I${HYPRE_PATH}/include
 
 # if we are using HDF5, we need to specify the path to the include files
-CFLAGS_HDF5 = -g -I${HDF5_PATH}/include -DH5_USE_18_API
-CFLAGS_NCMPI = -g -I${NCMPI_PATH}/include
+CFLAGS_HDF5 = -I${HDF5_PATH}/include -DH5_USE_18_API
+CFLAGS_NCMPI = -I${NCMPI_PATH}/include
 
 #----------------------------------------------------------------------------
 # Linker flags
@@ -113,22 +113,22 @@ CFLAGS_NCMPI = -g -I${NCMPI_PATH}/include
 #----------------------------------------------------------------------------
 
 # LFLAGS_OPT = -g -o
-LFLAGS_OPT   = -g \
-    -flto=full -fuse-ld=lld \
-    -fpass-plugin=$(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
-    -Xflang -load -Xflang $(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
-    -Rpass=enzyme \
-    -Wl,--load-pass-plugin=$(ENZYME_BUILD_DIR)/Enzyme/LLDEnzyme-20.so \
-    -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/mpfr-4.2.1-2aivvsalcuno6mvp2lyuta3glkp3o6v2/lib -lmpfr \
-    -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/gmp-6.3.0-kyy5q7hr34p4dr2aftntqw2z6pmkc7ja/lib -lgmp \
-    -lstdc++ \
-    mpfr.o \
-    -DENZYME_FPRT_ENABLE_GARBAGE_COLLECTION \
-    -DENZYME_FPRT_ENABLE_SHADOW_RESIDUALS \
-    -L$(ENZYME_BUILD_DIR)/Enzyme/Runtimes/FPRT/ -lEnzyme-FPRT-GC-20 \
-    -lEnzyme-FPRT-Count-20 \
-    -Wl,--allow-multiple-definition \
-    -o
+LFLAGS_OPT   =  \
+     -flto=full -fuse-ld=lld \
+     -fpass-plugin=$(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
+     -Xflang -load -Xflang $(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
+     -Rpass=enzyme \
+     -Wl,--load-pass-plugin=$(ENZYME_BUILD_DIR)/Enzyme/LLDEnzyme-20.so \
+     -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/mpfr-4.2.1-2aivvsalcuno6mvp2lyuta3glkp3o6v2/lib -lmpfr \
+     -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/gmp-6.3.0-kyy5q7hr34p4dr2aftntqw2z6pmkc7ja/lib -lgmp \
+     -lstdc++ \
+     mpfr.o \
+     -DENZYME_FPRT_ENABLE_GARBAGE_COLLECTION \
+     -DENZYME_FPRT_ENABLE_SHADOW_RESIDUALS \
+     -L$(ENZYME_BUILD_DIR)/Enzyme/Runtimes/FPRT/ -lEnzyme-FPRT-GC-20 \
+     -lEnzyme-FPRT-Count-20 \
+     -Wl,--allow-multiple-definition \
+     -o
 LFLAGS_DEBUG = -g -O0 -o
 LFLAGS_TEST  = -g -O0 -o
 

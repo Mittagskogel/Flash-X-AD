@@ -60,8 +60,8 @@ end module truncate_Hydro
 
 !#define ENABLE_TRUNC_HYDRO
 #define TRUNC_FROM 64
-#define TRUNC_TO_E 0
-#define TRUNC_TO_M 4
+#define TRUNC_TO_E 11
+#define TRUNC_TO_M 24
 #define LVL_OFFSET 0
 
 subroutine Hydro(simTime, dt, dtOld, sweeporder)

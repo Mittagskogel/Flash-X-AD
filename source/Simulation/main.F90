@@ -152,9 +152,7 @@ program Flashx
 
   write(*,*) "Number of truncated stores: ", f_enzyme_get_memory_access_trunc_store()
   write(*,*) "Number of truncated loads: ", f_enzyme_get_memory_access_trunc_load()
-  write(*,*) "Number of unique truncated loads: ", f_enzyme_get_memory_access_trunc_unique()
   write(*,*) "Number of original stores: ", f_enzyme_get_memory_access_original_store()
   write(*,*) "Number of original loads: ", f_enzyme_get_memory_access_original_load()
-  write(*,*) "Number of unique original loads: ", f_enzyme_get_memory_access_original_unique()
 
 end program Flashx
