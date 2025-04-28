@@ -11,7 +11,7 @@ mantissas=($(seq 5 1 53))
 rundir=autorun.sedov
 
 # Launch command for Flash-X
-launch_cmd="slurm -n 1 --exclusive"
+launch_cmd="srun -n 1 --exclusive"
 # launch_cmd="mpirun -n 1"
 
 
