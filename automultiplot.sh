@@ -136,7 +136,7 @@ plot '${input}/flop_counts_ref${n}_0001_speedups.out' u (\$1):(\$5) w l axes x1y
 
 
 
-mkdir -p plots
+mkdir -p figures
 
 gnuplot_gen 'sod-bt' 'Sod' 'plots/sod_0001' | gnuplot
 gnuplot_gen 'sedov-bt' 'Sedov' 'plots/sedov_0001' | gnuplot
