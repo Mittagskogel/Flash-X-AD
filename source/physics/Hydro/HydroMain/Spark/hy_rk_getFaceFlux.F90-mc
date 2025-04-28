@@ -349,7 +349,7 @@ subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
      call truncate_4d(scr_uPlus)
      call truncate_4d(scr_uMinus)
 #else
-#ifdef EXCL_RECON
+#ifdef EXCLUDE_RECON
      call enzyme_fprt_excl_trunc_start()
 #endif
      do k = limits(LOW,KAXIS,stage)-1*ks, limits(HIGH,KAXIS,stage)+1*ks
@@ -361,7 +361,7 @@ subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
            enddo
         enddo
      enddo
-#ifdef EXCL_RECON
+#ifdef EXCLUDE_RECON
      call enzyme_fprt_excl_trunc_end()
 #endif
 #endif
@@ -416,11 +416,11 @@ subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
         call truncate_0d(speed)
         call truncate_0d(C_hyp)
 #else
-#ifdef EXCL_RIEMANN
+#ifdef EXCLUDE_RIEMANN
         call enzyme_fprt_excl_trunc_start()
 #endif
         call hy_riemann(dir,VL,VR,inShock,Fstar,speed)
-#ifdef EXCL_RIEMANN
+#ifdef EXCLUDE_RIEMANN
         call enzyme_fprt_excl_trunc_end()
 #endif
 #endif

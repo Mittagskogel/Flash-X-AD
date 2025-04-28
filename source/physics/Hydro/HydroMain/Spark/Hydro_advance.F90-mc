@@ -393,7 +393,7 @@ subroutine Hydro_advance(stage_in, Uin, dt, dtOld, &
                             deltas, hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol, hy_xCenter, &
                             hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
                             dt, dtOld, limits, lo, loGC)
-#ifdef EXCLUDE_UPDATE_SOLN
+#ifdef EXCLUDE_UPDATESOLN
       call enzyme_fprt_excl_trunc_end()
 #endif
       ! print *, f_enzyme_reset_shadow_trace(), "errors in hy_rk_updateSoln"

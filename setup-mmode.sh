@@ -55,17 +55,20 @@ function build_flashx () {
 # Reference run
 objdir=sedov_spark_reference
 setup_flashx "${objdir}"
+sed -i 's/\!#define ENABLE_CONSTANT_DT/#define ENABLE_CONSTANT_DT/' "${objdir}/Driver_evolveAll.F90"
 build_flashx "${objdir}"
 
 # Baseline (truncate all of Hydro)
 objdir=sedov_spark_baseline
 setup_flashx "${objdir}"
+sed -i 's/\!#define ENABLE_CONSTANT_DT/#define ENABLE_CONSTANT_DT/' "${objdir}/Driver_evolveAll.F90"
 sed -i 's/\!#define ENABLE_TRUNC_HYDRO/#define ENABLE_TRUNC_HYDRO/' "${objdir}/Hydro.F90"
 build_flashx "${objdir}"
 
 # Exclude Recon
 objdir=sedov_spark_excl_recon
 setup_flashx "${objdir}"
+sed -i 's/\!#define ENABLE_CONSTANT_DT/#define ENABLE_CONSTANT_DT/' "${objdir}/Driver_evolveAll.F90"
 sed -i 's/\!#define ENABLE_TRUNC_HYDRO/#define ENABLE_TRUNC_HYDRO/' "${objdir}/Hydro.F90"
 sed -i 's/\!#define EXCLUDE_RECON/#define EXCLUDE_RECON/' "${objdir}/hy_rk_getFaceFlux.F90"
 build_flashx "${objdir}"
@@ -73,6 +76,7 @@ build_flashx "${objdir}"
 # Exclude Recon and Riemann
 objdir=sedov_spark_excl_recon_riemann
 setup_flashx "${objdir}"
+sed -i 's/\!#define ENABLE_CONSTANT_DT/#define ENABLE_CONSTANT_DT/' "${objdir}/Driver_evolveAll.F90"
 sed -i 's/\!#define ENABLE_TRUNC_HYDRO/#define ENABLE_TRUNC_HYDRO/' "${objdir}/Hydro.F90"
 sed -i 's/\!#define EXCLUDE_RECON/#define EXCLUDE_RECON/' "${objdir}/hy_rk_getFaceFlux.F90"
 sed -i 's/\!#define EXCLUDE_RIEMANN/#define EXCLUDE_RIEMANN/' "${objdir}/hy_rk_getFaceFlux.F90"
@@ -81,6 +85,7 @@ build_flashx "${objdir}"
 # Exclude Recon and Update
 objdir=sedov_spark_excl_recon_update
 setup_flashx "${objdir}"
+sed -i 's/\!#define ENABLE_CONSTANT_DT/#define ENABLE_CONSTANT_DT/' "${objdir}/Driver_evolveAll.F90"
 sed -i 's/\!#define ENABLE_TRUNC_HYDRO/#define ENABLE_TRUNC_HYDRO/' "${objdir}/Hydro.F90"
 sed -i 's/\!#define EXCLUDE_RECON/#define EXCLUDE_RECON/' "${objdir}/hy_rk_getFaceFlux.F90"
 sed -i 's/\!#define EXCLUDE_UPDATESOLN/#define EXCLUDE_UPDATESOLN/' "${objdir}/Hydro_advance.F90"
