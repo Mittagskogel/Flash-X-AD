@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+
+set -e
+
+# List of offsets for AMR levels
+offsets=(0 1 2 3)
+# List of mantissas
+mantissas=($(seq 5 1 53))
+
+# Directory for automatic experiment runner
+rundir=autorun.sod
+
+# Launch command for Flash-X
+launch_cmd="slurm -n 1 --exclusive"
+# launch_cmd="mpirun -n 1"
+
+
+
+jobs=()
+
+for offset in ${offsets[@]}
+do
+    for mantissa in ${mantissas[@]}
+    do
+        id=ref${offset}_${mantissa}bit
+        objdir=${rundir}/object_${id}
+
+        jobs+=(${objdir})
+    done
+done
+
+# Run jobs in parallel
+parallel -j 128 --progress cd {} "&&" \
+    ${launch_cmd} flashx ">" run_raw.log "2>&1" \
+    ::: ${jobs[@]}
+
+success=$(grep -R "FLASH run complete" |& grep sod.log | wc -l)
+echo "${success}/$(( ${#offsets[@]} * ${#mantissas[@]} )) runs successful."
