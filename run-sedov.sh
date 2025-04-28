@@ -30,7 +30,7 @@ do
 done
 
 # Run jobs in parallel
-parallel -j 128 --progress cd {} "&&" \
+parallel --progress cd {} "&&" \
     ${launch_cmd} flashx ">" run_raw.log "2>&1" \
     ::: ${jobs[@]}
 

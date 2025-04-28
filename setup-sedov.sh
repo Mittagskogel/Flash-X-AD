@@ -60,7 +60,7 @@ do
 done
 
 # Finish build for each object in parallel
-parallel make -C {} ">" {}/make.log "2>&1" ::: ${jobs[@]}
+parallel --progress make -C {} ">" {}/make.log "2>&1" ::: ${jobs[@]}
 
 success=$(grep -R "SUCCESS" |& grep make.log | wc -l)
 echo "${success}/$(( ${#offsets[@]} * ${#mantissas[@]} )) builds successful."
