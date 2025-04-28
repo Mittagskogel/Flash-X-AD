@@ -81,7 +81,7 @@ unset label 1
 set ylabel 'Truncation error' offset 3.2, 0
 set ytics offset 0.7, 0 autofreq 1e4
 
-set key maxrows 1 at character 23.5, character 11.6 right bottom samplen 1 spacing 2.2 width 1 font ',12'
+set key maxrows 1 at character 16.0, character 11.6 right bottom samplen 1 spacing 2.2 width 1 font ',12'
 "
         else
             echo "
