@@ -12,7 +12,7 @@ setup_cmd="Sod -auto -2d +uhd +pm4dev +nolwf"
 # Paramter file
 parfile="tests/test_amr_unsplit_2d.par"
 # Directory for automatic experiment runner
-rundir=autorun.sedov
+rundir=autorun.sod
 
 
 
