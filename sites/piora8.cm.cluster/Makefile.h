@@ -3,15 +3,13 @@
 # Set the HDF5/MPI library paths -- these need to be updated for your system
 #----------------------------------------------------------------------------
 
-MPI_PATH   = /scratch/fhrold/riken/openmpi-5.0.6-install
-# MPI_PATH = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/openmpi-5.0.5-4uhs65omq2kdbjjzu6p4xhwxwigwrq6h
+MPI_PATH   = ${BASE_PATH}/openmpi-5.0.6-install
 HDF4_PATH  =
-HDF5_PATH  = /scratch/fhrold/riken/hdf5-1.14.6-install
-HYPRE_PATH = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen3/gcc-11.4.1/hypre-2.31.0-2kjgx3lkjitpajwkru2chzxkk4smqurn
+HDF5_PATH  = ${BASE_PATH}/hdf5-1.14.6-install
+HYPRE_PATH = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen3/gcc-11.4.1/hypre-2.31.0-qk4jyhleqkrmi33iut5tciesurwpcfv7
 
 # Enzyme
-#ENZYME_BUILD_DIR=/scratch/fhrold/riken/lulesh-test/Enzyme2/enzyme/build
-ENZYME_BUILD_DIR=/scratch/fhrold/riken/Enzyme2/enzyme/build
+ENZYME_BUILD_DIR=${BASE_PATH}/Enzyme/enzyme/build
 
 ZLIB_PATH  =
 
@@ -21,9 +19,9 @@ PAPI_FLAGS =
 NCMPI_PATH = /usr/local/netcdf
 MPE_PATH   =
 
-MA28_PATH = /scratch/fhrold/riken/ma28-install
+MA28_PATH = ${BASE_PATH}/ma28-install
 
-AMREX_PATH = /scratch/fhrold/riken/amrex-install
+AMREX_PATH = ${BASE_PATH}/amrex-install
 
 #----------------------------------------------------------------------------
 # Compiler and linker commands
@@ -59,17 +57,11 @@ OPENMP = -fopenmp
 
 # Enzyme
 FFLAGS_OPT = -c -O2 -fdefault-real-8 -fdefault-double-8 \
--flto=full -DENZYME_FPRT_ENABLE_GARBAGE_COLLECTION \
--DENZYME_FPRT_ENABLE_SHADOW_RESIDUALS
-# -fpass-plugin=/scratch/fhrold/riken/Enzyme2/enzyme/build/Enzyme/LLVMEnzyme-20.so \
-# -Xflang -load -Xflang /scratch/fhrold/riken/Enzyme2/enzyme/build/Enzyme/LLVMEnzyme-20.so \
+    -flto=full -DENZYME_FPRT_ENABLE_GARBAGE_COLLECTION \
+    -DENZYME_FPRT_ENABLE_SHADOW_RESIDUALS
+# -fpass-plugin=${BASE_PATH}/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
+# -Xflang -load -Xflang ${BASE_PATH}/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
 # -Rpass=enzyme -mllvm -enzyme-truncate-all="64to11-51"
-
-# -fuse-ld=lld -fpass-plugin=$(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
-# -Xflang -load -Xflang $(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
-# -fPIE -lmpfr -lm -Rpass=enzyme -mllvm -enzyme-truncate-all="64to2-2" \
-# -L$(ENZYME_BUILD_DIR)/Enzyme/Runtimes/FPRT/ \
-# -DENZYME_FPRT_ENABLE_GARBAGE_COLLECTION
 
 #I explictly add -O0 because I found that compiling source files without
 #an optimization flag generates the same object code as compiling source
@@ -95,7 +87,7 @@ F90FLAGS =
 #The macro _FORTIFY_SOURCE adds some lightweight checks for buffer
 #overflows at both compile time and run time (only active at -O1 or higher)
 #http://gcc.gnu.org/ml/gcc-patches/2004-09/msg02055.html
-CFLAGS_OPT = -g -c -O2 -D_FORTIFY_SOURCE=2
+CFLAGS_OPT = -c -O2 -D_FORTIFY_SOURCE=2
 
 CFLAGS_DEBUG = -g -c -O0 \
 -pedantic -Werror -ftree-vrp \
@@ -117,30 +109,25 @@ CFLAGS_NCMPI = -I${NCMPI_PATH}/include
 #----------------------------------------------------------------------------
 
 # LFLAGS_OPT = -g -o
-LFLAGS_OPT   = \
+LFLAGS_OPT   =  \
      -flto=full -fuse-ld=lld \
-     -fpass-plugin=/scratch/fhrold/riken/Enzyme2/enzyme/build/Enzyme/LLVMEnzyme-20.so \
-     -Xflang -load -Xflang /scratch/fhrold/riken/Enzyme2/enzyme/build/Enzyme/LLVMEnzyme-20.so \
+     -fpass-plugin=${ENZYME_BUILD_DIR}/Enzyme/LLVMEnzyme-20.so \
+     -Xflang -load -Xflang ${ENZYME_BUILD_DIR}/Enzyme/LLVMEnzyme-20.so \
      -Rpass=enzyme \
-     -Wl,--load-pass-plugin=/scratch/fhrold/riken/Enzyme2/enzyme/build/Enzyme/LLDEnzyme-20.so \
+     -Wl,--load-pass-plugin=${ENZYME_BUILD_DIR}/Enzyme/LLDEnzyme-20.so \
      -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/mpfr-4.2.1-2aivvsalcuno6mvp2lyuta3glkp3o6v2/lib -lmpfr \
      -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/gmp-6.3.0-kyy5q7hr34p4dr2aftntqw2z6pmkc7ja/lib -lgmp \
      -lstdc++ \
      mpfr.o \
-     -L/scratch/fhrold/riken/Enzyme2/enzyme/build/Enzyme/Runtimes/FPRT/ \
+     -DENZYME_FPRT_ENABLE_GARBAGE_COLLECTION \
+     -DENZYME_FPRT_ENABLE_SHADOW_RESIDUALS \
+     -L${ENZYME_BUILD_DIR}/Enzyme/Runtimes/FPRT/ -lEnzyme-FPRT-GC-20 \
      -lEnzyme-FPRT-Count-20 \
+     -Wl,-mllvm -Wl,-load=${ENZYME_BUILD_DIR}/Enzyme/LLDEnzyme-20.so \
+     -Wl,-mllvm -Wl,-enzyme-truncate-count=1 \
+     -Wl,-mllvm -Wl,-enzyme-truncate-access-count=0 \
      -Wl,--allow-multiple-definition \
      -o
-# LFLAGS_OPT   = -g \
-#     -flto=full -fuse-ld=lld \
-#     -fpass-plugin=$(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
-#     -Xflang -load -Xflang $(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
-#     -Rpass=enzyme \
-#     -Wl,--load-pass-plugin=$(ENZYME_BUILD_DIR)/Enzyme/LLDEnzyme-20.so \
-#     -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/mpfr-4.2.1-2aivvsalcuno6mvp2lyuta3glkp3o6v2/lib -lmpfr \
-#     -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/gmp-6.3.0-kyy5q7hr34p4dr2aftntqw2z6pmkc7ja/lib -lgmp \
-#     -lstdc++ \
-#     mpfr.o -o
 LFLAGS_DEBUG = -g -O0 -o
 LFLAGS_TEST  = -g -O0 -o
 
