@@ -31,9 +31,8 @@ jobs=()
 # Premake and specifically fail fast in the linking stage (missing mpfr.o)
 premake=${rundir}/premake
 mkdir -p ${premake}
-./setup ${setup_cmd} -objdir=${premake} > setup.log 2>&1
-mv setup.log ${premake}/setup.log
-cp ${parfile} ${premake}/ || true
+./setup ${setup_cmd} -objdir=${premake} -parfile=${parfile} -site=raptor > setup_re${Re}.log 2>&1
+mv setup_re${Re}.log ${premake}/setup.log
 make -j -C ${premake} > ${premake}/make.log 2>&1 || true
 
 # Add mpfr.o to premake directory

@@ -23,7 +23,7 @@ then
 fi
 
 mkdir -p ${objdir}
-./setup ${setup_cmd} -site=raptor -objdir=${objdir} -parfile=${parfile} > setup_re${Re}.log 2>&1
+./setup ${setup_cmd} -objdir=${objdir} -parfile=${parfile} -site=raptor > setup_re${Re}.log 2>&1
 mv setup_re${Re}.log ${objdir}/setup.log
 
 # Add mpfr.o to objdir
