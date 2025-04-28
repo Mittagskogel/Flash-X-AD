@@ -96,9 +96,6 @@ set ytics
         if [ ${n} -eq ${ncols} ]
         then
             echo "
-#set y2tics autofreq 0.5 offset 2.6, 0
-#set y2tics autofreq 1.0 offset 2.6, 0
-#set y2label 'Projected Speedup' offset 1.3, 0
 unset y2tics
 unset y2label
 "
@@ -114,8 +111,7 @@ set y2range [speedup_range_lo:speedup_range_hi]
         if [ ${n} -eq 0 ]
         then
             echo "
-plot '${input}/flop_counts_ref${n}_0001_speedups.out' u (\$1):(\$5) w l axes x1y2 ls 204 title '\\small{Speedup}', \
-     '${input}/plot-data.out' u 1:2 w l ls 290 notitle, \
+plot '${input}/plot-data.out' u 1:2 w l ls 290 notitle, \
      '${input}/plot-data.out' u 1:3 w l ls 290 notitle, \
      '${input}/plot-data.out' u 1:4 w l ls 290 notitle, \
      '${input}/plot-data.out' u 1:5 w l ls 290 notitle, \
@@ -123,8 +119,7 @@ plot '${input}/flop_counts_ref${n}_0001_speedups.out' u (\$1):(\$5) w l axes x1y
 "
         else
             echo "
-plot '${input}/flop_counts_ref${n}_0001_speedups.out' u (\$1):(\$5) w l axes x1y2 ls 204 notitle, \
-     '${input}/plot-data.out' u 1:2 w l ls 290 notitle, \
+plot '${input}/plot-data.out' u 1:2 w l ls 290 notitle, \
      '${input}/plot-data.out' u 1:3 w l ls 290 notitle, \
      '${input}/plot-data.out' u 1:4 w l ls 290 notitle, \
      '${input}/plot-data.out' u 1:5 w l ls 290 notitle, \

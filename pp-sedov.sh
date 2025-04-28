@@ -53,6 +53,8 @@ do
                 ${outfile_sfocu} || true
 
             # Read flop counters >> perf_counts_ref*.out
+            echo -n "${mantissa}" >> ${outfile_flops}
+
             echo -n " "$(grep "Number of truncated flops:" ${objdir}/run_raw.log | \
                 sed 's/Number of truncated flops://' | \
                 paste -sd'+' | bc) >> ${outfile_flops}
