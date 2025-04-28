@@ -10,23 +10,6 @@ function gnuplot_gen () {
         sed 's/##TITLE##/'"${title}"'/' | sed '50a\'"${extras}"
 
     # Autodetect columns in input
-    # ncols=$(head -n 1 "${input}" | wc -w)
-    # echo -n "plot '${input}' u 1:2 w p ls 200 title '\\small{All}'"
-    # if [ ${ncols} -gt 2 ]
-    # then
-    #     echo ", \\"
-    # fi
-
-    # for n in $(seq $((${ncols}-2)))
-    # do
-    #     echo -n "'' u 1:$((${n}+2)) w p ls 20${n} title '\\small{\$M-${n}\$}'"
-    #     if [ ${n} -lt $((${ncols}-2)) ]
-    #     then
-    #         echo ", \\"
-    #     fi
-    # done
-
-    # Autodetect columns in input
     ncols=$(head -n 1 "${input}/plot-data.out" | wc -w)
     ncols=$((ncols - 2))
     if [ ${ncols} -eq 0 ]
@@ -39,21 +22,12 @@ function gnuplot_gen () {
              '17.6, 6.6, 1.6, 2.6')
     elif [ ${ncols} -eq 2 ]
     then
-         # marginlist=( \
-         #            '5.0, 22.8666667, 1.6, 2.6' \
-         #     '13.9333333, 13.9333333, 1.6, 2.6' \
-         #     '22.8666667, 5.0, 1.6, 2.6')
          marginlist=( \
                     '5.0, 22.2333333, 1.6, 2.6' \
              '14.5666667, 12.6666666, 1.6, 2.6' \
              '24.1333333, 3.1, 1.6, 2.6')
     elif [ ${ncols} -eq 3 ]
     then
-         # marginlist=( \
-         #     '5.0, 25.1, 1.6, 2.6' \
-         #     '11.7, 18.4, 1.6, 2.6' \
-         #     '18.4, 11.7, 1.6, 2.6' \
-         #     '25.1, 5.0, 1.6, 2.6')
          marginlist=( \
               '5.0, 24.625, 1.6, 2.6' \
              '12.175, 17.45, 1.6, 2.6' \
@@ -160,47 +134,9 @@ plot '${input}/flop_counts_ref${n}_0001_speedups.out' u (\$1):(\$5) w l axes x1y
     done
 }
 
+
+
 mkdir -p plots
 
 gnuplot_gen 'sod-bt' 'Sod' 'plots/sod_0001' | gnuplot
 gnuplot_gen 'sedov-bt' 'Sedov' 'plots/sedov_0001' | gnuplot
-
-# gnuplot_gen 'cellular-hydro-bt' 'Cellular Hydro' 'cellular_hydro_0002' | gnuplot
-# gnuplot_gen 'cellular-burn-bt' 'Cellular Burn' 'cellular_burn_0001' | gnuplot
-# gnuplot_gen 'cellular-both-bt' 'Cellular Both' 'cellular_both_0001' | gnuplot
-
-# gnuplot_gen 'rb-r-diff-35-bt' 'Bubble Diffusion Re=35 t=4.0' \
-#     'risingbubble_diffusion_re35_restart_0004' \
-#     'set boxwidth 4.0; flop_count_range=5666' | gnuplot
-# gnuplot_gen 'rb-r-diff-350-bt' 'Bubble Diffusion Re=350 t=4.0' \
-#     'risingbubble_diffusion_re350_restart_0004' \
-#     'set boxwidth 4.0; flop_count_range=5666' | gnuplot
-# gnuplot_gen 'rb-r-diff-3500-bt' 'Bubble Diffusion Re=3500 t=4.0' \
-#     'risingbubble_diffusion_re3500_restart_0004' \
-#     'set boxwidth 4.0; flop_count_range=5666' | gnuplot
-
-# gnuplot_gen 'rb-r-adv-35-bt' 'Bubble Advection Re=35 t=4.0' \
-#     'risingbubble_advection_re35_restart_0004' \
-#     'set boxwidth 4.0; flop_count_range=5666' | gnuplot
-# gnuplot_gen 'rb-r-adv-350-bt' 'Bubble Advection Re=350 t=4.0' \
-#     'risingbubble_advection_re350_restart_0013' \
-#     'set boxwidth 4.0; flop_count_range=5666' | gnuplot
-# gnuplot_gen 'rb-r-adv-3500-bt' 'Bubble Advection Re=3500 t=4.0' \
-#     'risingbubble_advection_re3500_restart_0013' \
-#     'set boxwidth 4.0; flop_count_range=5666' | gnuplot
-
-# gnuplot_gen 'rb-r-adv-3500-bt-0005' 'Bubble Advection Re=3500 t=3.2' \
-#     'risingbubble_advection_re3500_restart_0005' \
-#     'set boxwidth 4.0; flop_count_range=5666' | gnuplot
-# gnuplot_gen 'rb-r-adv-3500-bt-0008' 'Bubble Advection Re=3500 t=3.5' \
-#     'risingbubble_advection_re3500_restart_0008' \
-#     'set boxwidth 4.0; flop_count_range=5666' | gnuplot
-
-# Rising Bubble Advection Re=35 t=4.0
-# Rising Bubble Diffusion Re=35 t=4.0
-# Rising Bubble Advection Re=350 t=4.0
-# Rising Bubble Diffusion Re=350 t=4.0
-# Rising Bubble Advection Re=3500 t=4.0
-# Rising Bubble Diffusion Re=3500 t=4.0
-# Rising Bubble Advection Re=3500 t=3.5
-# Rising Bubble Advection Re=3500 t=3.2
