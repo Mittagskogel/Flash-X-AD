@@ -160,9 +160,10 @@ plot '${input}/flop_counts_ref${n}_0001_speedups.out' u (\$1):(\$5) w l axes x1y
     done
 }
 
-gnuplot_gen 'sod-bt' 'Sod' 'sod_exponent_0001' | gnuplot
-# gnuplot_gen 'sod-bt-exponent' 'Sod' 'sod_exponent_0001' | gnuplot
-gnuplot_gen 'sedov-bt' 'Sedov' 'sedov_exponent_0001' | gnuplot
+mkdir -p plots
+
+gnuplot_gen 'sod-bt' 'Sod' 'plots/sod_0001' | gnuplot
+gnuplot_gen 'sedov-bt' 'Sedov' 'plots/sedov_0001' | gnuplot
 
 # gnuplot_gen 'cellular-hydro-bt' 'Cellular Hydro' 'cellular_hydro_0002' | gnuplot
 # gnuplot_gen 'cellular-burn-bt' 'Cellular Burn' 'cellular_burn_0001' | gnuplot

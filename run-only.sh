@@ -4,7 +4,7 @@ set -e
 set -x
 
 offsets=(0 1 2 3)
-mantissas=($(seq 4 1 52))
+mantissas=($(seq 5 1 53))
 
 # setup_cmd="Sod -auto -2d +uhd +pm4dev +nolwf"
 # parfile="source/Simulation/SimulationMain/Sod/tests/test_amr_unsplit_2d.par"

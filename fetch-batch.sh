@@ -62,9 +62,9 @@ function fetch_batch () {
     offsets=($(seq -w $o1 $o2))
     steps=($(seq -w $s1 $s2))
 
-    rsync piora:${rundir}/sfocu_ref*.out .
+    rsync ${rundir}/sfocu_ref*.out .
+    rsync ${rundir}/perf_counts_ref*.out .
     # rsync piora:${rundir}/flop_counts_ref*.out .
-    rsync piora:${rundir}/perf_counts_ref*.out .
 
     # for f in $(ls flop_counts_ref*.out)
     # do
@@ -93,10 +93,12 @@ function fetch_batch () {
     # rm -f flop_counts_ref*.out
 }
 
+mkdir -p plots
+
 # offsets=(0 1 2)
 # steps=($(seq -w 0001 0020))
 
-# rundir=/scratch/fhrold/riken/Flash-X-Prec/autorun.risingbubble.diffusion.re35
+# rundir=${BASE_PATH}/Flash-X-Prec/autorun.risingbubble.diffusion.re35
 # archive=risingbubble_diffusion_re35
 
 # rsync piora:${rundir}/sfocu*.out .
@@ -117,72 +119,70 @@ function fetch_batch () {
 # done
 
 # fetch_batch 0 2 0001 0001 dens \
-#     /scratch/fhrold/riken/Flash-X/autorun.sod.lscount \
+#     ${BASE_PATH}/Flash-X/autorun.sod.lscount \
 #     sod
 
 fetch_batch 0 2 0001 0001 dens \
-    /scratch/fhrold/riken/Flash-X/autorun.sod.exponent.fast \
-    sod_exponent
+    ${BASE_PATH}/Flash-X/autorun.sod plots/sod
 
 fetch_batch 0 3 0001 0001 dens \
-    /scratch/fhrold/riken/Flash-X/autorun.sedov.exponent.fast \
-    sedov_exponent
+    ${BASE_PATH}/Flash-X/autorun.sedov plots/sedov
 
 # fetch_batch 0 3 0002 0002 dens \
-#     /scratch/fhrold/riken/Flash-X/autorun.cellular.hydro.restart \
+#     ${BASE_PATH}/Flash-X/autorun.cellular.hydro.restart \
 #     cellular_hydro
 # fetch_batch 0 3 0001 0001 dens \
-#     /scratch/fhrold/riken/Flash-X/autorun.cellular.burn.new \
+#     ${BASE_PATH}/Flash-X/autorun.cellular.burn.new \
 #     cellular_burn
 # fetch_batch 0 3 0001 0001 dens \
-#     /scratch/fhrold/riken/Flash-X/autorun.cellular.both.new \
+#     ${BASE_PATH}/Flash-X/autorun.cellular.both.new \
 #     cellular_both
 
 # fetch_batch 0 2 0001 0020 dfun \
-#     /scratch/fhrold/riken/Flash-X-Prec/autorun.risingbubble.diffusion.re35 \
+#     ${BASE_PATH}/Flash-X-Prec/autorun.risingbubble.diffusion.re35 \
 #     risingbubble_diffusion_re35
 # fetch_batch 0 2 0001 0020 dfun \
-#     /scratch/fhrold/riken/Flash-X-Prec/autorun.risingbubble.diffusion.re350 \
+#     ${BASE_PATH}/Flash-X-Prec/autorun.risingbubble.diffusion.re350 \
 #     risingbubble_diffusion_re350
 # fetch_batch 0 2 0001 0020 dfun \
-#     /scratch/fhrold/riken/Flash-X-Prec/autorun.risingbubble.diffusion.re3500 \
+#     ${BASE_PATH}/Flash-X-Prec/autorun.risingbubble.diffusion.re3500 \
 #     risingbubble_diffusion_re3500
 
 # # fetch_batch 0 2 0001 0020 dfun \
-# #     /scratch/fhrold/riken/Flash-X-Prec/autorun.risingbubble.advection.re35 \
+# #     ${BASE_PATH}/Flash-X-Prec/autorun.risingbubble.advection.re35 \
 # #     risingbubble_advection_re35
 # # fetch_batch 0 2 0001 0020 dfun \
-# #     /scratch/fhrold/riken/Flash-X-Prec/autorun.risingbubble.advection.re350 \
+# #     ${BASE_PATH}/Flash-X-Prec/autorun.risingbubble.advection.re350 \
 # #     risingbubble_advection_re350
 # fetch_batch 0 2 0001 0020 dfun \
-#     /scratch/fhrold/riken/Flash-X-Prec/autorun.risingbubble.advection.re3500.new \
+#     ${BASE_PATH}/Flash-X-Prec/autorun.risingbubble.advection.re3500.new \
 #     risingbubble_advection_re3500
 
 # fetch_batch 0 2 0004 0004 dfun \
-#     /scratch/fhrold/riken/Flash-X-Prec/autorun.risingbubble.diffusion.re35.restart \
+#     ${BASE_PATH}/Flash-X-Prec/autorun.risingbubble.diffusion.re35.restart \
 #     risingbubble_diffusion_re35_restart
 # fetch_batch 0 2 0004 0004 dfun \
-#     /scratch/fhrold/riken/Flash-X-Prec/autorun.risingbubble.diffusion.re350.restart \
+#     ${BASE_PATH}/Flash-X-Prec/autorun.risingbubble.diffusion.re350.restart \
 #     risingbubble_diffusion_re350_restart
 # fetch_batch 0 2 0004 0004 dfun \
-#     /scratch/fhrold/riken/Flash-X-Prec/autorun.risingbubble.diffusion.re3500.restart \
+#     ${BASE_PATH}/Flash-X-Prec/autorun.risingbubble.diffusion.re3500.restart \
 #     risingbubble_diffusion_re3500_restart
 
 # fetch_batch 0 2 0004 0004 dfun \
-#     /scratch/fhrold/riken/Flash-X-Prec/autorun.risingbubble.advection.re35.restart.new \
+#     ${BASE_PATH}/Flash-X-Prec/autorun.risingbubble.advection.re35.restart.new \
 #     risingbubble_advection_re35_restart
 # fetch_batch 0 2 0013 0013 dfun \
-#     /scratch/fhrold/riken/Flash-X-Prec/autorun.risingbubble.advection.re350.restart.new \
+#     ${BASE_PATH}/Flash-X-Prec/autorun.risingbubble.advection.re350.restart.new \
 #     risingbubble_advection_re350_restart
 # fetch_batch 0 2 0013 0013 dfun \
-#     /scratch/fhrold/riken/Flash-X-Prec/autorun.risingbubble.advection.re3500.restart.new \
+#     ${BASE_PATH}/Flash-X-Prec/autorun.risingbubble.advection.re3500.restart.new \
 #     risingbubble_advection_re3500_restart
 
 # fetch_batch 0 2 0005 0005 dfun \
-#      /scratch/fhrold/riken/Flash-X-Prec/autorun.risingbubble.advection.re3500.restart.new \
+#      ${BASE_PATH}/Flash-X-Prec/autorun.risingbubble.advection.re3500.restart.new \
 #      risingbubble_advection_re3500_restart
 # fetch_batch 0 2 0008 0008 dfun \
-#      /scratch/fhrold/riken/Flash-X-Prec/autorun.risingbubble.advection.re3500.restart.new \
+#      ${BASE_PATH}/Flash-X-Prec/autorun.risingbubble.advection.re3500.restart.new \
 #      risingbubble_advection_re3500_restart
 
 # Rising Bubble Advection Re=35 t=4.0
