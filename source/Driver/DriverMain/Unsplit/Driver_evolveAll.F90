@@ -46,6 +46,9 @@
 
 #define DEBUG_GRID_GCMASK
 
+! This is intended for Raptor mem-mode debugging with Spark.
+!#define ENABLE_CONSTANT_DT
+
 subroutine Driver_evolveAll()
 
   use Driver_data,         ONLY : dr_globalMe, dr_globalNumProcs, dr_nbegin, &
@@ -133,6 +136,9 @@ subroutine Driver_evolveAll()
   do dr_nstep = dr_nBegin, dr_nend
      
      useSTS_local = dr_useSTS
+#ifdef ENABLE_CONSTANT_DT
+     dr_dt = 4.5e-5
+#endif
 
      call dr_shortenLastDt(dr_dt, dr_simTime, dr_tmax, shortenedDt, 1)
      if (dr_globalMe == MASTER_PE) then
@@ -213,8 +219,10 @@ subroutine Driver_evolveAll()
 #endif
      ! calculate new
      call Timers_start("Driver_computeDt")
+#ifndef ENABLE_CONSTANT_DT
      call Driver_computeDt(dr_nbegin,  dr_nstep,      &
           dr_simTime, dr_dtOld, dr_dtNew)
+#endif
      call Timers_stop("Driver_computeDt")
 #ifdef DEBUG_DRIVER
      print*, 'return from Driver_computeDt '  ! DEBUG
