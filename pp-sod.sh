@@ -81,8 +81,8 @@ do
                 paste -sd'+' | bc) >> ${outfile_flops}
 
             echo >> ${outfile_flops}
-
-            echo
         done
+
+        echo
     done
 done
