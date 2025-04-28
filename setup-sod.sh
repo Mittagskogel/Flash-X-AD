@@ -3,7 +3,7 @@
 set -e
 
 # List of offsets for AMR levels
-offsets=(0 1 2 3)
+offsets=(0 1 2)
 # List of mantissas
 mantissas=($(seq 5 1 53))
 
