@@ -110,21 +110,23 @@ set y2range [speedup_range_lo:speedup_range_hi]
 "
         if [ ${n} -eq 0 ]
         then
-            echo "
-plot '${input}/plot-data.out' u 1:2 w l ls 290 notitle, \
-     '${input}/plot-data.out' u 1:3 w l ls 290 notitle, \
-     '${input}/plot-data.out' u 1:4 w l ls 290 notitle, \
-     '${input}/plot-data.out' u 1:5 w l ls 290 notitle, \
-     '${input}/plot-data.out' u 1:$((n+2)) w l ls 204 title '\\small{L1 Error}'
-"
+            echo "plot '${input}/plot-data.out' u 1:2 w l ls 290 notitle, \\"
+
+            for p in $(seq 3 ${ncols})
+            do
+                echo "'${input}/plot-data.out' u 1:${p} w l ls 290 notitle, \\"
+            done
+
+            echo "'${input}/plot-data.out' u 1:$((n+2)) w l ls 204 title '\\small{L1 Error}'"
         else
-            echo "
-plot '${input}/plot-data.out' u 1:2 w l ls 290 notitle, \
-     '${input}/plot-data.out' u 1:3 w l ls 290 notitle, \
-     '${input}/plot-data.out' u 1:4 w l ls 290 notitle, \
-     '${input}/plot-data.out' u 1:5 w l ls 290 notitle, \
-     '${input}/plot-data.out' u 1:$((n+2)) w l ls 204 notitle
-"
+            echo "plot '${input}/plot-data.out' u 1:2 w l ls 290 notitle, \\"
+
+            for p in $(seq 3 ${ncols})
+            do
+                echo "'${input}/plot-data.out' u 1:${p} w l ls 290 notitle, \\"
+            done
+
+            echo "'${input}/plot-data.out' u 1:$((n+2)) w l ls 204 notitle"
         fi
     done
 }
