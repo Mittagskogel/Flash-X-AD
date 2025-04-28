@@ -43,5 +43,5 @@ parallel -j $(( nproc / ${EXP_PROCS} )) --progress cd {} "&&" \
     ${launch_cmd} flashx ">" run_raw.log "2>&1" \
     ::: ${jobs[@]}
 
-success=$(grep -R "FLASH run complete" ${rundir} |& grep sedov.log | wc -l)
+success=$(grep -R "FLASH run complete" ${rundir} |& grep INS_Rising_Bubble.log | wc -l)
 echo "${success}/$(( ${#offsets[@]} * ${#mantissas[@]} )) runs successful."
