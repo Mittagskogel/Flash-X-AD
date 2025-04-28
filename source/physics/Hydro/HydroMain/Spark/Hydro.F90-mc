@@ -24,7 +24,7 @@
 !!Reorder(4): hy_rope,hy_flux,hy_uPlus,hy_uMinus
 !!NOVARIANTS
 
-#define ENABLE_TRUNC_HYDRO
+!#define ENABLE_TRUNC_HYDRO
 #define TRUNC_FROM 64
 #define TRUNC_TO_E 5
 #define TRUNC_TO_M 13
