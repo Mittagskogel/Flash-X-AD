@@ -21,7 +21,7 @@ MPE_PATH   =
 
 MA28_PATH = ${BASE_PATH}/ma28-install
 
-AMREX_PATH = ${BASE_PATH}/amrex-24.04-install
+AMREX_PATH = ${BASE_PATH}/amrex-25.04-install
 
 #----------------------------------------------------------------------------
 # Compiler and linker commands
@@ -124,7 +124,7 @@ LFLAGS_OPT   =  \
      -L${ENZYME_BUILD_DIR}/Enzyme/Runtimes/FPRT/ -lEnzyme-FPRT-GC-20 \
      -lEnzyme-FPRT-Count-20 \
      -Wl,-mllvm -Wl,-load=${ENZYME_BUILD_DIR}/Enzyme/LLDEnzyme-20.so \
-     -Wl,-mllvm -Wl,-enzyme-truncate-count=1 \
+     -Wl,-mllvm -Wl,-enzyme-truncate-count=0 \
      -Wl,-mllvm -Wl,-enzyme-truncate-access-count=0 \
      -Wl,--allow-multiple-definition \
      -o
