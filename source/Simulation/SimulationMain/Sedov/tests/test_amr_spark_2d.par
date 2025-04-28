@@ -52,7 +52,7 @@ checkpointFileNumber = 0
 plotfileIntervalTime = 0
 plotfileIntervalStep = 0
 
-nend            = 4 #10000
+nend            = 10000
 tmax            = 0.01
 
 run_comment     = "Sedov explosion"

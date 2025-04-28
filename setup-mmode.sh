@@ -39,6 +39,7 @@ function build_flashx () {
     cp ${BASE_PATH}/Enzyme/enzyme/include/enzyme/fprt/mpfr.h ${objdir}/mpfr.cpp
     clang++ -c ${objdir}/mpfr.cpp $(pkg-config --cflags mpfr gmp) \
         -I${BASE_PATH}/Enzyme/enzyme/include/enzyme/fprt/ \
+        -DENZYME_FPRT_ENABLE_SHADOW_RESIDUALS \
         -o ${objdir}/mpfr.o
 
     # Finish build
