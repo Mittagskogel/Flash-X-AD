@@ -21,7 +21,7 @@ MPE_PATH   =
 
 MA28_PATH = ${BASE_PATH}/ma28-install
 
-AMREX_PATH = ${BASE_PATH}/amrex-install
+AMREX_PATH = ${BASE_PATH}/amrex-24.04-install
 
 #----------------------------------------------------------------------------
 # Compiler and linker commands
