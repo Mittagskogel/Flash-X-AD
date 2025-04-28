@@ -44,9 +44,11 @@
 
 !#define DISABLE_TRUNC_RECON
 !#define DISABLE_TRUNC_RIEMANN
+!#define EXCLUDE_RECON
+!#define EXCLUDE_RIEMANN
 #define TRUNC_FROM 64
-#define TRUNC_TO_E 0
-#define TRUNC_TO_M 24
+#define TRUNC_TO_E 5
+#define TRUNC_TO_M 13
 
 module truncate_helpers
   implicit none
@@ -85,7 +87,21 @@ module truncate_helpers
      end function f_enzyme_reset_shadow_trace
   end interface
 
+  interface
+     subroutine enzyme_fprt_excl_trunc_start() bind(c)
+       implicit none
+     end subroutine enzyme_fprt_excl_trunc_start
+  end interface
+
+  interface
+     subroutine enzyme_fprt_excl_trunc_end() bind(c)
+       implicit none
+     end subroutine enzyme_fprt_excl_trunc_end
+  end interface
+
   public :: truncate_0d, truncate_1d, truncate_2d, truncate_3d, truncate_4d
+  public :: f__enzyme_truncate_mem_func_hy_recon
+  public :: f__enzyme_truncate_mem_func_hy_riemann
   contains
     subroutine truncate_1d(x)
       real, intent(inout) :: x(:)
@@ -180,6 +196,40 @@ module truncate_helpers
       call expand_1d(tmp)
       x = reshape(tmp, [size(x, 1), size(x, 2), size(x, 3), size(x, 4)])
     end subroutine expand_4d
+
+    subroutine f__enzyme_truncate_mem_func_hy_recon(from, to_e, to_m, &
+         scr_rope, scr_uPlus, scr_uMinus, flat3d, loGC, is, js, ks, i,j,k,v)
+      implicit none
+
+      integer, intent(in) :: from, to_e, to_m
+
+      integer, intent(IN) :: i,j,k,v, is, js, ks
+      integer, intent(IN) :: loGC(3)
+      real, dimension(1:, loGC(1):, loGC(2):, loGC(3):), intent(INOUT) :: &
+           scr_rope,scr_uPlus, scr_uMinus
+      real, dimension(loGC(1):, loGC(2):, loGC(3):), intent(IN) :: flat3d
+
+      call hy_recon(scr_rope, scr_uPlus, scr_uMinus, flat3d, loGC, is, js, ks, i,j,k,v)
+    end subroutine f__enzyme_truncate_mem_func_hy_recon
+
+    subroutine f__enzyme_truncate_mem_func_hy_riemann(from, to_e, to_m, &
+         dir,VL,VR,inShock,Fstar,speed)
+#include "Simulation.h"
+#include "constants.h"
+#include "Spark.h"
+      implicit none
+
+      integer, intent(in) :: from, to_e, to_m
+
+      integer, intent(IN) :: dir
+      real, dimension(HY_NUM_VARS), intent(INOUT)  :: VL, VR
+      logical, intent(IN) :: inShock
+      real, dimension(HY_NUM_FLUX),    intent(OUT) :: Fstar
+      real,    intent(OUT) :: speed
+
+      call hy_riemann(dir,VL,VR,inShock,Fstar,speed)
+    end subroutine f__enzyme_truncate_mem_func_hy_riemann
+
 end module truncate_helpers
 
 subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
@@ -231,9 +281,6 @@ subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
 
   logical :: offload = .false.
 
-  ! Enzyme
-  ! integer :: err_tmp
-
 #ifdef OMP_OL
   offload = .true.
 #endif
@@ -283,11 +330,27 @@ subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
      @M hy_DIR_recon_private &
      @M hy_DIR_private([stencil]) &
      @M hy_DIR_firstprivate([is, js, ks])
-     ! Expand for recon
 #ifdef DISABLE_TRUNC_RECON
+     ! Expand for recon
      call expand_4d(scr_rope)
      call expand_4d(scr_uPlus)
      call expand_4d(scr_uMinus)
+     do k = limits(LOW,KAXIS,stage)-1*ks, limits(HIGH,KAXIS,stage)+1*ks
+        do j = limits(LOW,JAXIS,stage)-1*js, limits(HIGH,JAXIS,stage)+1*js
+           do i = limits(LOW,IAXIS,stage)-1*is, limits(HIGH,IAXIS,stage)+1*is
+              do v=1,NRECON
+                 call hy_recon(scr_rope, scr_uPlus, scr_uMinus, expand_flat3d, loGC, is, js, ks, i,j,k,v)
+              enddo
+           enddo
+        enddo
+     enddo
+     ! Truncate back from recon
+     call truncate_4d(scr_rope)
+     call truncate_4d(scr_uPlus)
+     call truncate_4d(scr_uMinus)
+#else
+#ifdef EXCL_RECON
+     call enzyme_fprt_excl_trunc_start()
 #endif
      do k = limits(LOW,KAXIS,stage)-1*ks, limits(HIGH,KAXIS,stage)+1*ks
         do j = limits(LOW,JAXIS,stage)-1*js, limits(HIGH,JAXIS,stage)+1*js
@@ -298,11 +361,9 @@ subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
            enddo
         enddo
      enddo
-     ! Truncate back from recon
-#ifdef DISABLE_TRUNC_RECON
-     call truncate_4d(scr_rope)
-     call truncate_4d(scr_uPlus)
-     call truncate_4d(scr_uMinus)
+#ifdef EXCL_RECON
+     call enzyme_fprt_excl_trunc_end()
+#endif
 #endif
      ! call Timers_stop("recon")
 
@@ -346,14 +407,22 @@ subroutine hy_rk_getFaceFlux (stage, starState, flat3d, flx, fly, flz, &
         ! call expand_1d(Fstar)
         ! call expand_0d(speed)
         call expand_0d(C_hyp)
-#endif
+
         call hy_riemann(dir,VL,VR,inShock,Fstar,speed)
-#ifdef DISABLE_TRUNC_RIEMANN
+
         call truncate_1d(VL)
         call truncate_1d(VR)
         call truncate_1d(Fstar)
         call truncate_0d(speed)
         call truncate_0d(C_hyp)
+#else
+#ifdef EXCL_RIEMANN
+        call enzyme_fprt_excl_trunc_start()
+#endif
+        call hy_riemann(dir,VL,VR,inShock,Fstar,speed)
+#ifdef EXCL_RIEMANN
+        call enzyme_fprt_excl_trunc_end()
+#endif
 #endif
         scr_flux(1:HY_NUM_FLUX,i,j,k) = Fstar(1:HY_NUM_FLUX)
         ! print *, err_tmp, "errors after reset,", &

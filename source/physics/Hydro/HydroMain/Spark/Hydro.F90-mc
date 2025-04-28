@@ -25,11 +25,9 @@
 !!NOVARIANTS
 
 #define ENABLE_TRUNC_HYDRO
-#define DISABLE_TRUNC_EOS
-!#define ENABLE_TRUNC_FLUXCORR
 #define TRUNC_FROM 64
-#define TRUNC_TO_E 0
-#define TRUNC_TO_M 24
+#define TRUNC_TO_E 5
+#define TRUNC_TO_M 13
 
 module truncate_Hydro
   implicit none
@@ -525,7 +523,6 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
 
         ! Enzyme: Truncate for mem mode
 #ifdef ENABLE_TRUNC_HYDRO
-        if (timeEndAdv .le. 1e-9) then
         ! Truncate function arguments
         trunc_dt = dt
         trunc_dtOld = dtOld
@@ -573,17 +570,6 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         call truncate_0d(hy_alphaGLM)
         call truncate_1d(hy_weights)
 
-#ifndef DISABLE_TRUNC_EOS
-        ! Truncate Eos_data fields
-        call truncate_0d(eos_gasConstant)
-        call truncate_0d(eos_gamma)
-        call truncate_0d(eos_singleSpeciesA)
-        call truncate_0d(eos_singleSpeciesZ)
-
-        ! Truncate eos_idealGammaData fields
-        call truncate_0d(eos_gammam1)
-#endif
-
         call enzyme_fprt_op_clear();
 
         eos_truncate = .true.
@@ -602,58 +588,10 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
              hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
         eos_truncate = .false.
 
-        !print *, blkLimits
         call enzyme_fprt_op_dump_status(12)
-
         ! call enzyme_fprt_gc_dump_status()
 
-        ! call mark_seen_0d(trunc_dt)
-        ! call mark_seen_0d(trunc_dtOld)
-        ! call mark_seen_4d(Uin)
-        ! call mark_seen_4d(hy_starState)
-        ! call mark_seen_4d(hy_flx)
-        ! call mark_seen_4d(hy_fly)
-        ! call mark_seen_4d(hy_flz)
-        ! call mark_seen_4d(hy_tmpState)
-        ! call mark_seen_4d(hy_fluxBufx)
-        ! call mark_seen_4d(hy_fluxBufy)
-        ! call mark_seen_4d(hy_fluxBufz)
-        ! call mark_seen_4d(hy_rope)
-        ! call mark_seen_4d(hy_flux)
-        ! call mark_seen_4d(hy_uPlus)
-        ! call mark_seen_4d(hy_uMinus)
-        ! call mark_seen_4d(hy_grav)
-        ! call mark_seen_3d(hy_flat3d)
-        ! call mark_seen_1d(deltas)
-        ! call mark_seen_1d(hy_xCenter)
-        ! call mark_seen_1d(hy_yCenter)
-        ! call mark_seen_1d(hy_zCenter)
-        ! call mark_seen_1d(hy_xLeft)
-        ! call mark_seen_1d(hy_xRight)
-        ! call mark_seen_1d(hy_yLeft)
-        ! call mark_seen_1d(hy_yRight)
-        ! call mark_seen_3d(hy_fareaX)
-        ! call mark_seen_3d(hy_fareaY)
-        ! call mark_seen_3d(hy_fareaZ)
-        ! call mark_seen_3d(hy_cvol)
-
-        ! ! Mark_Seen Hydro_data fields
-        ! call mark_seen_0d(hy_cvisc)
-        ! call mark_seen_0d(hy_C_hyp)
-        ! call mark_seen_0d(hy_tiny)
-        ! call mark_seen_0d(hy_smalldens)
-        ! call mark_seen_0d(hy_smallpres)
-        ! call mark_seen_0d(hy_smallX)
-        ! call mark_seen_0d(hy_limRad)
-        ! call mark_seen_0d(hy_mp5ZeroTol)
-        ! call mark_seen_2d(hy_coeffArray)
-        ! call mark_seen_0d(hy_smallE)
-        ! call mark_seen_0d(hy_alphaGLM)
-        ! call mark_seen_1d(hy_weights)
-
         ! Expand function arguments
-        ! call expand_0d(trunc_dt)
-        ! call expand_0d(trunc_dtOld)
         call expand_4d(Uin)
         call expand_4d(hy_starState)
         call expand_4d(hy_flx)
@@ -696,33 +634,9 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
         call expand_0d(hy_alphaGLM)
         call expand_1d(hy_weights)
 
-#ifndef DISABLE_TRUNC_EOS
-        ! Expand Eos_data fields
-        call expand_0d(eos_gasConstant)
-        call expand_0d(eos_gamma)
-        call expand_0d(eos_singleSpeciesA)
-        call expand_0d(eos_singleSpeciesZ)
-
-        ! Expand eos_idealGammaData fields
-        call expand_0d(eos_gammam1)
-#endif
-
         call enzyme_fprt_gc_doit()
         ! call enzyme_fprt_gc_dump_status()
-        else
-        call Hydro_advance(stage, Uin, dt, dtOld, &
-             hy_starState, hy_tmpState, &
-             hy_flx, hy_fly, hy_flz, &
-             hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
-             hy_grav, hy_flat3d, &
-             hy_rope, hy_flux, hy_uPlus, hy_uMinus, &
-             deltas, &
-             blkLimits, blkLimitsGC, &
-             lo, loGC, &
-             hy_xCenter, hy_yCenter, hy_zCenter, &
-             hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
-             hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol)
-        end if
+
 #else
         call Hydro_advance(stage, Uin, dt, dtOld, &
              hy_starState, hy_tmpState, &
@@ -807,80 +721,6 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
               call Grid_getCellCoords(JAXIS, RIGHT_EDGE, level, loGC, hiGC, hy_yRight)
            end if
 
-#ifdef ENABLE_TRUNC_FLUXCORR
-           call truncate_4d(Uin)
-           call truncate_4d(hy_fluxBufX)
-           call truncate_4d(hy_fluxBufY)
-           call truncate_4d(hy_fluxBufZ)
-           call truncate_1d(deltas)
-           call truncate_3d(hy_fareaX)
-           call truncate_3d(hy_fareaY)
-           call truncate_3d(hy_fareaZ)
-           call truncate_3d(hy_cvol)
-           call truncate_1d(hy_xCenter)
-           call truncate_1d(hy_xLeft)
-           call truncate_1d(hy_xRight)
-           call truncate_1d(hy_yLeft)
-           call truncate_1d(hy_yRight)
-           call truncate_0d(hy_smallE)
-           call truncate_0d(hy_smalldens)
-           trunc_dt = dt
-           call truncate_0d(trunc_dt)
-
-           ! Truncate Eos_data fields
-           call truncate_0d(eos_gasConstant)
-           call truncate_0d(eos_gamma)
-           call truncate_0d(eos_singleSpeciesA)
-           call truncate_0d(eos_singleSpeciesZ)
-
-           ! Truncate eos_idealGammaData fields
-           call truncate_0d(eos_gammam1)
-
-           call enzyme_fprt_op_clear();
-
-           eos_truncate = .true.
-           print *, "---- f__enzyme_truncate_mem_func_hy_rk_correctfluxes"
-           call f__enzyme_truncate_mem_func_hy_rk_correctfluxes(TRUNC_FROM, TRUNC_TO_E, TRUNC_TO_M, &
-                Uin, blkLimits, &
-                hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
-                deltas, hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol, hy_xCenter, &
-                hy_xLeft, hy_xRight, hy_yLeft, hy_yRight, &
-                hy_geometry, &
-                hy_smallE, hy_smalldens, &
-                trunc_dt, .NOT. hy_telescoping, &
-                lo, loGC)
-           eos_truncate = .false.
-
-           call enzyme_fprt_op_dump_status(12)
-
-           call expand_4d(Uin)
-           call expand_4d(hy_fluxBufX)
-           call expand_4d(hy_fluxBufY)
-           call expand_4d(hy_fluxBufZ)
-           call expand_1d(deltas)
-           call expand_3d(hy_fareaX)
-           call expand_3d(hy_fareaY)
-           call expand_3d(hy_fareaZ)
-           call expand_3d(hy_cvol)
-           call expand_1d(hy_xCenter)
-           call expand_1d(hy_xLeft)
-           call expand_1d(hy_xRight)
-           call expand_1d(hy_yLeft)
-           call expand_1d(hy_yRight)
-           call expand_0d(hy_smallE)
-           call expand_0d(hy_smalldens)
-
-           ! Expand Eos_data fields
-           call expand_0d(eos_gasConstant)
-           call expand_0d(eos_gamma)
-           call expand_0d(eos_singleSpeciesA)
-           call expand_0d(eos_singleSpeciesZ)
-
-           ! Expand eos_idealGammaData fields
-           call expand_0d(eos_gammam1)
-
-           call enzyme_fprt_gc_doit()
-#else
            call hy_rk_correctFluxes(Uin, blkLimits, &
                                     hy_fluxBufX, hy_fluxBufY, hy_fluxBufZ, &
                                     deltas, hy_fareaX, hy_fareaY, hy_fareaZ, hy_cvol, hy_xCenter, &
@@ -889,7 +729,6 @@ subroutine Hydro(timeEndAdv, dt, dtOld, sweepOrder)
                                     hy_smallE, hy_smalldens, &
                                     dt, .NOT. hy_telescoping, &
                                     lo, loGC)
-#endif !ENABLE_TRUNC_FLUXCORR
            if (hy_geometry /= CARTESIAN) then
               @M hy_release_geom
            end if
