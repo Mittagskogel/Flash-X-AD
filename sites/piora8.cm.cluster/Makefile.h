@@ -106,17 +106,17 @@ CFLAGS_NCMPI = -I${NCMPI_PATH}/include
 # LFLAGS_OPT = -g -o
 LFLAGS_OPT   =  \
      -flto=full -fuse-ld=lld \
-     -fpass-plugin=$(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
-     -Xflang -load -Xflang $(ENZYME_BUILD_DIR)/Enzyme/LLVMEnzyme-20.so \
+     -fpass-plugin=${ENZYME_BUILD_DIR}/Enzyme/LLVMEnzyme-20.so \
+     -Xflang -load -Xflang ${ENZYME_BUILD_DIR}/Enzyme/LLVMEnzyme-20.so \
      -Rpass=enzyme \
-     -Wl,--load-pass-plugin=$(ENZYME_BUILD_DIR)/Enzyme/LLDEnzyme-20.so \
+     -Wl,--load-pass-plugin=${ENZYME_BUILD_DIR}/Enzyme/LLDEnzyme-20.so \
      -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/mpfr-4.2.1-2aivvsalcuno6mvp2lyuta3glkp3o6v2/lib -lmpfr \
      -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/gmp-6.3.0-kyy5q7hr34p4dr2aftntqw2z6pmkc7ja/lib -lgmp \
      -lstdc++ \
      mpfr.o \
      -DENZYME_FPRT_ENABLE_GARBAGE_COLLECTION \
      -DENZYME_FPRT_ENABLE_SHADOW_RESIDUALS \
-     -L$(ENZYME_BUILD_DIR)/Enzyme/Runtimes/FPRT/ -lEnzyme-FPRT-GC-20 \
+     -L${ENZYME_BUILD_DIR}/Enzyme/Runtimes/FPRT/ -lEnzyme-FPRT-GC-20 \
      -lEnzyme-FPRT-Count-20 \
      -Wl,-mllvm -Wl,-load=${ENZYME_BUILD_DIR}/Enzyme/LLDEnzyme-20.so \
      -Wl,-mllvm -Wl,-enzyme-truncate-count=1 \
