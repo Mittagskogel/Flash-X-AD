@@ -43,9 +43,9 @@ end module truncate_diffusion
 
 !#define ENABLE_TRUNC_DIFFUSION
 #define TRUNC_FROM 64
-#define TRUNC_TO_E 0
-#define TRUNC_TO_M 32
-#define LVL_OFFSET 1
+#define TRUNC_TO_E 11
+#define TRUNC_TO_M 52
+#define LVL_OFFSET 0
 
 subroutine IncompNS_diffusion(tileDesc)
 
