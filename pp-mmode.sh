@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 jobs=(sedov_spark_reference \
       sedov_spark_baseline \

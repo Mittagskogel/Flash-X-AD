@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 set -e
 
@@ -23,7 +23,7 @@ jobs=()
 # Premake and specifically fail fast in the linking stage (missing mpfr.o)
 premake=${rundir}/premake
 mkdir -p ${premake}
-./setup ${setup_cmd} -objdir=${premake} -parfile=${parfile} > setup.log 2>&1
+./setup ${setup_cmd} -objdir=${premake} -parfile=${parfile} -site=raptor > setup.log 2>&1
 mv setup.log ${premake}/setup.log
 make -j -C ${premake} > ${premake}/make.log 2>&1 || true
 

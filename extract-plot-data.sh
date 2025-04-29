@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # matchfields="dens\|eint\|ener\|game\|pres\|temp\|velx"
 # matchfields="dens\|eint\|ener\|game\|pres\|temp\|velx\|vely"
