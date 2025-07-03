@@ -48,7 +48,7 @@ program Flashx
   implicit none
 
   interface
-     function f_enzyme_get_trunc_flop_count() result(count) bind(C)
+     function f_raptor_get_trunc_flop_count() result(count) bind(C)
        use, intrinsic :: iso_c_binding, only: c_long_long
        implicit none
 
@@ -57,7 +57,7 @@ program Flashx
   end interface
 
   interface
-     function f_enzyme_get_double_flop_count() result(count) bind(C)
+     function f_raptor_get_double_flop_count() result(count) bind(C)
        use, intrinsic :: iso_c_binding, only: c_long_long
        implicit none
 
@@ -66,7 +66,7 @@ program Flashx
   end interface
 
   interface
-     function f_enzyme_get_float_flop_count() result(count) bind(C)
+     function f_raptor_get_float_flop_count() result(count) bind(C)
        use, intrinsic :: iso_c_binding, only: c_long_long
        implicit none
 
@@ -75,7 +75,7 @@ program Flashx
   end interface
 
   interface
-     function f_enzyme_get_half_flop_count() result(count) bind(C)
+     function f_raptor_get_half_flop_count() result(count) bind(C)
        use, intrinsic :: iso_c_binding, only: c_long_long
        implicit none
 
@@ -84,7 +84,7 @@ program Flashx
   end interface
 
   interface
-     function f_enzyme_get_memory_access_trunc_store() result(count) bind(C)
+     function f_raptor_get_memory_access_trunc_store() result(count) bind(C)
        use, intrinsic :: iso_c_binding, only: c_long_long
        implicit none
 
@@ -93,7 +93,7 @@ program Flashx
   end interface
 
   interface
-     function f_enzyme_get_memory_access_trunc_load() result(count) bind(C)
+     function f_raptor_get_memory_access_trunc_load() result(count) bind(C)
        use, intrinsic :: iso_c_binding, only: c_long_long
        implicit none
 
@@ -102,7 +102,7 @@ program Flashx
   end interface
 
   interface
-     function f_enzyme_get_memory_access_trunc_unique() result(count) bind(C)
+     function f_raptor_get_memory_access_trunc_unique() result(count) bind(C)
        use, intrinsic :: iso_c_binding, only: c_long_long
        implicit none
 
@@ -111,7 +111,7 @@ program Flashx
   end interface
 
   interface
-     function f_enzyme_get_memory_access_original_store() result(count) bind(C)
+     function f_raptor_get_memory_access_original_store() result(count) bind(C)
        use, intrinsic :: iso_c_binding, only: c_long_long
        implicit none
 
@@ -120,7 +120,7 @@ program Flashx
   end interface
 
   interface
-     function f_enzyme_get_memory_access_original_load() result(count) bind(C)
+     function f_raptor_get_memory_access_original_load() result(count) bind(C)
        use, intrinsic :: iso_c_binding, only: c_long_long
        implicit none
 
@@ -129,7 +129,7 @@ program Flashx
   end interface
 
   interface
-     function f_enzyme_get_memory_access_original_unique() result(count) bind(C)
+     function f_raptor_get_memory_access_original_unique() result(count) bind(C)
        use, intrinsic :: iso_c_binding, only: c_long_long
        implicit none
 
@@ -145,14 +145,14 @@ program Flashx
 
   call Driver_finalizeAll ( )
 
-  write(*,*) "Number of truncated flops: ", f_enzyme_get_trunc_flop_count()
-  write(*,*) "Number of double flops: ", f_enzyme_get_double_flop_count()
-  write(*,*) "Number of float flops: ", f_enzyme_get_float_flop_count()
-  write(*,*) "Number of half flops: ", f_enzyme_get_half_flop_count()
+  write(*,*) "Number of truncated flops: ", f_raptor_get_trunc_flop_count()
+  write(*,*) "Number of double flops: ", f_raptor_get_double_flop_count()
+  write(*,*) "Number of float flops: ", f_raptor_get_float_flop_count()
+  write(*,*) "Number of half flops: ", f_raptor_get_half_flop_count()
 
-  write(*,*) "Number of truncated stores: ", f_enzyme_get_memory_access_trunc_store()
-  write(*,*) "Number of truncated loads: ", f_enzyme_get_memory_access_trunc_load()
-  write(*,*) "Number of original stores: ", f_enzyme_get_memory_access_original_store()
-  write(*,*) "Number of original loads: ", f_enzyme_get_memory_access_original_load()
+  write(*,*) "Number of truncated stores: ", f_raptor_get_memory_access_trunc_store()
+  write(*,*) "Number of truncated loads: ", f_raptor_get_memory_access_trunc_load()
+  write(*,*) "Number of original stores: ", f_raptor_get_memory_access_original_store()
+  write(*,*) "Number of original loads: ", f_raptor_get_memory_access_original_load()
 
 end program Flashx

@@ -8,8 +8,8 @@ HDF4_PATH  =
 HDF5_PATH  = ${BASE_PATH}/hdf5-1.14.6-install
 HYPRE_PATH = /scratch/fhrold/spack/opt/spack/linux-rocky9-zen3/gcc-11.4.1/hypre-2.31.0-qk4jyhleqkrmi33iut5tciesurwpcfv7
 
-# Enzyme
-ENZYME_BUILD_DIR=${BASE_PATH}/Enzyme/enzyme/build
+# RAPTOR
+RAPTOR_PATH=${BASE_PATH}/raptor-install
 
 ZLIB_PATH  =
 
@@ -53,13 +53,9 @@ PP      = -D
 
 OPENMP = -fopenmp
 
-# Enzyme
-FFLAGS_OPT = -c -O2 -fdefault-real-8 -fdefault-double-8 \
-    -flto=full -DENZYME_FPRT_ENABLE_GARBAGE_COLLECTION \
-    -DENZYME_FPRT_ENABLE_SHADOW_RESIDUALS
-# -fpass-plugin=${BASE_PATH}/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
-# -Xflang -load -Xflang ${BASE_PATH}/Enzyme/enzyme/build/Enzyme/LLVMEnzyme-20.so \
-# -Rpass=enzyme -mllvm -enzyme-truncate-all="64to11-51"
+# RAPTOR
+FFLAGS_OPT = -c -g -O2 -fdefault-real-8 -fdefault-double-8 \
+    -flto=full
 
 #I explictly add -O0 because I found that compiling source files without
 #an optimization flag generates the same object code as compiling source
@@ -104,24 +100,16 @@ CFLAGS_NCMPI = -I${NCMPI_PATH}/include
 #----------------------------------------------------------------------------
 
 # LFLAGS_OPT = -g -o
-LFLAGS_OPT   =  \
+LFLAGS_OPT   = -g -O3 \
      -flto=full -fuse-ld=lld \
-     -fpass-plugin=${ENZYME_BUILD_DIR}/Enzyme/LLVMEnzyme-20.so \
-     -Xflang -load -Xflang ${ENZYME_BUILD_DIR}/Enzyme/LLVMEnzyme-20.so \
-     -Rpass=enzyme \
-     -Wl,--load-pass-plugin=${ENZYME_BUILD_DIR}/Enzyme/LLDEnzyme-20.so \
+     -fpass-plugin=${RAPTOR_PATH}/lib/LLVMRaptor-20.so \
+     -Xflang -load -Xflang ${RAPTOR_PATH}/lib/LLVMRaptor-20.so \
+     -Wl,--load-pass-plugin=${RAPTOR_PATH}/lib/LLDRaptor-20.so \
+     -Wl,-mllvm -Wl,-load=${RAPTOR_PATH}/lib/LLDRaptor-20.so \
      -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/mpfr-4.2.1-2aivvsalcuno6mvp2lyuta3glkp3o6v2/lib -lmpfr \
      -L/scratch/fhrold/spack/opt/spack/linux-rocky9-zen2/gcc-11.4.1/gmp-6.3.0-kyy5q7hr34p4dr2aftntqw2z6pmkc7ja/lib -lgmp \
-     -lstdc++ \
-     mpfr.o \
-     -DENZYME_FPRT_ENABLE_GARBAGE_COLLECTION \
-     -DENZYME_FPRT_ENABLE_SHADOW_RESIDUALS \
-     -L${ENZYME_BUILD_DIR}/Enzyme/Runtimes/FPRT/ -lEnzyme-FPRT-GC-20 \
-     -lEnzyme-FPRT-Count-20 \
-     -Wl,-mllvm -Wl,-load=${ENZYME_BUILD_DIR}/Enzyme/LLDEnzyme-20.so \
-     -Wl,-mllvm -Wl,-enzyme-truncate-count=1 \
-     -Wl,-mllvm -Wl,-enzyme-truncate-access-count=0 \
-     -Wl,--allow-multiple-definition \
+     -L${BASE_PATH}/raptor-install/lib \
+     -lstdc++ -lmpfr -lRaptor-RT-20\
      -o
 LFLAGS_DEBUG = -g -O0 -o
 LFLAGS_TEST  = -g -O0 -o
